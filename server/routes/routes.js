@@ -5,7 +5,7 @@ var db = require('../models/database')
 
 // Define the routes to be used here
 var testRoute = function (req, res) {
-  res.send("hello")
+  res.send("this is a test route")
 }
 
 // Routes object

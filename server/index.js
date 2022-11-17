@@ -2,6 +2,7 @@ var express = require('express')
 var session = require('express-session')
 var routes = require('./routes/routes')
 var cors = require('cors')
+const path = require('path')
 
 // Initialization
 var app = express();
