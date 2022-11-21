@@ -14,6 +14,7 @@ app.use(express.static('dist'))
 
 // Routes
 app.get("/test", routes.test_route)
+app.post("/addUser", routes.add_user)
 
 // set favicon
 app.get('/favicon.ico', (req, res) => {
