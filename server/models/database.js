@@ -7,7 +7,6 @@ const db = new AWS.DynamoDB()
 
 var checkLogin = function (username, callback) {
   // With username as key
-  console.log(username)
   var params = {
     KeyConditions: {
       username: {
@@ -21,7 +20,6 @@ var checkLogin = function (username, callback) {
 
   // If the user exists then return the password to the callback
   db.query(params, function (err, data) {
-    console.log({ err, data })
     if (err || data.Items.length == 0) {
       callback(err, "user not found")
     } else {
@@ -36,58 +34,56 @@ var checkSignup = function (username, password, first_name, last_name, email, af
   var params = {
     KeyConditions: {
       username: {
-        ComparisonOperator: 'EQ',
-        AttributeValueList: [ { S: username } ]
-      }
+        ComparisonOperator: "EQ",
+        AttributeValueList: [{ S: username }],
+      },
     },
     TableName: "users",
-    AttributesToGet: [ 'password' ]
-  };
+    AttributesToGet: ["password"],
+  }
 
-  db.query(params, function(err, data) {
+  db.query(params, function (err, data) {
     if (err || data.Items.length !== 0) {
-      callback(err, "user already exists");
+      callback(err, "user already exists")
     } else {
-    //add the user to db if they don't exist
+      //add the user to db if they don't exist
       var paramsAddUser = {
         Item: {
-          "username": {
-            S: username
+          username: {
+            S: username,
           },
-          "password": { 
-            S: password
+          password: {
+            S: password,
           },
-          "first_name": {
-            S: first_name
+          first_name: {
+            S: first_name,
           },
-          "last_name": {
-            S: last_name
+          last_name: {
+            S: last_name,
           },
-          "email": {
-            S: email
+          email: {
+            S: email,
           },
-          "affiliation": {
-            S: affiliation
+          affiliation: {
+            S: affiliation,
           },
-          "birthday": {
-            S: birthday
+          birthday: {
+            S: birthday,
           },
-          "interests": {
-            SS: interests
-          }
+          interests: {
+            SS: interests,
+          },
         },
         TableName: "users",
-        ReturnValues: 'NONE'
-      };
+        ReturnValues: "NONE",
+      }
 
-      db.putItem(paramsAddUser, function(err, data){
-        if (err)
-          callback(err)
-        else
-          callback(null, 'Success')
-      });
+      db.putItem(paramsAddUser, function (err, data) {
+        if (err) callback(err)
+        else callback(null, "Success")
+      })
     }
-  });
+  })
 }
 
 var updateEmail = (username, email, callback) => {
@@ -103,11 +99,11 @@ var updateEmail = (username, email, callback) => {
     UpdateExpression: "set #email = :val",
     ExpressionAttributeValues: {
       ":val": {
-        S: email
-      }
+        S: email,
+      },
     },
-  };
-  db.updateItem(params, function(err, data) {
+  }
+  db.updateItem(params, function (err, data) {
     if (err) {
       callback(err, "unable to update email")
     } else {
@@ -120,20 +116,26 @@ var updatePassword = (username, password, callback) => {
   const params = {
     TableName: "users",
     Key: {
+<<<<<<< HEAD
       "username": {
         S: username
       }
+=======
+      username: {
+        S: username,
+      },
+>>>>>>> jason
     },
     ProjectionExpression: "#password",
     ExpressionAttributeNames: { "#password": "password" },
     UpdateExpression: "set #password = :val",
     ExpressionAttributeValues: {
       ":val": {
-        S: password
-      }
+        S: password,
+      },
     },
-  };
-  db.updateItem(params, function(err, data) {
+  }
+  db.updateItem(params, function (err, data) {
     if (err) {
       callback(err, "unable to update password")
     } else {
@@ -155,11 +157,11 @@ var updateAffiliation = (username, affiliation, callback) => {
     UpdateExpression: "set #affiliation = :val",
     ExpressionAttributeValues: {
       ":val": {
-        S: affiliation
-      }
+        S: affiliation,
+      },
     },
-  };
-  db.updateItem(params, function(err, data) {
+  }
+  db.updateItem(params, function (err, data) {
     if (err) {
       callback(err, "unable to update affiliation")
     } else {

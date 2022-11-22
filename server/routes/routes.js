@@ -10,16 +10,23 @@ const testRoute = function (req, res) {
   res.send("this is a test route")
 }
 
-var addUser = function (req, res) {
+const isLogged = function (req, res) {
+  console.log("USER: " + req.session.user)
+  res.send(req.session.user)
+}
+
+var signup = function (req, res) {
   const { username, password, first_name, last_name, email, affiliation, birthday, interests } = req.body
   var hash = CryptoJS.SHA256(password).toString()
-  db.check_signup(username, hash, first_name, last_name, email, affiliation, birthday, interests, function(err, data) {
+
+  db.check_signup(username, hash, first_name, last_name, email, affiliation, birthday, interests, function (err, data) {
     if (err || data === "user already exists") {
       res.send("err1")
     } else {
       if (data === "Success") {
         req.session.user = username
-        res.redirect("/home")
+        req.session.save()
+        res.send("works")
       } else {
         res.send("err2")
       }
@@ -39,22 +46,21 @@ const login = async (req, res) => {
 
       if (password === hash) {
         req.session.user = username
-        res.send("hi")
-        res.redirect("/home")
+        req.session.save()
+        res.send("works")
       } else {
         res.send("err2")
       }
     }
   })
-  //hash the password and check against the db
 }
 
 const changeEmail = async (req, res) => {
   const { username, newEmail } = req.body
   //somehow check if it's the logged-in user changing their email
-  if (req.session.username === username) {
+  if (req.session.user === username) {
     //db calls for updating email
-    db.update_email(username, newEmail, function(err, data) {
+    db.update_email(username, newEmail, function (err, data) {
       if (err || data === "unable to update email") {
         res.send("unable to update email")
       } else {
@@ -67,11 +73,11 @@ const changeEmail = async (req, res) => {
 const changePassword = async (req, res) => {
   const { username, newPassword } = req.body
   //somehow check if it's the logged-in user changing their email
-  if (req.session.username === username) {
+  if (req.session.user === username) {
     //hash the password
     var hash = CryptoJS.SHA256(newPassword).toString()
     //db calls for updating password
-    db.update_password(username, hash, function(err, data) {
+    db.update_password(username, hash, function (err, data) {
       if (err || data === "unable to update password") {
         res.send("unable to update password")
       } else {
@@ -84,9 +90,9 @@ const changePassword = async (req, res) => {
 const changeAffiliation = async (req, res) => {
   const { username, affiliation } = req.body
   //somehow check if it's the logged-in user changing their email
-  if (req.session.username === username) {
+  if (req.session.user === username) {
     //db calls for updating affiliation
-    db.update_affiliation(username, affiliation, function(err, data) {
+    db.update_affiliation(username, affiliation, function (err, data) {
       if (err || data === "unable to update affiliation") {
         res.send("unable to update affiliation")
       } else {
@@ -99,9 +105,9 @@ const changeAffiliation = async (req, res) => {
 const addInterest = async (req, res) => {
   const { username, newInterest } = req.body
   //somehow check if it's the logged-in user changing their email
-  if (req.session.username === username) {
+  if (req.session.user === username) {
     //db calls for adding interest
-    db.add_interest(username, newInterest, function(err, data) {
+    db.add_interest(username, newInterest, function (err, data) {
       if (err) {
         res.send("failed to add interest")
       } else {
@@ -115,8 +121,9 @@ const deleteInterest = async (req, res) => {
   const { username, interest } = req.body
   //somehow check if it's the logged-in user changing their email
   if (req.session.user === username) {
+    //hash the password
     //db calls for deleting interest
-    db.remove_interest(username, interest, function(err, data) {
+    db.remove_interest(username, interest, function (err, data) {
       if (err) {
         res.send("failed to remove interest")
       } else {
@@ -135,13 +142,14 @@ const searchUser = async (req, res) => {
 const routes = {
   test_route: testRoute,
   login,
+  signup,
   change_email: changeEmail,
   change_password: changePassword,
-  add_user: addUser,
   change_affiliation: changeAffiliation,
   add_interest: addInterest,
   delete_interest: deleteInterest,
   search_user: searchUser,
+  is_logged: isLogged,
 }
 
 module.exports = routes

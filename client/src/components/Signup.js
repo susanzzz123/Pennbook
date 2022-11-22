@@ -1,12 +1,23 @@
 import react, { useEffect, useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import $ from "jquery"
 
 const Signup = () => {
   const [errMessage, setErrMessage] = useState("")
   const [interests, setInterests] = useState([])
+  const navigate = useNavigate()
 
   useEffect(() => {
+    $.get("http://localhost:3000/isLogged", (data, status) => {
+      console.log("FROM LOGGED")
+      console.log(data)
+      if (data === undefined) {
+        return false
+      } else {
+        return true
+      }
+    })
+
     $("#interests_input").on("keypress", (e) => {
       if (e.which === 13) handleAdd()
     })
@@ -20,8 +31,9 @@ const Signup = () => {
       const birth_day = $("#birth_day").val()
       const birth_month = $("#birth_month").val()
       const birth_year = $("#birth_year").val()
+      const birthday = birth_day + "-" + birth_month + "-" + birth_year
       const affiliation = $("#affiliation").val()
-      const interests = interests
+      const interest_list = getInterests()
 
       if (first_name.length === 0) {
         setErrMessage("First name cannot be empty")
@@ -38,18 +50,29 @@ const Signup = () => {
         setErrMessage("Please enter a valid birth day")
       } else if (birth_month.length > 2 || birth_month.length === 0 || /\D/.test(birth_month)) {
         setErrMessage("Please enter a valid birth month")
-      } else if (birth_year.length > 2 || birth_year.length === 0 || /\D/.test(birth_year)) {
+      } else if (birth_year.length !== 4 || /\D/.test(birth_year)) {
         setErrMessage("Please enter a valid birth year")
       } else if (affiliation.length === 0) {
         setErrMessage("Affiliation cannot be empty")
-      } else if (interests.length === 0) {
+      } else if (interest_list.length === 0) {
         setErrMessage("Add at least 2 interests")
       } else {
-        // $.post('/addUser', {email}, (data, status) => {
-        // })
+        $.post("http://localhost:3000/signup", { username, password, first_name, last_name, email, affiliation, birthday, interests: interest_list }, (data, status) => {
+          if (data === "err1") {
+            setErrMessage("User already exists")
+          } else if (data === "err2") {
+            setErrMessage("error occured")
+          } else {
+            navigate("/home")
+          }
+        })
       }
     })
   }, [])
+
+  getInterests = () => {
+    return interests
+  }
 
   handleAdd = () => {
     const interest = $("#interests_input").val()
