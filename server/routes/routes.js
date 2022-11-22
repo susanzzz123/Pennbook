@@ -2,6 +2,8 @@
 Routes
 -----*/
 const db = require('../models/database')
+const CryptoJS = require("crypto-js");
+const secret_key = "nets2120 secret"
 
 // Define the routes to be used here
 const testRoute = function (req, res) {
@@ -14,6 +16,23 @@ var addUser = function (req, res) {
 
 const login = async (req, res) => {
   const { username, password } = req.body
+  var hash = CryptoJS.SHA256(password).toString();
+
+  db.check_login(username, function(err, data) {
+    if (err || data === "user not found") {
+      res.send("err1")
+    } else {
+      const password = data.password
+      const uid = data.uid 
+
+      if (password === data) {
+        res.session.user = uid
+        res.redirect("/home")
+      } else {
+        res.send("err2")
+      }
+    }
+  }) 
   //hash the password and check against the db
 }
 const signUp = async (req, res) => {
@@ -88,6 +107,7 @@ const routes = {
   sign_up: signUp,
   change_email: changeEmail,
   change_password: changePassword,
+  add_user: addUser,
   change_affiliation: changeAffiliation,
   add_interest: addInterest,
   delete_interest: deleteInterest,
