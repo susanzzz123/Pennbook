@@ -114,8 +114,15 @@ const addInterest = async (req, res) => {
 const deleteInterest = async (req, res) => {
   const { username, interest } = req.body
   //somehow check if it's the logged-in user changing their email
-  if (req.session.username === username) {
+  if (req.session.user === username) {
     //db calls for deleting interest
+    db.remove_interest(username, interest, function(err, data) {
+      if (err) {
+        res.send("failed to remove interest")
+      } else {
+        res.send(data)
+      }
+    })
   }
 }
 

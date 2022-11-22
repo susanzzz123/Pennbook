@@ -214,13 +214,61 @@ var addInterest = (username, interest, callback) => {
   });
 }
 
+var removeInterest = (username, interest, callback) => {
+  var params = {
+    KeyConditions: {
+      username: {
+        ComparisonOperator: 'EQ',
+        AttributeValueList: [ { S: username } ]
+      }
+    },
+    TableName: "users",
+    AttributesToGet: [ 'interests' ]
+  };
+
+  db.query(params, function(err, data) {
+    if (err || data.Items.length !== 0) {
+      callback(err, "user doesn't exist");
+    } else {
+      //add interest to list
+      const currInterests = data.Items[0].interests.SS
+      const idx = currInterests.indexOf(interest)
+      currInterests = currInterests.splice(idx, 1)
+      const paramsAddInterest = {
+        TableName: "users",
+        Key: {
+          "username": {
+            S: username
+          }
+        },
+        ProjectionExpression: "#interests",
+        ExpressionAttributeNames: { "#interests": "interests" },
+        UpdateExpression: "set #interests = :val",
+        ExpressionAttributeValues: {
+          ":val": {
+            SS: currInterests
+          }
+        },
+      };
+      db.updateItem(paramsAddInterest, function(err, data) {
+        if (err) {
+          callback(err, "unable to remove interests")
+        } else {
+          callback(null, "interest removed successfully")
+        }
+      })
+    }
+  });
+}
+
 var database = {
   check_login: checkLogin,
   check_signup: checkSignup,
   update_email: updateEmail,
   update_password: updatePassword,
   update_affiliation: updateAffiliation,
-  add_interest: addInterest
+  add_interest: addInterest,
+  remove_interest: removeInterest
 }
 
 module.exports = database
