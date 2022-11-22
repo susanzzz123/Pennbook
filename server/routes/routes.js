@@ -101,7 +101,13 @@ const addInterest = async (req, res) => {
   //somehow check if it's the logged-in user changing their email
   if (req.session.username === username) {
     //db calls for adding interest
-    
+    db.add_interest(username, newInterest, function(err, data) {
+      if (err) {
+        res.send("failed to add interest")
+      } else {
+        res.send(data)
+      }
+    })
   }
 }
 
@@ -109,7 +115,6 @@ const deleteInterest = async (req, res) => {
   const { username, interest } = req.body
   //somehow check if it's the logged-in user changing their email
   if (req.session.username === username) {
-    //hash the password
     //db calls for deleting interest
   }
 }
