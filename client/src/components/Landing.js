@@ -3,35 +3,43 @@ import { Link, useNavigate, useNavigationType } from "react-router-dom"
 import $ from "jquery"
 
 const Landing = () => {
-  const [message, setMessage] = useState("")
   const [errMessage, setErrMessage] = useState("")
   const navigate = useNavigate()
 
   useEffect(() => {
+    $("#password").on("keypress", (e) => {
+      if (e.which === 13) {
+        handleLogin()
+      }
+    })
     $.get("http://localhost:3000/test", function (data, status) {
       setMessage(data)
     })
     $("#login").on("click", () => {
-      const username = $("#username").val()
-      const password = $("#password").val()
-
-      if (username.length === 0) {
-        setErrMessage("Username must be filled")
-      } else if (password.length === 0) {
-        setErrMessage("Password must be filled")
-      } else {
-        $.post("http://localhost:3000/login", { username, password }, function (data, status) {
-          if (data === "err1") {
-            setErrMessage("User not found")
-          } else if (data === "err2") {
-            setErrMessage("Password incorrect")
-          } else {
-            navigate("/home")
-          }
-        })
-      }
+      handleLogin()
     })
   }, [])
+
+  handleLogin = () => {
+    const username = $("#username").val()
+    const password = $("#password").val()
+
+    if (username.length === 0) {
+      setErrMessage("Username must be filled")
+    } else if (password.length === 0) {
+      setErrMessage("Password must be filled")
+    } else {
+      $.post("http://localhost:3000/login", { username, password }, function (data, status) {
+        if (data === "err1") {
+          setErrMessage("User not found")
+        } else if (data === "err2") {
+          setErrMessage("Password incorrect")
+        } else {
+          navigate("/home")
+        }
+      })
+    }
+  }
 
   return (
     <>
