@@ -1,8 +1,8 @@
 /* ---
 Routes
 -----*/
-const db = require('../models/database')
-const CryptoJS = require("crypto-js");
+const db = require("../models/database")
+const CryptoJS = require("crypto-js")
 const secret_key = "nets2120 secret"
 
 // Define the routes to be used here
@@ -16,36 +16,26 @@ var addUser = function (req, res) {
 
 const login = async (req, res) => {
   const { username, password } = req.body
-  var hash = CryptoJS.SHA256(password).toString();
+  var hash = CryptoJS.SHA256(password).toString()
 
-  db.check_login(username, function(err, data) {
+  db.check_login(username, function (err, data) {
     if (err || data === "user not found") {
       res.send("err1")
     } else {
       const password = data.password
-      const uid = data.uid 
 
-      if (password === data) {
-        res.session.user = uid
+      if (password === hash) {
+        req.session.user = username
         res.redirect("/home")
       } else {
         res.send("err2")
       }
     }
-  }) 
+  })
   //hash the password and check against the db
 }
 const signUp = async (req, res) => {
-  const { 
-    username, 
-    password, 
-    first_name, 
-    last_name,
-    email,
-    affiliation,
-    birthday,
-    interests
-  } = req.body
+  const { username, password, first_name, last_name, email, affiliation, birthday, interests } = req.body
 
   //take in interests as string/array
   //generate user id for storing in the table
@@ -111,7 +101,7 @@ const routes = {
   change_affiliation: changeAffiliation,
   add_interest: addInterest,
   delete_interest: deleteInterest,
-  search_user: searchUser
+  search_user: searchUser,
 }
 
-module.exports = routes 
+module.exports = routes

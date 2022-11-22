@@ -1,16 +1,17 @@
-import react, { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
-import $ from 'jquery'
+import react, { useEffect, useState } from "react"
+import { Link, useNavigate, useNavigationType } from "react-router-dom"
+import $ from "jquery"
 
 const Home = () => {
-  const [message, setMessage] = useState('')
-  const [errMessage, setErrMessage] = useState('')
+  const [message, setMessage] = useState("")
+  const [errMessage, setErrMessage] = useState("")
+  const navigate = useNavigate()
 
   useEffect(() => {
-    $.get('http://localhost:3000/test', function(data, status) {
+    $.get("http://localhost:3000/test", function (data, status) {
       setMessage(data)
     })
-    $("#login").on('click', () => {
+    $("#login").on("click", () => {
       const username = $("#username").val()
       const password = $("#password").val()
 
@@ -19,33 +20,43 @@ const Home = () => {
       } else if (password.length === 0) {
         setErrMessage("Password must be filled")
       } else {
-        $.post('http://localhost:3000/login', { username, password }, function(data, status) {
+        $.post("http://localhost:3000/login", { username, password }, function (data, status) {
           if (data === "err1") {
             setErrMessage("User not found")
           } else if (data === "err2") {
             setErrMessage("Password incorrect")
+          } else {
+            navigate("/home")
           }
         })
       }
     })
-  }, []) 
+  }, [])
 
   return (
     <>
-      <div className = "container">
+      <div className="container">
         <h1>Welcome to PennBook!</h1>
         <form>
           <div className="form-floating mb-3">
-            <input id="username" className="form-control" placeholder="Username"/>
-            <label className="text-secondary" htmlFor="floatingInput">Username</label>
+            <input id="username" className="form-control" placeholder="Username" />
+            <label className="text-secondary" htmlFor="floatingInput">
+              Username
+            </label>
           </div>
           <div className="form-floating mb-3">
-            <input id = "password" className="form-control" placeholder = "Password"/>
-            <label className="text-secondary" htmlFor="floatingInput">Password</label>
+            <input id="password" className="form-control" placeholder="Password" />
+            <label className="text-secondary" htmlFor="floatingInput">
+              Password
+            </label>
           </div>
           <p className="text-danger">{errMessage}</p>
-          <button type = "button" id="login" className="btn btn-primary">Log in</button>
-          <Link className="mx-3" to="/signup">Sign up</Link>
+          <button type="button" id="login" className="btn btn-primary">
+            Log in
+          </button>
+          <Link className="mx-3" to="/signup">
+            Sign up
+          </Link>
         </form>
       </div>
     </>
