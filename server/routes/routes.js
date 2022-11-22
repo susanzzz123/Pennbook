@@ -69,7 +69,15 @@ const changePassword = async (req, res) => {
   //somehow check if it's the logged-in user changing their email
   if (req.session.username === username) {
     //hash the password
+    var hash = CryptoJS.SHA256(newPassword).toString()
     //db calls for updating password
+    db.update_password(username, hash, function(err, data) {
+      if (err || data === "unable to update password") {
+        res.send("unable to update password")
+      } else {
+        res.send(data)
+      }
+    })
   }
 }
 
@@ -78,6 +86,13 @@ const changeAffiliation = async (req, res) => {
   //somehow check if it's the logged-in user changing their email
   if (req.session.username === username) {
     //db calls for updating affiliation
+    db.update_affiliation(username, affiliation, function(err, data) {
+      if (err || data === "unable to update affiliation") {
+        res.send("unable to update affiliation")
+      } else {
+        res.send(data)
+      }
+    })
   }
 }
 
@@ -85,8 +100,8 @@ const addInterest = async (req, res) => {
   const { username, newInterest } = req.body
   //somehow check if it's the logged-in user changing their email
   if (req.session.username === username) {
-    //hash the password
     //db calls for adding interest
+    
   }
 }
 
