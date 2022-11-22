@@ -34,6 +34,7 @@ app.post("/signup", routes.signup)
 app.post("/login", routes.login)
 app.put("/changeEmail", routes.change_email)
 app.get("/isLogged", routes.is_logged)
+app.get("/users", routes.get_users);
 
 // set favicon
 app.get("/favicon.ico", (req, res) => {

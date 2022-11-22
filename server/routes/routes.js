@@ -133,9 +133,21 @@ const deleteInterest = async (req, res) => {
   }
 }
 
+// searches for users in the database by a particular username
 const searchUser = async (req, res) => {
   const { username } = req.body
-  //db calls
+  
+  db.get_users(username, function (err, data) {
+    if (err) {
+      res.send("Error occurred when searching for users");
+    } else {
+      if (data.length == 0) {
+        res.send("No users found");
+      } else {
+        res.send(data);
+      }
+    }
+  });
 }
 
 // Routes object
@@ -148,7 +160,7 @@ const routes = {
   change_affiliation: changeAffiliation,
   add_interest: addInterest,
   delete_interest: deleteInterest,
-  search_user: searchUser,
+  get_users: searchUser,
   is_logged: isLogged,
 }
 
