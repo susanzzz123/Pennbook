@@ -90,9 +90,36 @@ var checkSignup = function (username, password, first_name, last_name, email, af
   });
 }
 
+var updateEmail = (username, email, callback) => {
+  const params = {
+    TableName: "users",
+    Key: {
+      username: {
+        S: username
+      }
+    },
+    ProjectionExpression: "#email",
+    ExpressionAttributeNames: { "#email": "email" },
+    UpdateExpression: "set #email = :val",
+    ExpressionAttributeValues: {
+      ":val": {
+        S: email
+      }
+    },
+  };
+  db.updateItem(params, function(err, data) {
+    if (err) {
+      callback(err, "unable to update email")
+    } else {
+      callback(null, "email updated successfully")
+    }
+  })
+}
+
 var database = {
   check_login: checkLogin,
-  check_signup: checkSignup
+  check_signup: checkSignup,
+  update_email: updateEmail
 }
 
 module.exports = database

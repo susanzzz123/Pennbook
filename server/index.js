@@ -3,6 +3,7 @@ var session = require('express-session')
 var routes = require('./routes/routes')
 var cors = require('cors')
 const path = require('path')
+const isAuthenticated = require('./middlewares/isAuthenticated')
 
 // Initialization
 var app = express();
@@ -13,9 +14,10 @@ app.use(express.json())
 app.use(express.static('dist'))
 
 // Routes
-app.get("/test", routes.test_route)
+app.get("/test", isAuthenticated, routes.test_route)
 app.post("/addUser", routes.add_user)
 app.post("/login", routes.login)
+app.put("/changeEmail", routes.change_email)
 
 // set favicon
 app.get('/favicon.ico', (req, res) => {

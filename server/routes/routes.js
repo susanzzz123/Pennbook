@@ -39,6 +39,7 @@ const login = async (req, res) => {
 
       if (password === hash) {
         req.session.user = username
+        res.send("hi")
         res.redirect("/home")
       } else {
         res.send("err2")
@@ -47,19 +48,19 @@ const login = async (req, res) => {
   })
   //hash the password and check against the db
 }
-const signUp = async (req, res) => {
-  
 
-  //take in interests as string/array
-  //generate user id for storing in the table
-  //hash the password for storage
-}
-
-const changeEmail = async (Req, res) => {
+const changeEmail = async (req, res) => {
   const { username, newEmail } = req.body
   //somehow check if it's the logged-in user changing their email
   if (req.session.username === username) {
     //db calls for updating email
+    db.update_email(username, newEmail, function(err, data) {
+      if (err || data === "unable to update email") {
+        res.send("unable to update email")
+      } else {
+        res.send(data)
+      }
+    })
   }
 }
 
@@ -107,7 +108,6 @@ const searchUser = async (req, res) => {
 const routes = {
   test_route: testRoute,
   login,
-  sign_up: signUp,
   change_email: changeEmail,
   change_password: changePassword,
   add_user: addUser,
