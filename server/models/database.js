@@ -90,9 +90,9 @@ var updateEmail = (username, email, callback) => {
   const params = {
     TableName: "users",
     Key: {
-      "username": {
-        S: username
-      }
+      username: {
+        S: username,
+      },
     },
     ProjectionExpression: "#email",
     ExpressionAttributeNames: { "#email": "email" },
@@ -116,15 +116,9 @@ var updatePassword = (username, password, callback) => {
   const params = {
     TableName: "users",
     Key: {
-<<<<<<< HEAD
-      "username": {
-        S: username
-      }
-=======
       username: {
         S: username,
       },
->>>>>>> jason
     },
     ProjectionExpression: "#password",
     ExpressionAttributeNames: { "#password": "password" },
@@ -148,9 +142,9 @@ var updateAffiliation = (username, affiliation, callback) => {
   const params = {
     TableName: "users",
     Key: {
-      "username": {
-        S: username
-      }
+      username: {
+        S: username,
+      },
     },
     ProjectionExpression: "#affiliation",
     ExpressionAttributeNames: { "#affiliation": "affiliation" },
@@ -174,17 +168,17 @@ var addInterest = (username, interest, callback) => {
   var params = {
     KeyConditions: {
       username: {
-        ComparisonOperator: 'EQ',
-        AttributeValueList: [ { S: username } ]
-      }
+        ComparisonOperator: "EQ",
+        AttributeValueList: [{ S: username }],
+      },
     },
     TableName: "users",
-    AttributesToGet: [ 'interests' ]
-  };
+    AttributesToGet: ["interests"],
+  }
 
-  db.query(params, function(err, data) {
+  db.query(params, function (err, data) {
     if (err || data.Items.length !== 0) {
-      callback(err, "user doesn't exist");
+      callback(err, "user doesn't exist")
     } else {
       //add interest to list
       const currInterests = data.Items[0].interests.SS
@@ -192,20 +186,20 @@ var addInterest = (username, interest, callback) => {
       const paramsAddInterest = {
         TableName: "users",
         Key: {
-          "username": {
-            S: username
-          }
+          username: {
+            S: username,
+          },
         },
         ProjectionExpression: "#interests",
         ExpressionAttributeNames: { "#interests": "interests" },
         UpdateExpression: "set #interests = :val",
         ExpressionAttributeValues: {
           ":val": {
-            SS: currInterests
-          }
+            SS: currInterests,
+          },
         },
-      };
-      db.updateItem(paramsAddInterest, function(err, data) {
+      }
+      db.updateItem(paramsAddInterest, function (err, data) {
         if (err) {
           callback(err, "unable to add interests")
         } else {
@@ -213,24 +207,24 @@ var addInterest = (username, interest, callback) => {
         }
       })
     }
-  });
+  })
 }
 
 var removeInterest = (username, interest, callback) => {
   var params = {
     KeyConditions: {
       username: {
-        ComparisonOperator: 'EQ',
-        AttributeValueList: [ { S: username } ]
-      }
+        ComparisonOperator: "EQ",
+        AttributeValueList: [{ S: username }],
+      },
     },
     TableName: "users",
-    AttributesToGet: [ 'interests' ]
-  };
+    AttributesToGet: ["interests"],
+  }
 
-  db.query(params, function(err, data) {
+  db.query(params, function (err, data) {
     if (err || data.Items.length !== 0) {
-      callback(err, "user doesn't exist");
+      callback(err, "user doesn't exist")
     } else {
       //add interest to list
       const currInterests = data.Items[0].interests.SS
@@ -239,20 +233,20 @@ var removeInterest = (username, interest, callback) => {
       const paramsAddInterest = {
         TableName: "users",
         Key: {
-          "username": {
-            S: username
-          }
+          username: {
+            S: username,
+          },
         },
         ProjectionExpression: "#interests",
         ExpressionAttributeNames: { "#interests": "interests" },
         UpdateExpression: "set #interests = :val",
         ExpressionAttributeValues: {
           ":val": {
-            SS: currInterests
-          }
+            SS: currInterests,
+          },
         },
-      };
-      db.updateItem(paramsAddInterest, function(err, data) {
+      }
+      db.updateItem(paramsAddInterest, function (err, data) {
         if (err) {
           callback(err, "unable to remove interests")
         } else {
@@ -260,7 +254,7 @@ var removeInterest = (username, interest, callback) => {
         }
       })
     }
-  });
+  })
 }
 
 var database = {
@@ -270,7 +264,7 @@ var database = {
   update_password: updatePassword,
   update_affiliation: updateAffiliation,
   add_interest: addInterest,
-  remove_interest: removeInterest
+  remove_interest: removeInterest,
 }
 
 module.exports = database
