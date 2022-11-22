@@ -11,7 +11,20 @@ const testRoute = function (req, res) {
 }
 
 var addUser = function (req, res) {
-  const email = req.body.email
+  const { username, password, first_name, last_name, email, affiliation, birthday, interests } = req.body
+  var hash = CryptoJS.SHA256(password).toString()
+  db.check_signup(username, hash, first_name, last_name, email, affiliation, birthday, interests, function(err, data) {
+    if (err || data === "user already exists") {
+      res.send("err1")
+    } else {
+      if (data === "Success") {
+        req.session.user = username
+        res.redirect("/home")
+      } else {
+        res.send("err2")
+      }
+    }
+  })
 }
 
 const login = async (req, res) => {
@@ -35,7 +48,7 @@ const login = async (req, res) => {
   //hash the password and check against the db
 }
 const signUp = async (req, res) => {
-  const { username, password, first_name, last_name, email, affiliation, birthday, interests } = req.body
+  
 
   //take in interests as string/array
   //generate user id for storing in the table

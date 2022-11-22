@@ -32,8 +32,67 @@ var checkLogin = function (username, callback) {
   })
 }
 
+var checkSignup = function (username, password, first_name, last_name, email, affiliation, birthday, interests, callback) {
+  var params = {
+    KeyConditions: {
+      username: {
+        ComparisonOperator: 'EQ',
+        AttributeValueList: [ { S: username } ]
+      }
+    },
+    TableName: "users",
+    AttributesToGet: [ 'password' ]
+  };
+
+  db.query(params, function(err, data) {
+    if (err || data.Items.length !== 0) {
+      callback(err, "user already exists");
+    } else {
+    //add the user to db if they don't exist
+      var paramsAddUser = {
+        Item: {
+          "username": {
+            S: username
+          },
+          "password": { 
+            S: password
+          },
+          "first_name": {
+            S: first_name
+          },
+          "last_name": {
+            S: last_name
+          },
+          "email": {
+            S: email
+          },
+          "affiliation": {
+            S: affiliation
+          },
+          "birthday": {
+            S: birthday
+          },
+          "interests": {
+            SS: interests
+          }
+        },
+        TableName: "users",
+        ReturnValues: 'NONE'
+      };
+
+      db.putItem(paramsAddUser, function(err, data){
+        if (err)
+          callback(err)
+        else
+          callback(null, 'Success')
+      });
+    }
+  });
+}
+
 var database = {
   check_login: checkLogin,
+  check_signup: checkSignup
 }
 
 module.exports = database
