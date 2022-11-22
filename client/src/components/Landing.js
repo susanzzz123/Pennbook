@@ -12,9 +12,6 @@ const Landing = () => {
         handleLogin()
       }
     })
-    $.get("http://localhost:3000/test", function (data, status) {
-      setMessage(data)
-    })
     $("#login").on("click", () => {
       handleLogin()
     })
