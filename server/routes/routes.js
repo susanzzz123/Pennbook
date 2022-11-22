@@ -11,7 +11,20 @@ const testRoute = function (req, res) {
 }
 
 var addUser = function (req, res) {
-  const email = req.body.email
+  const { username, password, first_name, last_name, email, affiliation, birthday, interests } = req.body
+  var hash = CryptoJS.SHA256(password).toString()
+  db.check_signup(username, hash, first_name, last_name, email, affiliation, birthday, interests, function(err, data) {
+    if (err || data === "user already exists") {
+      res.send("err1")
+    } else {
+      if (data === "Success") {
+        req.session.user = username
+        res.redirect("/home")
+      } else {
+        res.send("err2")
+      }
+    }
+  })
 }
 
 const login = async (req, res) => {
@@ -26,6 +39,7 @@ const login = async (req, res) => {
 
       if (password === hash) {
         req.session.user = username
+        res.send("hi")
         res.redirect("/home")
       } else {
         res.send("err2")
@@ -34,19 +48,19 @@ const login = async (req, res) => {
   })
   //hash the password and check against the db
 }
-const signUp = async (req, res) => {
-  const { username, password, first_name, last_name, email, affiliation, birthday, interests } = req.body
 
-  //take in interests as string/array
-  //generate user id for storing in the table
-  //hash the password for storage
-}
-
-const changeEmail = async (Req, res) => {
+const changeEmail = async (req, res) => {
   const { username, newEmail } = req.body
   //somehow check if it's the logged-in user changing their email
   if (req.session.username === username) {
     //db calls for updating email
+    db.update_email(username, newEmail, function(err, data) {
+      if (err || data === "unable to update email") {
+        res.send("unable to update email")
+      } else {
+        res.send(data)
+      }
+    })
   }
 }
 
@@ -55,7 +69,15 @@ const changePassword = async (req, res) => {
   //somehow check if it's the logged-in user changing their email
   if (req.session.username === username) {
     //hash the password
+    var hash = CryptoJS.SHA256(newPassword).toString()
     //db calls for updating password
+    db.update_password(username, hash, function(err, data) {
+      if (err || data === "unable to update password") {
+        res.send("unable to update password")
+      } else {
+        res.send(data)
+      }
+    })
   }
 }
 
@@ -64,6 +86,13 @@ const changeAffiliation = async (req, res) => {
   //somehow check if it's the logged-in user changing their email
   if (req.session.username === username) {
     //db calls for updating affiliation
+    db.update_affiliation(username, affiliation, function(err, data) {
+      if (err || data === "unable to update affiliation") {
+        res.send("unable to update affiliation")
+      } else {
+        res.send(data)
+      }
+    })
   }
 }
 
@@ -71,8 +100,8 @@ const addInterest = async (req, res) => {
   const { username, newInterest } = req.body
   //somehow check if it's the logged-in user changing their email
   if (req.session.username === username) {
-    //hash the password
     //db calls for adding interest
+    
   }
 }
 
@@ -94,7 +123,6 @@ const searchUser = async (req, res) => {
 const routes = {
   test_route: testRoute,
   login,
-  sign_up: signUp,
   change_email: changeEmail,
   change_password: changePassword,
   add_user: addUser,
