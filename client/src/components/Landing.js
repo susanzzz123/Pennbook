@@ -2,7 +2,7 @@ import react, { useEffect, useState } from "react"
 import { Link, useNavigate, useNavigationType } from "react-router-dom"
 import $ from "jquery"
 
-const Home = () => {
+const Landing = () => {
   const [message, setMessage] = useState("")
   const [errMessage, setErrMessage] = useState("")
   const navigate = useNavigate()
@@ -63,4 +63,4 @@ const Home = () => {
   )
 }
 
-export default Home
+export default Landing
