@@ -3,26 +3,17 @@ var session = require("express-session")
 var routes = require("./routes/routes")
 var cors = require("cors")
 const path = require("path")
-var cookieSession = require("cookie-session")
-const isAuthenticated = require("./middlewares/isAuthenticated")
 
 // Initialization
 var app = express()
 
-app.use(cors({ credentials: true, origin: "*" }))
+app.use(cors({ credentials: true, origin: "http://localhost:1234" }))
 app.use(express.urlencoded({ extended: true }))
 app.use(
   session({
-    cookie: {
-      maxAge: 24 * 60 * 60 * 1000, //please change it based on your needs
-      secure: app.get("env") === "production" ? true : false,
-      sameSite: "none",
-      secure: false,
-      httpOnly: false,
-    },
     secret: "loginSecret",
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: true,
   })
 )
 app.use(express.json())
@@ -32,8 +23,11 @@ app.use(express.static("dist"))
 app.get("/test", routes.test_route)
 app.post("/signup", routes.signup)
 app.post("/login", routes.login)
-app.put("/changeEmail", routes.change_email)
-app.get("/isLogged", routes.is_logged)
+app.post("/changeEmail", routes.change_email)
+app.post("/changePassword", routes.change_password)
+app.get("/getUser", routes.get_user)
+app.post("/getWallInformation", routes.get_wall_information)
+app.post("/changeAffiliation", routes.change_affiliation)
 
 // set favicon
 app.get("/favicon.ico", (req, res) => {

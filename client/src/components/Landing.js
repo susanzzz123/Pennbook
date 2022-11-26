@@ -1,5 +1,5 @@
 import react, { useEffect, useState } from "react"
-import { Link, useNavigate, useNavigationType } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import $ from "jquery"
 
 const Landing = () => {
@@ -7,6 +7,11 @@ const Landing = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
+    $.get("http://localhost:3000/getUser", (data, status) => {
+      if (data !== "") {
+        navigate("/home")
+      }
+    })
     $("#password").on("keypress", (e) => {
       if (e.which === 13) {
         handleLogin()

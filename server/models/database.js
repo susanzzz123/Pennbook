@@ -5,6 +5,36 @@ const AWS = require("aws-sdk")
 AWS.config.update({ region: "us-east-1" })
 const db = new AWS.DynamoDB()
 
+var getUserInfo = function (username, callback) {
+  // With username as key
+  var params = {
+    KeyConditions: {
+      username: {
+        ComparisonOperator: "EQ",
+        AttributeValueList: [{ S: username }],
+      },
+    },
+    TableName: "users",
+  }
+
+  // If the user exists then return the password to the callback
+  db.query(params, function (err, data) {
+    if (err || data.Items.length == 0) {
+      callback(err, "user not found")
+    } else {
+      const first_name = data.Items[0].first_name.S
+      const last_name = data.Items[0].last_name.S
+      const interests = data.Items[0].interests.SS
+      const affiliation = data.Items[0].affiliation.S
+      const username = data.Items[0].username.S
+      const email = data.Items[0].email.S
+      const birthday = data.Items[0].birthday.S
+
+      callback(err, { first_name, last_name, interests, affiliation, username, email, birthday })
+    }
+  })
+}
+
 var checkLogin = function (username, callback) {
   // With username as key
   var params = {
@@ -94,7 +124,6 @@ var updateEmail = (username, email, callback) => {
         S: username,
       },
     },
-    ProjectionExpression: "#email",
     ExpressionAttributeNames: { "#email": "email" },
     UpdateExpression: "set #email = :val",
     ExpressionAttributeValues: {
@@ -120,7 +149,6 @@ var updatePassword = (username, password, callback) => {
         S: username,
       },
     },
-    ProjectionExpression: "#password",
     ExpressionAttributeNames: { "#password": "password" },
     UpdateExpression: "set #password = :val",
     ExpressionAttributeValues: {
@@ -146,7 +174,6 @@ var updateAffiliation = (username, affiliation, callback) => {
         S: username,
       },
     },
-    ProjectionExpression: "#affiliation",
     ExpressionAttributeNames: { "#affiliation": "affiliation" },
     UpdateExpression: "set #affiliation = :val",
     ExpressionAttributeValues: {
@@ -190,7 +217,6 @@ var addInterest = (username, interest, callback) => {
             S: username,
           },
         },
-        ProjectionExpression: "#interests",
         ExpressionAttributeNames: { "#interests": "interests" },
         UpdateExpression: "set #interests = :val",
         ExpressionAttributeValues: {
@@ -259,6 +285,7 @@ var removeInterest = (username, interest, callback) => {
 
 var database = {
   check_login: checkLogin,
+  get_user_info: getUserInfo,
   check_signup: checkSignup,
   update_email: updateEmail,
   update_password: updatePassword,

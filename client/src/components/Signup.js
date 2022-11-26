@@ -8,16 +8,6 @@ const Signup = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
-    $.get("http://localhost:3000/isLogged", (data, status) => {
-      console.log("FROM LOGGED")
-      console.log(data)
-      if (data === undefined) {
-        return false
-      } else {
-        return true
-      }
-    })
-
     $("#interests_input").on("keypress", (e) => {
       if (e.which === 13) handleAdd()
     })
