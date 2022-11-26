@@ -283,6 +283,29 @@ var removeInterest = (username, interest, callback) => {
   })
 }
 
+// used for when searching for users publicly
+var getUsers = (username, callback) => {
+  // With username as key
+  var params = {
+    KeyConditions: {
+      username: {
+        ComparisonOperator: "EQ",
+        AttributeValueList: [{ S: username }],
+      },
+    },
+    TableName: "users",
+    AttributesToGet: ["first_name", "last_name", "affiliation", "interests", "email", "birthday"],
+  }
+
+  db.query(params, function (err, data) {
+    if (err) {
+      callback(err, "Error with querying users")
+    } else {
+      callback(err, data)
+    }
+  })
+}
+
 var database = {
   check_login: checkLogin,
   get_user_info: getUserInfo,
@@ -292,6 +315,7 @@ var database = {
   update_affiliation: updateAffiliation,
   add_interest: addInterest,
   remove_interest: removeInterest,
+  get_users: getUsers,
 }
 
 module.exports = database

@@ -29,7 +29,6 @@
     "express-session": "^1.17.3",
     "jquery": "^3.6.1",
     "lru-cache": "^7.14.1",
-    "nodemon": "^2.0.20",
     "parcel": "^2.8.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -37,6 +36,7 @@
   },
   "devDependencies": {
     "buffer": "^5.7.1",
+    "nodemon": "^2.0.20",
     "process": "^0.11.10"
   }
 }
