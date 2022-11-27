@@ -6,6 +6,10 @@ AWS.config.update({ region: "us-east-1" })
 const db = new AWS.DynamoDB()
 const async = require("async")
 
+/* -------------------
+Table(s): users (and prefixes)
+---------------------*/
+
 var getUserInfo = function (username, callback) {
   // With username as key
   var params = {
