@@ -1,16 +1,19 @@
-import React, { useState } from 'react'
+import React from 'react'
 
-export const Post = () => {
-  const [img, setImg] = useState('')
-  const [title, setTitle] = useState('hi')
-  const [content, setContent] = useState('')
+export const Post = ({ img, user, content, type, date }) => {
+  const date = new Date(date).toString()
   return (
     <div class="card" style={{width: "18rem"}}>
       <img class="card-img-top" src={img} alt="Card image cap"/>
       <div class="card-body">
-        <h5 class="card-title">{title}</h5>
+        <h5 class="card-title">{user}</h5>
+        <h6>{date}</h6>
         <p class="card-text">{content}</p>
-        <button class="btn btn-primary">Comment</button>
+        {
+          type === 'post' && (
+            <button class="btn btn-primary">Comment</button>
+          )
+        }
       </div>
     </div>
   )
