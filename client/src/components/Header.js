@@ -5,6 +5,28 @@ const img = require("./penguin.png")
 const Header = () => {
   const [showDropdown, setShowDropdown] = useState(false)
   const [user, setUser] = useState("")
+  const [searchTerm, setSearchTerm] = useState("")
+  const [foundUsers, setFoundUsers] = useState([])
+
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      if (searchTerm.length !== 0) {
+        // Uncomment this when you want to test out the actual search
+        // $.post("http://localhost:3000/searchUser", { username: searchTerm }, (data, status) => {
+        //   if (data !== "No users found") {
+        //     setFoundUsers(data)
+        //   }
+        // })
+
+        // Dummy values to save AWS cost
+        setFoundUsers(["hello", "test1", "test2"])
+      } else {
+        setFoundUsers([])
+      }
+    }, 2000)
+
+    return () => clearTimeout(delayDebounceFn)
+  }, [searchTerm])
 
   useEffect(() => {
     $.get("http://localhost:3000/getUser", (data, status) => {
@@ -12,9 +34,18 @@ const Header = () => {
     })
   }, [])
 
+  const handleBlur = () => {
+    $("#found-field").css("visibility", "hidden")
+  }
+
+  const handleFocus = () => {
+    $("#found-field").css("visibility", "visible")
+  }
+
   const handleClick = () => {
     setShowDropdown(!showDropdown)
   }
+
   return (
     <>
       <header className="p-3 mb-3 border-bottom">
@@ -24,12 +55,27 @@ const Header = () => {
             <h3 className="text-center mb-0 mx-2">Pennbook</h3>
           </a>
 
-          <div className="d-flex mx-auto col">
-            <form className="col-12">
-              <input type="search" className="form-control" placeholder="Search..." aria-label="Search" />
-            </form>
+          <div className="position-relative d-flex mx-auto col">
+            <input
+              id="search-input"
+              onBlur={() => handleBlur()}
+              onFocus={() => handleFocus()}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              type="search"
+              className="form-control"
+              placeholder="Search for users..."
+              aria-label="Search"
+            />
+            {foundUsers.length > 0 && (
+              <div id="found-field" style={{ width: "29rem" }} className="z-10 mt-1 position-absolute top-100 bg-light p-3">
+                {foundUsers.map((elem) => (
+                  <>
+                    <div>{elem}</div>
+                  </>
+                ))}
+              </div>
+            )}
           </div>
-
           <div onClick={handleClick} className="dropdown text-end ms-auto col">
             {user}
             <a href={`/wall?user=${user}`} className="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">

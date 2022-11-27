@@ -26,6 +26,7 @@ app.post("/login", routes.login)
 app.post("/changeEmail", routes.change_email)
 app.post("/changePassword", routes.change_password)
 app.get("/getUser", routes.get_user)
+app.post("/searchUser", routes.search_user)
 app.post("/getWallInformation", routes.get_wall_information)
 app.post("/changeAffiliation", routes.change_affiliation)
 

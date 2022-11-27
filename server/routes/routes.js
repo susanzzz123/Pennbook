@@ -55,7 +55,7 @@ var signup = function (req, res) {
       res.send("err1")
     } else {
       if (data === "Success") {
-        req.session.cookie.user = username
+        req.session.user = username
         req.session.save()
         res.send("works")
       } else {
@@ -153,10 +153,12 @@ const searchUser = async (req, res) => {
     if (err) {
       res.send("Error occurred when searching for users")
     } else {
-      if (data.length == 0) {
+      if (data.Items.length == 0) {
         res.send("No users found")
       } else {
-        res.send(data)
+        // Returns the usernames of the people - might change to make async calls to each of the usernames
+        const usernames = data.Items[0].usernames.SS
+        res.send(usernames)
       }
     }
   })

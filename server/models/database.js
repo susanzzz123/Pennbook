@@ -4,6 +4,7 @@ Database Access Routes
 const AWS = require("aws-sdk")
 AWS.config.update({ region: "us-east-1" })
 const db = new AWS.DynamoDB()
+const async = require("async")
 
 var getUserInfo = function (username, callback) {
   // With username as key
@@ -73,7 +74,7 @@ var checkSignup = function (username, password, first_name, last_name, email, af
   }
 
   db.query(params, function (err, data) {
-    if (err || data.Items.length !== 0) {
+    if (err || data == null || data.Items.length !== 0) {
       callback(err, "user already exists")
     } else {
       //add the user to db if they don't exist
@@ -109,8 +110,80 @@ var checkSignup = function (username, password, first_name, last_name, email, af
       }
 
       db.putItem(paramsAddUser, function (err, data) {
-        if (err) callback(err)
-        else callback(null, "Success")
+        if (err) {
+          callback(err)
+        } else {
+          // Also add the user prefixes to the prefixes table if they don't exist
+          const prefixes = []
+          const word = []
+          for (let i = 0; i < username.length; i++) {
+            word.push(username.charAt(i))
+            prefixes.push([word.join(""), [username]])
+          }
+
+          async
+            .forEach(prefixes, function (prefix) {
+              // Check if the prefix exists
+              var params = {
+                KeyConditions: {
+                  prefix: {
+                    ComparisonOperator: "EQ",
+                    AttributeValueList: [{ S: prefix[0] }],
+                  },
+                },
+                TableName: "prefixes",
+              }
+
+              db.query(params, function (err, data) {
+                if (err) {
+                  callback(err, "failed")
+                } else if (data.Items.length !== 0) {
+                  // If the prefix already exists, update the users
+                  const newData = [...data.Items[0].usernames.SS, prefix[1][0]]
+                  const params = {
+                    TableName: "prefixes",
+                    Key: {
+                      prefix: {
+                        S: prefix[0],
+                      },
+                    },
+                    ExpressionAttributeNames: { "#usernames": "usernames" },
+                    UpdateExpression: "set #usernames = :val",
+                    ExpressionAttributeValues: {
+                      ":val": {
+                        SS: newData,
+                      },
+                    },
+                  }
+                  db.updateItem(params, function (err, data) {
+                    if (err) {
+                      callback(err, "failed")
+                    }
+                  })
+                } else {
+                  // If the prefix doesn't exist, then add it to the table
+                  var params = {
+                    Item: {
+                      prefix: {
+                        S: prefix[0],
+                      },
+                      usernames: {
+                        SS: prefix[1],
+                      },
+                    },
+                    TableName: "prefixes",
+                  }
+
+                  db.putItem(params, function (err, data) {
+                    if (err) {
+                      callback(err, "failed")
+                    }
+                  })
+                }
+              })
+            })
+            .then(callback(null, "Success"))
+        }
       })
     }
   })
@@ -288,13 +361,13 @@ var getUsers = (username, callback) => {
   // With username as key
   var params = {
     KeyConditions: {
-      username: {
+      prefix: {
         ComparisonOperator: "EQ",
         AttributeValueList: [{ S: username }],
       },
     },
-    TableName: "users",
-    AttributesToGet: ["first_name", "last_name", "affiliation", "interests", "email", "birthday"],
+    TableName: "prefixes",
+    AttributesToGet: ["usernames"],
   }
 
   db.query(params, function (err, data) {

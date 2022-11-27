@@ -119,7 +119,45 @@ initTable("post_id", "posts", function (err, data) {
   if (err) {
     console.log("error making table posts")
   } else {
-    console.log("successfully created table posts")
+    if (data === "already created") {
+      console.log("Table prefixes already exists - adding dummy values")
+
+      const prefixes = [
+        ["j", ["jren2"]],
+        ["jr", ["jren2"]],
+        ["jre", ["jren2"]],
+        ["jren", ["jren2"]],
+        ["jren2", ["jren2"]],
+      ]
+
+      async.forEach(
+        prefixes,
+        function (prefix, callback) {
+          console.log("Uploading prefix: " + prefixes[0])
+          var params = {
+            Item: {
+              prefix: {
+                S: prefix[0],
+              },
+              usernames: {
+                SS: prefix[1],
+              },
+            },
+            TableName: "prefixes",
+          }
+
+          db.putItem(params, function (err, data) {
+            if (err) callback(err)
+            else callback(null, "Success")
+          })
+        },
+        function () {
+          console.log("Upload complete")
+        }
+      )
+    } else {
+      console.log("Successfully created table users")
+    }
   }
 })
 
@@ -136,6 +174,14 @@ initTable("sender_uid", "friends", function (err, data) {
     console.log("error making table friends")
   } else {
     console.log("successfully created table friends")
+  }
+})
+
+initTable("prefix", "prefixes", function (err, data) {
+  if (err) {
+    console.log("error making table prefixes")
+  } else {
+    console.log("successfully created table prefixes")
   }
 })
 
