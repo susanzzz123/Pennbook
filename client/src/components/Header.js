@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
 import $ from "jquery"
+import Profile from "./icons/Profile"
 const img = require("./penguin.png")
 
 const Header = () => {
@@ -7,25 +9,28 @@ const Header = () => {
   const [user, setUser] = useState("")
   const [searchTerm, setSearchTerm] = useState("")
   const [foundUsers, setFoundUsers] = useState([])
+  const navigate = useNavigate()
 
   useEffect(() => {
-    const delayDebounceFn = setTimeout(() => {
-      if (searchTerm.length !== 0) {
-        // Uncomment this when you want to test out the actual search
-        // $.post("http://localhost:3000/searchUser", { username: searchTerm }, (data, status) => {
-        //   if (data !== "No users found") {
-        //     setFoundUsers(data)
-        //   }
-        // })
+    if (searchTerm.length === 0) {
+      setFoundUsers([])
+    } else {
+      const delayDebounceFn = setTimeout(() => {
+        if (searchTerm.length !== 0) {
+          // Uncomment this when you want to test out the actual search
+          // $.post("http://localhost:3000/searchUser", { username: searchTerm }, (data, status) => {
+          //   if (data !== "No users found") {
+          //     setFoundUsers(data)
+          //   }
+          // })
 
-        // Dummy values to save AWS cost
-        setFoundUsers(["hello", "test1", "test2"])
-      } else {
-        setFoundUsers([])
-      }
-    }, 2000)
+          // Dummy values to save AWS cost
+          setFoundUsers(["jren2", "test1", "test2"])
+        }
+      }, 2000)
 
-    return () => clearTimeout(delayDebounceFn)
+      return () => clearTimeout(delayDebounceFn)
+    }
   }, [searchTerm])
 
   useEffect(() => {
@@ -35,7 +40,7 @@ const Header = () => {
   }, [])
 
   const handleBlur = () => {
-    $("#found-field").css("visibility", "hidden")
+    // $("#found-field").css("visibility", "hidden")
   }
 
   const handleFocus = () => {
@@ -44,6 +49,14 @@ const Header = () => {
 
   const handleClick = () => {
     setShowDropdown(!showDropdown)
+  }
+
+  const viewProfile = (profile) => {
+    $("#found-field").css("visibility", "hidden")
+    $("#search-input").val("")
+    setSearchTerm("")
+    setFoundUsers([])
+    navigate(`/wall?user=${profile}`)
   }
 
   return (
@@ -69,9 +82,14 @@ const Header = () => {
             {foundUsers.length > 0 && (
               <div id="found-field" style={{ width: "29rem" }} className="z-10 mt-1 position-absolute top-100 bg-light p-3">
                 {foundUsers.map((elem) => (
-                  <>
-                    <div>{elem}</div>
-                  </>
+                  <a href={`/wall?user=${elem}`} className="text-decoration-none  pe-auto row my-1">
+                    <div className="z-50 d-flex col-1 align-items-center">
+                      <Profile></Profile>
+                    </div>
+                    <div style={{ marginLeft: "-1rem" }} className=" col-11">
+                      {elem}
+                    </div>
+                  </a>
                 ))}
               </div>
             )}

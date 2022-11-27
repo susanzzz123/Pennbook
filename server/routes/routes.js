@@ -145,7 +145,7 @@ const deleteInterest = async (req, res) => {
   }
 }
 
-// searches for users in the database by a particular username
+// searches for users in the database by a particular prefix
 const searchUser = async (req, res) => {
   const { username } = req.body
 
