@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import Edit from "./Edit"
+import Edit from "./icons/Edit"
 import $ from "jquery"
 import Header from "./Header"
 
