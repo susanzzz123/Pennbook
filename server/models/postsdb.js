@@ -7,63 +7,82 @@ const db = new AWS.DynamoDB()
 const async = require("async")
 
 /* -------------------
-Table(s): posts
+Table: posts
 ---------------------*/
 
 const addPost = (username, type, wall, parent_name, parent_id, content, callback) => {
+  const post_id = Date.now()
   var params = {
-    KeyConditions: {
+    Item: {
       username: {
-        ComparisonOperator: "EQ",
-        AttributeValueList: [{ S: username }],
+        S: username,
       },
+      post_id: {
+        S: post_id,
+      },
+      wall: {
+        S: wall,
+      },
+      type: {
+        S: type,
+      },
+      parent_name: {
+        S: parent_name,
+      },
+      parent_id: {
+        N: parent_id
+      },
+      content: {
+        S: content,
+      }
     },
     TableName: "posts",
+    ReturnValues: "NONE",
   }
-  db.query(params, function (err, data) {
-    const post_id = Date.now()
-    // const date_created = new Date(post_id).toString() to get the date
+  db.putItem(params, function (err, data) {
     if (err) {
-      callback(err, "error occurred while querying user's posts")
-    } else if (data.Items.length !== 0) { 
-
+      callback(err)
     } else {
-      var paramsAddPost = {
-        Item: {
-          username: {
-            S: username,
-          },
-          post_id: {
-            S: post_id,
-          },
-          wall: {
-            S: wall,
-          },
-          type: {
-            S: type,
-          },
-          parent_name: {
-            S: parent_name,
-          },
-          parent_id: {
-            N: parent_id
-          },
-          content: {
-            S: content,
-          }
-        },
-        TableName: "posts",
-        ReturnValues: "NONE",
-      }
-      db.putItem(paramsAddPost, function (err, data) {
-        if (err) {
-          callback(err)
-        } else {
-          callback(null, "Success")
-        }
-      })
+      callback(null, "Success")
     }
   })
+  //a post on another person's wall should also show up on their list of posts
+  if (username !== wall) {
+    var params1 = {
+      Item: {
+        username: {
+          S: wall,
+        },
+        post_id: {
+          S: post_id,
+        },
+        wall: {
+          S: wall,
+        },
+        type: {
+          S: type,
+        },
+        parent_name: {
+          S: parent_name,
+        },
+        parent_id: {
+          N: parent_id
+        },
+        content: {
+          S: content,
+        }
+      },
+      TableName: "posts",
+      ReturnValues: "NONE",
+    }
+    db.putItem(params1, function (err, data) {
+      if (err) {
+        callback(err)
+      } else {
+        callback(null, "Successfully added to both walls")
+      }
+    })
+  }
 }
 
 const getPostsForUser = (username, callback) => {
