@@ -358,7 +358,7 @@ var removeInterest = (username, interest, callback) => {
 
 // used for when searching for users publicly
 var getUsers = (username, callback) => {
-  // With username as key
+  // With username as the key, look for the prefixes
   var params = {
     KeyConditions: {
       prefix: {
