@@ -51,7 +51,7 @@ var signup = function (req, res) {
   var hash = CryptoJS.SHA256(password).toString()
 
   db.check_signup(username, hash, first_name, last_name, email, affiliation, birthday, interests, function (err, data) {
-    if (err || data === "user already exists") {
+    if (data === "user already exists") {
       res.send("err1")
     } else {
       if (data === "Success") {

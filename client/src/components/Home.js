@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import Header from "./Header"
 import $ from "jquery"
+import { Post } from "./Post"
 
 const Home = () => {
   const [user, setUser] = useState()
@@ -18,7 +19,9 @@ const Home = () => {
         <div className="row">
           <div className="col">Menu</div>
           <div>{user}</div>
-          <div className="col-8">Posts/news updates</div>
+          <div className="col-8">
+            <Post></Post>
+          </div>
           <div className="col">List of friends/friends online and chat groups</div>
         </div>
       </div>
