@@ -1,9 +1,12 @@
-const db = require("../models/postsdb")
-const express = require('express')
+/* -------------
+Routes for posts
+---------------*/
 
-const getPostsForUser = function(req, res) {
+const db = require("../models/postsdb")
+
+const getPostsForUser = function (req, res) {
   const { username } = req.body
-  db.get_posts_for_user(username, function(err, data) {
+  db.get_posts_for_user(username, function (err, data) {
     if (err || data === "user has no posts") {
       res.send("no posts")
     } else {
@@ -12,9 +15,9 @@ const getPostsForUser = function(req, res) {
   })
 }
 
-const addPost = function(req, res) {
+const addPost = function (req, res) {
   const { username, type, wall, parent_name, parent_id, content, img } = req.body
-  db.add_post(username, type, wall, parent_name, parent_id, content, img, function(err, data) {
+  db.add_post(username, type, wall, parent_name, parent_id, content, img, function (err, data) {
     if (err) {
       res.send(err)
     } else {
@@ -25,7 +28,7 @@ const addPost = function(req, res) {
 
 const routes = {
   get_posts_for_user: getPostsForUser,
-  add_post: addPost
+  add_post: addPost,
 }
 
 module.exports = routes
