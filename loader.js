@@ -115,6 +115,54 @@ initTable("username", "users", function (err, data) {
   }
 })
 
+initTable("sender", "friends", function (err, data) {
+  if (err) {
+    console.log("error making table friends")
+  } else {
+    if (data === "already created") {
+      console.log("Table friends already exists - adding dummy values")
+
+      const friends = [
+        ["jren2", "test1", 0],
+        ["test1", "test2", 1],
+        ["test2", "test1", 1],
+      ]
+
+      async.forEach(
+        friends,
+        function (friend, callback) {
+          console.log("Uploading friend: " + friend[0])
+          var params = {
+            Item: {
+              sender: {
+                S: friend[0],
+              },
+              receiver: {
+                S: friend[1],
+              },
+              status: {
+                S: friend[2],
+              },
+            },
+            TableName: "friends",
+            ReturnValues: "NONE",
+          }
+
+          db.putItem(params, function (err, data) {
+            if (err) callback(err)
+            else callback(null, "Success")
+          })
+        },
+        function () {
+          console.log("Upload complete")
+        }
+      )
+    } else {
+      console.log("Successfully created table friends")
+    }
+  }
+})
+
 initTable("post_id", "posts", function (err, data) {
   if (err) {
     console.log("error making table posts")
@@ -158,22 +206,6 @@ initTable("post_id", "posts", function (err, data) {
     } else {
       console.log("Successfully created table users")
     }
-  }
-})
-
-initTable("sender_uid", "friends", function (err, data) {
-  if (err) {
-    console.log("error making table friends")
-  } else {
-    console.log("successfully created table friends")
-  }
-})
-
-initTable("sender_uid", "friends", function (err, data) {
-  if (err) {
-    console.log("error making table friends")
-  } else {
-    console.log("successfully created table friends")
   }
 })
 

@@ -1,16 +1,26 @@
 import { useEffect, useState } from "react"
+import AddedFriend from "./icons/AddedFriend"
+import PendingFriend from "./icons/PendingFriend"
 import Header from "./Header"
 import $ from "jquery"
 import { Post } from "./Post"
 
 const Home = () => {
   const [user, setUser] = useState('')
+  const [friends, setFriends] = useState([])
   //posts are sorted in ascending order
   const [allPosts, setAllPosts] = useState([])
 
   useEffect(() => {
     $.get("http://localhost:3000/getUser", (data, status) => {
       setUser(data)
+      $.post("http://localhost:3000/getFriends", { username: data }, (data, status) => {
+        if (data === "Error occured when searching for friends") {
+          setFriends([])
+        } else {
+          setFriends(data)
+        }
+      })
     })
   }, [])
   
@@ -28,19 +38,8 @@ const Home = () => {
           <div className="col">Menu</div>
           <div>{user}</div>
           <div className="col-8">
-            {
-              allPosts.map(post => {
-                <Post 
-                img={post.img.S}
-                user={post.username.S}
-                content={post.content.S}
-                type={post.type.S}
-                date={post.post_id.N}
-                ></Post>
-              })
-            }
+            <Post></Post>
           </div>
-          <div className="col">List of friends/friends online and chat groups</div>
         </div>
       </div>
     </>

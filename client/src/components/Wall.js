@@ -4,19 +4,25 @@ import $ from "jquery"
 import Header from "./Header"
 
 const Wall = () => {
-  const [user, setUser] = useState("")
+  const [visitingUser, setVisitingUser] = useState("")
   const [data, setData] = useState({})
   const [toggles, setToggles] = useState([false, false, false])
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     const user = params.get("user")
-    setUser(user)
 
     $.post("http://localhost:3000/getWallInformation", { user }, (data, status) => {
       setData(data)
     })
 
+    $.get("http://localhost:3000/getUser", (data, status) => {
+      console.log(data)
+      setVisitingUser(data)
+    })
+  }, [])
+
+  useEffect(() => {
     $("#edit-affiliation").on("click", () => {
       changeToggles(0)
     })
@@ -26,7 +32,7 @@ const Wall = () => {
     $("#edit-password").on("click", () => {
       changeToggles(2)
     })
-  }, [])
+  }, [visitingUser])
 
   useEffect(() => {
     $("#change-affiliation").on("click", () => {
@@ -119,15 +125,15 @@ const Wall = () => {
             <h3 className="text-center">
               {data.first_name} {data.last_name}
             </h3>
-            <div className="text-secondary fw-light fs-7">Username:</div>
-            <div className="fs-6 mb-2 fw-semibold">user</div>
             <div className="text-secondary fw-light fs-7">Affiliation:</div>
             <div className="fs-6 mb-2 fw-semibold">
               {data.affiliation}
               &nbsp;
-              <a href="#" id="edit-affiliation">
-                <Edit></Edit>
-              </a>
+              {visitingUser === data.username && (
+                <a href="#" id="edit-affiliation">
+                  <Edit></Edit>
+                </a>
+              )}
             </div>
             {toggles[0] && (
               <>
@@ -144,9 +150,11 @@ const Wall = () => {
             <div className="text-secondary fw-light fs-7">Email:</div>
             <div className="fs-6 mb-2 fw-semibold">
               {data.email} &nbsp;
-              <a href="#" id="edit-email">
-                <Edit></Edit>
-              </a>
+              {visitingUser === data.username && (
+                <a href="#" id="edit-email">
+                  <Edit></Edit>
+                </a>
+              )}
             </div>
             {toggles[1] && (
               <>
@@ -163,9 +171,11 @@ const Wall = () => {
             <div className="text-secondary fw-light fs-7">Password:</div>
             <div className="fs-6 mb-2 fw-semibold">
               ****** &nbsp;
-              <a href="#" id="edit-password">
-                <Edit></Edit>
-              </a>
+              {visitingUser === data.username && (
+                <a href="#" id="edit-password">
+                  <Edit></Edit>
+                </a>
+              )}
             </div>
             {toggles[2] && (
               <>

@@ -30,7 +30,7 @@ app.get("/getUser", routes.get_user)
 app.post("/searchUser", routes.search_user)
 app.post("/getWallInformation", routes.get_wall_information)
 app.post("/changeAffiliation", routes.change_affiliation)
-app.get("/getPosts", postRoutes.get_posts_for_user)
+app.post("/getFriends", routes.get_friends)
 
 // set favicon
 app.get("/favicon.ico", (req, res) => {
