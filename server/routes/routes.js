@@ -5,6 +5,7 @@ const account_routes = require("./account")
 const friend_routes = require("./friends")
 const registration_routes = require("./registration")
 const utility_routes = require("./utility")
+const posts_routes = require("./posts")
 
 // Routes object
 const routes = {
@@ -22,6 +23,8 @@ const routes = {
   remove_friend: friend_routes.remove_friend,
   add_friend: friend_routes.add_friend,
   request_friend: friend_routes.request_friend,
+  add_post: posts_routes.add_post,
+  get_posts_for_user: posts_routes.get_posts_for_user
 }
 
 module.exports = routes

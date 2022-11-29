@@ -18,7 +18,7 @@ const addPost = (username, type, wall, parent_name, parent_id, content, img, cal
         S: username,
       },
       post_id: {
-        S: post_id,
+        N: post_id,
       },
       wall: {
         S: wall,
@@ -57,7 +57,7 @@ const addPost = (username, type, wall, parent_name, parent_id, content, img, cal
           S: wall,
         },
         post_id: {
-          S: post_id,
+          N: post_id,
         },
         wall: {
           S: wall,
