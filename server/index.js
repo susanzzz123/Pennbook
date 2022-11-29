@@ -21,7 +21,6 @@ app.use(express.json())
 app.use(express.static("dist"))
 
 // Routes
-app.get("/test", routes.test_route)
 app.post("/signup", routes.signup)
 app.post("/login", routes.login)
 app.post("/changeEmail", routes.change_email)
