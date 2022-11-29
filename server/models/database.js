@@ -65,6 +65,32 @@ var checkLogin = function (username, callback) {
   })
 }
 
+var getFriends = function (username, callback) {
+  // With username as key
+  var params = {
+    KeyConditions: {
+      sender: {
+        ComparisonOperator: "EQ",
+        AttributeValueList: [{ S: username }],
+      },
+    },
+    TableName: "friends",
+  }
+
+  // If the user exists then return the password to the callback
+  db.query(params, function (err, data) {
+    if (err) {
+      callback(err, "error")
+    } else if (data.Items.length == 0) {
+      callback(err, "user has no friends")
+    } else {
+      const friendships = data.Items
+
+      callback(err, friendships)
+    }
+  })
+}
+
 var checkSignup = function (username, password, first_name, last_name, email, affiliation, birthday, interests, callback) {
   var params = {
     KeyConditions: {
@@ -393,6 +419,7 @@ var database = {
   add_interest: addInterest,
   remove_interest: removeInterest,
   get_users: getUsers,
+  get_friends: getFriends,
 }
 
 module.exports = database

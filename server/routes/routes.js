@@ -164,6 +164,20 @@ const searchUser = async (req, res) => {
   })
 }
 
+const getFriends = async (req, res) => {
+  const { username } = req.body
+  console.log(username)
+
+  db.get_friends(username, function (err, data) {
+    if (err) {
+      res.send("Error occured when searching for friends")
+    } else {
+      const friendships = data
+      res.send(friendships)
+    }
+  })
+}
+
 // Routes object
 const routes = {
   test_route: testRoute,
@@ -177,6 +191,7 @@ const routes = {
   search_user: searchUser,
   get_user: getUser,
   get_wall_information: getWallInformation,
+  get_friends: getFriends,
 }
 
 module.exports = routes
