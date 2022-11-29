@@ -31,6 +31,7 @@ app.post("/searchUser", routes.search_user)
 app.post("/getWallInformation", routes.get_wall_information)
 app.post("/changeAffiliation", routes.change_affiliation)
 app.post("/getFriends", routes.get_friends)
+app.get("/getPosts", postRoutes.get_posts_for_user)
 
 // set favicon
 app.get("/favicon.ico", (req, res) => {
