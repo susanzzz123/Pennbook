@@ -26,9 +26,9 @@ const addPost = function (req, res) {
   })
 }
 
-const routes = {
+const posts_routes = {
   get_posts_for_user: getPostsForUser,
   add_post: addPost,
 }
 
-module.exports = routes
+module.exports = posts_routes

@@ -1,7 +1,6 @@
 var express = require("express")
 var session = require("express-session")
 var routes = require("./routes/routes")
-var postRoutes = require("./routes/posts")
 var cors = require("cors")
 const path = require("path")
 
@@ -30,8 +29,12 @@ app.post("/searchUser", routes.search_user)
 app.post("/getWallInformation", routes.get_wall_information)
 app.post("/changeAffiliation", routes.change_affiliation)
 app.post("/getFriends", routes.get_friends)
+<<<<<<< HEAD
 app.post("/addFriend", routes.add_friend)
 app.post("/removeFriend", routes.remove_friend)
+=======
+app.get("/getPosts", routes.get_posts_for_user)
+>>>>>>> cd178f392339dff49cf6f324be1413133f757da9
 
 // set favicon
 app.get("/favicon.ico", (req, res) => {
