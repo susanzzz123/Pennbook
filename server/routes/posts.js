@@ -16,8 +16,8 @@ const getPostsForUser = function (req, res) {
 }
 
 const addPost = function (req, res) {
-  const { username, type, wall, parent_name, parent_id, content } = req.body
-  db.add_post(username, type, wall, parent_name, parent_id, content, function (err, data) {
+  const { username, author, type, parent_name, parent_id, content } = req.body
+  db.add_post(username, author, type, parent_name, parent_id, content, function (err, data) {
     if (err) {
       res.send(err)
     } else {
