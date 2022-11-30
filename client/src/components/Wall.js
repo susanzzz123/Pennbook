@@ -14,6 +14,8 @@ const Wall = () => {
   const [type, setType] = useState('Choose a post type')
   const [content, setContent] = useState('')
   const [allPosts, setAllPosts] = useState([])
+  const [affiliation, setAffiliation] = useState('')
+  const [email, setEmail] = useState('')
 
   const params = new URLSearchParams(window.location.search)
   const user = params.get("user")
@@ -38,7 +40,7 @@ const Wall = () => {
     $("#edit-password").on("click", () => {
       changeToggles(2)
     })
-    $.post("http://localhost:3000/getPosts", { username: visitingUser }, (data, status) => {
+    $.post("http://localhost:3000/getPosts", { username: user }, (data, status) => {
       if (data !== "no posts") {
         setAllPosts(data)
       } else {
@@ -178,6 +180,28 @@ const Wall = () => {
     })
   }
 
+  const changeAffiliation = async () => {
+    $.post("http://localhost:3000/changeAffiliation", { username: user, affiliation }, (data, status) => {
+      if (data === "Success") {
+        $.post("http://localhost:3000/addPost", { username: user, type: "Status Update", wall: user, parent_name: '', parent_id: "-1", content: `${user} updated their affiliation to ${affiliation}` }, (data, status) => {
+          if (data !== "Success") {
+            console.log(data)
+          }
+        })
+      } else {
+        console.log(data)
+      }
+    })
+  }
+
+  const changeEmail = async () => {
+    $.post("http://localhost:3000/changeEmail", { username: user, email }, (data, status) => {
+      if (data !== "Success") {
+        console.log(data)
+      }
+    })
+  }
+
   return (
     <>
       <Header></Header>
@@ -253,7 +277,7 @@ const Wall = () => {
               <>
                 <div class="input-group mb-3">
                   <input id="affiliation-input" type="text" class="form-control" placeholder="Change Affiliation" />
-                  <button type="button" id="change-affiliation" class="input-group-text">
+                  <button onClick={() => changeAffiliation()} type="button" id="change-affiliation" class="input-group-text">
                     Confirm
                   </button>
                 </div>

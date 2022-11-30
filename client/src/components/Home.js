@@ -3,7 +3,7 @@ import AddedFriend from "./icons/AddedFriend"
 import PendingFriend from "./icons/PendingFriend"
 import Header from "./Header"
 import $ from "jquery"
-
+import { Post } from "./Post"
 
 const Home = () => {
   const [user, setUser] = useState()

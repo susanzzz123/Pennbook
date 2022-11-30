@@ -10,7 +10,6 @@ const getPostsForUser = function (req, res) {
     if (err || data === "user has no posts") {
       res.send("no posts")
     } else {
-      console.log(data)
       res.send(data)
     }
   })
