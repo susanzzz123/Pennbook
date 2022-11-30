@@ -34,15 +34,16 @@ import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
 
 import scala.Tuple2;
 
-// import edu.upenn.cis.nets2120.config.Config;
-// import edu.upenn.cis.nets2120.storage.SparkConnector;
+import edu.upenn.cis.nets2120.config.Config;
+import edu.upenn.cis.nets2120.storage.SparkConnector;
+import edu.upenn.cis.nets2120.storage.DynamoConnector;
 
 public class ComputeRanks {	
 	
 	/**
 	 * The basic logger
 	 */
-	static Logger logger = LogManager.getLogger(ComputeRanks.class);
+	// static Logger logger = LogManager.getLogger(ComputeRanks.class);
 
 	/**
 	 * Connection to DynamoDB
@@ -80,55 +81,60 @@ public class ComputeRanks {
 	 * @throws InterruptedException 
 	 */
 	public void initialize() throws IOException, InterruptedException {
-		logger.info("Connecting to Spark...");
+		// logger.info("Connecting to Spark...");
 
-		spark = SparkConnector.getSparkConnection();
-		context = SparkConnector.getSparkContext();
+		System.out.println("test");
+		// spark = SparkConnector.getSparkConnection();
+		// context = SparkConnector.getSparkContext();
 		
-		logger.debug("Connected!");
+		// logger.debug("Connected!");
 	}
+
+	// public void exportDynamoDB() throws IOException {
+	// 	List<String> features = new ArrayList<String>();
+	// 	features.add("news_id", "category");
+	// 	ScanResult r = db.scan("news", features);
+	// 	System.out.println(r.getScannedCount());
+	// }
 	
-    
-
-
 	/**
-	 * Fetch the social network from the S3 path, and create a (followed, follower) edge graph
+	 * R
 	 * 
 	 * @param filePath
 	 * @return JavaPairRDD: (followed: int, follower: int)
 	 * @throws IOException 
 	 */
-	JavaPairRDD<Integer,Integer> getSocialNetwork(String filePath) throws IOException {
-		// Read into RDD with lines as strings
-		JavaRDD<String[]> file = context.textFile(filePath, Config.PARTITIONS)
-				.map(line -> line.toString().split("[ \t]"));
+	// JavaPairRDD<String, String> getNewsGraph(DynamoDB db) throws IOException {
+	// 	// Read into RDD with lines as strings
+	// 	JavaRDD<String[]> file = context.textFile(filePath, Config.PARTITIONS)
+	// 			.map(line -> line.toString().split("[ \t]"));
 		
-		// Create a network PairRDD from the RDD of lines
-		JavaPairRDD<Integer, Integer> network = file.mapToPair(line -> new Tuple2<Integer, Integer>(
-				Integer.parseInt(line[0]), 
-				Integer.parseInt(line[1])));
+	// 	// Create a network PairRDD from the RDD of lines
+	// 	JavaPairRDD<Integer, Integer> network = file.mapToPair(line -> new Tuple2<Integer, Integer>(
+	// 			Integer.parseInt(line[0]), 
+	// 			Integer.parseInt(line[1])));
 		
-		// Remove duplicate connections		
-		network = network.distinct();
+	// 	// Remove duplicate connections		
+	// 	network = network.distinct();
 		
-		return network;
-	}
+	// 	return network;
+	// }
 	
-	private JavaRDD<Integer> getSinks(JavaPairRDD<Integer,Integer> network) {
-		// Get the number of unique nodes and edges
-		JavaRDD<Integer> outgoing = network.map(x -> x._1);
-		JavaRDD<Integer> ingoing = network.map(x -> x._2);
+	// private JavaRDD<Integer> getSinks(JavaPairRDD<Integer,Integer> network) {
+	// 	// Get the number of unique nodes and edges
+	// 	JavaRDD<Integer> outgoing = network.map(x -> x._1);
+	// 	JavaRDD<Integer> ingoing = network.map(x -> x._2);
 		
-		int numNodes = (int) outgoing.union(ingoing).distinct().count();
-		int numEdges = (int) network.count();
+	// 	int numNodes = (int) outgoing.union(ingoing).distinct().count();
+	// 	int numEdges = (int) network.count();
 		
-		logger.info(String.format("This graph contains %d nodes and %d edges", numNodes, numEdges));
+	// 	logger.info(String.format("This graph contains %d nodes and %d edges", numNodes, numEdges));
 		
-		// Sinks are nodes with ingoing edges that have no outgoing edges
-		JavaRDD<Integer> sinks = ingoing.subtract(outgoing).distinct();
+	// 	// Sinks are nodes with ingoing edges that have no outgoing edges
+	// 	JavaRDD<Integer> sinks = ingoing.subtract(outgoing).distinct();
 		
-		return sinks;
-	}
+	// 	return sinks;
+	// }
 	
 	/**
 	 * Helper method to get a PairRDD containing the initial ranks for each node
@@ -136,6 +142,49 @@ public class ComputeRanks {
 	 * @param network
 	 * @return socialRanks
 	 */
-	private JavaPairRDD<Integer, Double> getInitSocialRanks(JavaPairRDD<Integer,Integer> network) {
-		// Get the number of unique nodes and edges
-		Jav
+	// private JavaPairRDD<Integer, Double> getInitSocialRanks(JavaPairRDD<Integer,Integer> network) {
+	// 	// Get the number of unique nodes and edges
+	// 	JavaRDD<Integer> outgoing = network.map(x -> x._1);
+	// 	JavaRDD<Integer> ingoing = network.map(x -> x._2);
+		
+	// 	return outgoing.union(ingoing).distinct().mapToPair(node -> new Tuple2<Integer, Double>(node, 1.0));
+	// }
+
+	/**
+	 * Main functionality in the program: read and process the social network
+	 * 
+	 * @throws IOException File read, network, and other errors
+	 * @throws InterruptedException User presses Ctrl-C
+	 */
+	public void run() throws IOException, InterruptedException {
+		System.out.println("Connecting to DynamoDB...");
+        db = DynamoConnector.getConnection(Config.DYNAMODB_URL);
+        System.out.println("Connected!");
+
+		// Load the social network
+		// followed, follower
+		// JavaPairRDD<Integer, Integer> network = getSocialNetwork(Config.SOCIAL_NET_PATH);
+    	
+		// Get edge weights
+
+		// When computing ranks, we do the same process as before, but we only want to transfer labels if
+		// they're above a certain threshold
+
+		// therefore, we should remove all labels from the RDD that don't meet that requirement before
+		// running adsorption as usual
+	}
+
+	public static void main( String[] args )
+    {  
+		System.out.println("Running!");
+
+        ComputeRanks cr = new ComputeRanks();
+
+        try {
+			cr.initialize();
+            cr.run();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+}

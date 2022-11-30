@@ -28,7 +28,7 @@ public class SparkConnector {
 			
 		    spark = SparkSession
 		            .builder()
-		            .appName("Homework3")
+		            .appName("Pennbook")
 		            .master((host == null) ? Config.LOCAL_SPARK : host)
 		            .getOrCreate();
 		}

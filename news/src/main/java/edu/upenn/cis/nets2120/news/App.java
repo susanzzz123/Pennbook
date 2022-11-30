@@ -1,5 +1,7 @@
 package edu.upenn.cis.nets2120.news;
 
+import edu.upenn.cis.nets2120.news.ComputeRanks;
+
 /**
  * Hello world!
  *
@@ -7,7 +9,13 @@ package edu.upenn.cis.nets2120.news;
 public class App 
 {
     public static void main( String[] args )
-    {
-        System.out.println( "Hello World!" );
+    {  
+        ComputeRanks cr = new ComputeRanks();
+
+        try {
+            cr.run();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
     }
 }

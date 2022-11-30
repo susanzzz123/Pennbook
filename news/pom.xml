@@ -18,6 +18,14 @@
     <aws.java.sdk.version>2.13.64</aws.java.sdk.version>
   </properties>
 
+  <repositories>
+    <repository>
+      <id>dynamodb-local</id>
+      <name>DynamoDB Local Release Repository</name>
+      <url>https://s3-us-west-2.amazonaws.com/dynamodb-local/release</url>
+    </repository>
+  </repositories>
+
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
@@ -35,6 +43,16 @@
       <groupId>software.amazon.awssdk</groupId>
       <artifactId>dynamodb</artifactId>
       <version>${aws.java.sdk.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.amazonaws</groupId>
+      <artifactId>DynamoDBLocal</artifactId>
+      <version>1.16.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.amazonaws</groupId>
+      <artifactId>aws-java-sdk</artifactId>
+      <version>1.9.3</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -130,6 +148,7 @@
       </releases>
     </pluginRepository>
   </pluginRepositories>
+
   <build>
     <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
       <plugins>
@@ -146,6 +165,10 @@
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
           <version>3.8.0</version>
+          <configuration>
+            <source>1.8</source>
+            <target>1.8</target>
+          </configuration>
         </plugin>
         <plugin>
           <artifactId>maven-surefire-plugin</artifactId>
@@ -198,6 +221,48 @@
               </configuration>
             </execution>
           </executions>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-shade-plugin</artifactId>
+          <version>1.6</version>
+          <executions>
+            <execution>
+              <phase>package</phase>
+              <goals>
+                <goal>shade</goal>
+              </goals>
+            </execution>
+          </executions>
+          <configuration>
+            <finalName>framework</finalName>
+          </configuration>
+        </plugin>
+        <plugin>
+         <groupId>org.eclipse.m2e</groupId>
+         <artifactId>lifecycle-mapping</artifactId>
+         <version>1.0.0</version>
+         <configuration>
+           <lifecycleMappingMetadata>
+             <pluginExecutions>
+               <pluginExecution>
+                 <pluginExecutionFilter>
+                   <groupId>org.apache.maven.plugins</groupId>
+                   <artifactId>maven-dependency-plugin</artifactId>
+                   <versionRange>[1.0.0,)</versionRange>
+                   <goals>
+                     <goal>copy-dependencies</goal>
+                   </goals>
+                 </pluginExecutionFilter>
+                 <action>
+                   <execute>
+                     <runOnIncremental>false</runOnIncremental>
+                   </execute >
+                 </action>
+               </pluginExecution>
+             </pluginExecutions>
+           </lifecycleMappingMetadata>
+         </configuration>
         </plugin>
       </plugins>
     </pluginManagement>
