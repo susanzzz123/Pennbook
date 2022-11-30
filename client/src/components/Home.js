@@ -3,13 +3,12 @@ import AddedFriend from "./icons/AddedFriend"
 import PendingFriend from "./icons/PendingFriend"
 import Header from "./Header"
 import $ from "jquery"
-import { Post } from "./Post"
+
 
 const Home = () => {
   const [user, setUser] = useState('')
   const [friends, setFriends] = useState([])
   //posts are sorted in ascending order
-  const [allPosts, setAllPosts] = useState([])
 
   useEffect(() => {
     $.get("http://localhost:3000/getUser", (data, status) => {
@@ -24,11 +23,6 @@ const Home = () => {
     })
   }, [])
   
-  useEffect(() => {
-    $.get("http://localhost:3000/getPosts", { username: user }, (data, status) => {
-      setAllPosts(data)
-    })
-  }, [])
 
   return (
     <>
@@ -37,9 +31,7 @@ const Home = () => {
         <div className="row">
           <div className="col">Menu</div>
           <div>{user}</div>
-          <div className="col-8">
-            <Post></Post>
-          </div>
+          
         </div>
       </div>
     </>
