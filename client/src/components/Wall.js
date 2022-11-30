@@ -169,18 +169,22 @@ const Wall = () => {
           <div className="col">
             <h3 className="text-center">
               {data.first_name} {data.last_name}
-              {isFriend && (
+              {visitingUser !== data.username && (
                 <>
-                  <a href="#" id="remove-friend">
-                    <AddedFriend></AddedFriend>
-                  </a>
-                </>
-              )}
-              {!isFriend && (
-                <>
-                  <a href="#" id="add-friend">
-                    <AddFriend></AddFriend>
-                  </a>
+                  {isFriend && (
+                    <>
+                      <a href="#" id="remove-friend">
+                        <AddedFriend></AddedFriend>
+                      </a>
+                    </>
+                  )}
+                  {!isFriend && (
+                    <>
+                      <a href="#" id="add-friend">
+                        <AddFriend></AddFriend>
+                      </a>
+                    </>
+                  )}
                 </>
               )}
             </h3>

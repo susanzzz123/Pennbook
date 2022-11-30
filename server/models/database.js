@@ -134,6 +134,34 @@ var removeFriend = function (sender, receiver, callback) {
   })
 }
 
+const updateTimestamp = function (username, callback) {
+  const updated_time = `${Date.now()}`
+
+  const params = {
+    TableName: "timestamps",
+    Key: {
+      username: {
+        S: username,
+      },
+    },
+    ExpressionAttributeNames: { "#time": "last_time" },
+    UpdateExpression: "set #time = :val",
+    ExpressionAttributeValues: {
+      ":val": {
+        N: updated_time,
+      },
+    },
+  }
+
+  db.updateItem(params, function (err, data) {
+    if (err) {
+      callback(err, "unable to update time")
+    } else {
+      callback(null, "timestamp updated successfully")
+    }
+  })
+}
+
 var checkSignup = function (username, password, first_name, last_name, email, affiliation, birthday, interests, callback) {
   var params = {
     KeyConditions: {
@@ -453,6 +481,7 @@ var getUsers = (username, callback) => {
 }
 
 var database = {
+  update_timestamp: updateTimestamp,
   check_login: checkLogin,
   get_user_info: getUserInfo,
   check_signup: checkSignup,
