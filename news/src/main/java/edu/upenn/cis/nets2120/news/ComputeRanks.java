@@ -5,10 +5,14 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.PrintWriter;  
 import java.io.IOException;
 import java.io.Reader;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Iterator;
 
 import org.apache.hadoop.yarn.webapp.hamlet.HamletSpec._;
 import org.apache.logging.log4j.LogManager;
@@ -19,6 +23,9 @@ import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.SparkSession;
 
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
+import com.amazonaws.services.dynamodbv2.document.Item;
+import com.amazonaws.services.dynamodbv2.document.ItemCollection;
+import com.amazonaws.services.dynamodbv2.document.ScanOutcome;
 import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.dynamodbv2.document.TableWriteItems;
 import com.amazonaws.services.dynamodbv2.model.AttributeDefinition;
@@ -83,7 +90,7 @@ public class ComputeRanks {
 	public void initialize() throws IOException, InterruptedException {
 		// logger.info("Connecting to Spark...");
 
-		System.out.println("test");
+		System.out.println("Initializing...");
 		// spark = SparkConnector.getSparkConnection();
 		// context = SparkConnector.getSparkContext();
 		
@@ -150,6 +157,36 @@ public class ComputeRanks {
 	// 	return outgoing.union(ingoing).distinct().mapToPair(node -> new Tuple2<Integer, Double>(node, 1.0));
 	// }
 
+
+	public void getTableEntries(DynamoDB db, String tableName, String projection) throws FileNotFoundException, IOException {
+		File file = new File(tableName + ".txt");
+		FileWriter fileWriter = new FileWriter(file, true);
+		PrintWriter writer = new PrintWriter(fileWriter);
+
+		Table table = db.getTable("news");
+
+		ItemCollection<ScanOutcome> items = table.scan( 
+			null,                                  			// FilterExpression 
+			projection,     								// ProjectionExpression 
+			null,                                           // No ExpressionAttributeNames  
+			null);
+			
+		System.out.println("Scanned table"); 
+		Iterator<Item> iterator = items.iterator(); 
+
+		String[] attrs = projection.split(", ", 0);
+			
+		while (iterator.hasNext()) { 
+			Item item = iterator.next();
+			String[] results = Arrays.stream(attrs).map(attr -> (String) item.getString(attr)).toArray(String[]::new);
+			
+			String line = String.join(" ", results);
+			writer.println(line);
+		}
+
+		writer.close();
+	}
+
 	/**
 	 * Main functionality in the program: read and process the social network
 	 * 
@@ -160,6 +197,11 @@ public class ComputeRanks {
 		System.out.println("Connecting to DynamoDB...");
         db = DynamoConnector.getConnection(Config.DYNAMODB_URL);
         System.out.println("Connected!");
+
+		// Load the DynamoDB tables as undirected graphs into local files
+		getTableEntries(db, "news", "news_id, category");
+		getTableEntries(db, "friends", "sender, receiver");
+		getTableEntries(db, "users", "username, interests");
 
 		// Load the social network
 		// followed, follower
