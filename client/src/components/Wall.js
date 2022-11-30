@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import Edit from "./icons/Edit"
 import $ from "jquery"
 import Header from "./Header"
+import { Post } from "./Post"
 import AddFriend from "./icons/AddFriend"
 import AddedFriend from "./icons/AddedFriend"
 
@@ -10,10 +11,13 @@ const Wall = () => {
   const [data, setData] = useState({})
   const [isFriend, setIsFriend] = useState()
   const [toggles, setToggles] = useState([false, false, false])
+  const [type, setType] = useState('Choose a post type')
+  const [content, setContent] = useState('')
+  const [allPosts, setAllPosts] = useState([])
 
+  const params = new URLSearchParams(window.location.search)
+  const user = params.get("user")
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    const user = params.get("user")
 
     $.post("http://localhost:3000/getWallInformation", { user }, (data, status) => {
       setData(data)
@@ -33,6 +37,14 @@ const Wall = () => {
     })
     $("#edit-password").on("click", () => {
       changeToggles(2)
+    })
+    $.post("http://localhost:3000/getPosts", { username: visitingUser }, (data, status) => {
+      if (data !== "no posts") {
+        setAllPosts(data)
+      } else {
+        //error message for display
+        console.log("error while retrieving posts")
+      }
     })
     if (visitingUser.length !== 0) {
       $.post("http://localhost:3000/getFriends", { username: visitingUser }, (friends_data, status) => {
@@ -150,6 +162,22 @@ const Wall = () => {
     }
   }
 
+  const handleSelectPost = () => {
+    setType("Post")
+  }
+
+  const handleSelectStatus = () => {
+    setType("Status Update")
+  }
+
+  const handlePost = async () => {
+    $.post("http://localhost:3000/addPost", { username: visitingUser, type, wall: user, parent_name: '', parent_id: "-1", content }, (data, status) => {
+      if (data !== "Success") {
+        console.log(data)
+      }
+    })
+  }
+
   return (
     <>
       <Header></Header>
@@ -162,7 +190,34 @@ const Wall = () => {
                 <label htmlFor="exampleFormControlTextarea1" className="form-label">
                   Make a post!
                 </label>
-                <textarea className="form-control w-75 m-auto"></textarea>
+                <textarea
+                className="form-control w-75 m-auto"
+                onChange={e => setContent(e.target.value)}></textarea>
+                <div class="dropdown mt-2">
+                  <a class="btn btn-secondary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    {type}
+                  </a>
+                  <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" onClick={() => handleSelectPost()}>Post</a></li>
+                    <li><a class="dropdown-item" onClick={() => handleSelectStatus()}>Status Update</a></li>
+                  </ul>
+                </div>
+                <button
+                type="button"
+                class="btn btn-primary mt-2"
+                onClick={() => handlePost()}>Post</button>
+              </div>
+              <div className="col-8">
+                {
+                  allPosts.map(post =>
+                    <Post
+                    user={post.username.S}
+                    content={post.content.S}
+                    type={post.type.S}
+                    date={parseInt(post.post_id.N)}>
+                    </Post>
+                  )
+                }
               </div>
             </div>
           </div>

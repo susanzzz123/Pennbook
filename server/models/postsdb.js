@@ -10,8 +10,9 @@ const async = require("async")
 Table: posts
 ---------------------*/
 
-const addPost = (username, type, wall, parent_name, parent_id, content, img, callback) => {
-  const post_id = Date.now()
+const addPost = (username, type, wall, parent_name, parent_id, content, callback) => {
+  const post_id = `${Date.now()}`
+  console.log(typeof post_id)
   var params = {
     Item: {
       username: {
@@ -34,9 +35,6 @@ const addPost = (username, type, wall, parent_name, parent_id, content, img, cal
       },
       content: {
         S: content,
-      },
-      img: {
-        S: img,
       }
     },
     TableName: "posts",
@@ -73,9 +71,6 @@ const addPost = (username, type, wall, parent_name, parent_id, content, img, cal
         },
         content: {
           S: content,
-        },
-        img: {
-          S: img,
         }
       },
       TableName: "posts",

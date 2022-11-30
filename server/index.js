@@ -29,9 +29,10 @@ app.post("/searchUser", routes.search_user)
 app.post("/getWallInformation", routes.get_wall_information)
 app.post("/changeAffiliation", routes.change_affiliation)
 app.post("/getFriends", routes.get_friends)
+app.post("/addPost", routes.add_post)
+app.post("/getPosts", routes.get_posts_for_user)
 app.post("/addFriend", routes.add_friend)
 app.post("/removeFriend", routes.remove_friend)
-app.get("/getPosts", routes.get_posts_for_user)
 app.post("/updateTimestamp", routes.update_timestamp)
 
 // set favicon
