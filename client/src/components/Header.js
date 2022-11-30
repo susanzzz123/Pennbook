@@ -5,7 +5,6 @@ import Profile from "./icons/Profile"
 const img = require("./penguin.png")
 
 const Header = () => {
-  const [showDropdown, setShowDropdown] = useState(false)
   const [user, setUser] = useState("")
   const [searchTerm, setSearchTerm] = useState("")
   const [foundUsers, setFoundUsers] = useState([])
@@ -47,10 +46,6 @@ const Header = () => {
     $("#found-field").css("visibility", "visible")
   }
 
-  const handleClick = () => {
-    setShowDropdown(!showDropdown)
-  }
-
   const viewProfile = (profile) => {
     $("#found-field").css("visibility", "hidden")
     $("#search-input").val("")
@@ -63,12 +58,12 @@ const Header = () => {
     <>
       <header className="p-3 mb-3 border-bottom">
         <div className="px-3 d-flex flex-wrap align-items-center row">
-          <a href="/home" className="text-decoration-none d-flex flex-wrap align-items-center justify-content-left col">
+          <a href="/home" className="text-decoration-none d-inline flex-wrap align-items-center justify-content-left col">
             <img className="d-flex justify-content-left" src={img} width="25"></img>
             <h3 className="text-center mb-0 mx-2">Pennbook</h3>
           </a>
 
-          <div className="position-relative d-flex mx-auto col">
+          <div className="position-relative d-inline mx-auto col">
             <input
               id="search-input"
               onBlur={() => handleBlur()}
@@ -94,11 +89,11 @@ const Header = () => {
               </div>
             )}
           </div>
-          <div onClick={handleClick} className="dropdown text-end ms-auto col">
-            {user}
-            <a href={`/wall?user=${user}`} className="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-              <img src="https://github.com/mdo.png" alt="mdo" width="32" height="32" className="rounded-circle" />
-            </a>
+          <div style={{ width: "auto" }} className="dropdown d-inline text-end ms-auto col">
+            <div className="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+              Dropdown
+            </div>
+            <a href={`/wall?user=${user}`}>{user}</a>
             <ul className="dropdown-menu">
               <li>
                 <a className="dropdown-item" href="#">

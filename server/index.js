@@ -33,6 +33,7 @@ app.post("/addPost", routes.add_post)
 app.post("/getPosts", routes.get_posts_for_user)
 app.post("/addFriend", routes.add_friend)
 app.post("/removeFriend", routes.remove_friend)
+app.post("/updateTimestamp", routes.update_timestamp)
 
 // set favicon
 app.get("/favicon.ico", (req, res) => {
