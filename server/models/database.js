@@ -91,6 +91,49 @@ var getFriends = function (username, callback) {
   })
 }
 
+var addFriend = function (sender, receiver, callback) {
+  var params = {
+    Item: {
+      sender: {
+        S: sender,
+      },
+      receiver: {
+        S: receiver,
+      },
+      status: {
+        N: "0",
+      },
+    },
+    TableName: "friends",
+  }
+
+  db.putItem(params, function (err, data) {
+    if (err) {
+      callback(err)
+    } else {
+      callback(err, "success")
+    }
+  })
+}
+
+var removeFriend = function (sender, receiver, callback) {
+  var params = {
+    TableName: "friends",
+    Key: {
+      sender: { S: sender },
+      receiver: { S: receiver },
+    },
+  }
+
+  db.deleteItem(params, function (err, data) {
+    if (err) {
+      callback(err)
+    } else {
+      callback(err, "success")
+    }
+  })
+}
+
 var checkSignup = function (username, password, first_name, last_name, email, affiliation, birthday, interests, callback) {
   var params = {
     KeyConditions: {
@@ -420,6 +463,8 @@ var database = {
   remove_interest: removeInterest,
   get_users: getUsers,
   get_friends: getFriends,
+  add_friend: addFriend,
+  remove_friend: removeFriend,
 }
 
 module.exports = database

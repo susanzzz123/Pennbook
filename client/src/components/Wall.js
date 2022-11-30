@@ -3,10 +3,13 @@ import Edit from "./icons/Edit"
 import $ from "jquery"
 import Header from "./Header"
 import { Post } from "./Post"
+import AddFriend from "./icons/AddFriend"
+import AddedFriend from "./icons/AddedFriend"
 
 const Wall = () => {
   const [visitingUser, setVisitingUser] = useState("")
   const [data, setData] = useState({})
+  const [isFriend, setIsFriend] = useState()
   const [toggles, setToggles] = useState([false, false, false])
   const [type, setType] = useState('Choose a post type')
   const [content, setContent] = useState('')
@@ -21,7 +24,6 @@ const Wall = () => {
     })
 
     $.get("http://localhost:3000/getUser", (data, status) => {
-      console.log(data)
       setVisitingUser(data)
     })
   }, [])
@@ -44,7 +46,27 @@ const Wall = () => {
         console.log("error while retrieving posts")
       }
     })
+    if (visitingUser.length !== 0) {
+      $.post("http://localhost:3000/getFriends", { username: visitingUser }, (friends_data, status) => {
+        let check_friend = false
+        friends_data.forEach((elem) => {
+          if (elem.receiver.S === data.username) {
+            check_friend = true
+          }
+        })
+        setIsFriend(check_friend)
+      })
+    }
   }, [visitingUser])
+
+  useEffect(() => {
+    $("#add-friend").on("click", () => {
+      addFriend()
+    })
+    $("#remove-friend").on("click", () => {
+      removeFriend()
+    })
+  }, [isFriend])
 
   useEffect(() => {
     $("#change-affiliation").on("click", () => {
@@ -64,10 +86,33 @@ const Wall = () => {
     })
   }, [toggles[2]])
 
-  changeToggles = (event) => {
+  const changeToggles = (event) => {
     const curr = [...toggles]
     curr[event] = !curr[event]
     setToggles(curr)
+  }
+
+  const addFriend = () => {
+    $.post("http://localhost:3000/addFriend", { sender: visitingUser, receiver: data.username }, (data, status) => {
+      if (data === "error") {
+        console.log("error")
+      } else {
+        setIsFriend(true)
+        console.log("successfully added friend")
+      }
+    })
+  }
+
+  const removeFriend = () => {
+    console.log("Removing friend")
+    $.post("http://localhost:3000/removeFriend", { sender: visitingUser, receiver: data.username }, (data, status) => {
+      if (data === "error") {
+        console.log("error")
+      } else {
+        setIsFriend(false)
+        console.log("successfully removed friend")
+      }
+    })
   }
 
   changeItem = (item) => {
@@ -179,6 +224,20 @@ const Wall = () => {
           <div className="col">
             <h3 className="text-center">
               {data.first_name} {data.last_name}
+              {isFriend && (
+                <>
+                  <a href="#" id="remove-friend">
+                    <AddedFriend></AddedFriend>
+                  </a>
+                </>
+              )}
+              {!isFriend && (
+                <>
+                  <a href="#" id="add-friend">
+                    <AddFriend></AddFriend>
+                  </a>
+                </>
+              )}
             </h3>
             <div className="text-secondary fw-light fs-7">Affiliation:</div>
             <div className="fs-6 mb-2 fw-semibold">

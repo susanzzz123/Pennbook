@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react"
 
 export const Post = ({ user, content, type, date }) => {
   const currDate = new Date(date).toString()
@@ -9,11 +9,7 @@ export const Post = ({ user, content, type, date }) => {
         <h5 class="card-title">{user}</h5>
         <h6>{currDate}</h6>
         <p class="card-text">{content}</p>
-        {
-          type === 'post' && (
-            <button class="btn btn-primary">Comment</button>
-          )
-        }
+        {type === "post" && <button class="btn btn-primary">Comment</button>}
       </div>
     </div>
   )

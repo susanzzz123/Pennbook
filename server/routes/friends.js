@@ -2,6 +2,7 @@
 Routes for friends
 -----------------*/
 
+const { response } = require("express")
 const db = require("../models/database")
 
 const requestFriend = async (req, res) => {
@@ -9,16 +10,27 @@ const requestFriend = async (req, res) => {
 }
 
 const addFriend = async (req, res) => {
-  const { username, friendUsername } = req.body
-  res.send("TODO")
+  const { sender, receiver } = req.body
+
+  db.add_friend(sender, receiver, function (err, data) {
+    if (err) {
+      res.send("Error occured when adding friend")
+    } else {
+      res.send(data)
+    }
+  })
 }
 
 const removeFriend = async (req, res) => {
-  const { username, friendUsername } = req.body
-  res.send("TODO")
+  const { sender, receiver } = req.body
 
-  //users db calls to get ids
-  //friends db calls to remove from each's friends list
+  db.remove_friend(sender, receiver, function (err, data) {
+    if (err) {
+      res.send("Error occured when removing friend")
+    } else {
+      res.send(data)
+    }
+  })
 }
 
 const getFriends = async (req, res) => {
@@ -38,6 +50,7 @@ const friend_routes = {
   get_friends: getFriends,
   remove_friend: removeFriend,
   add_friend: addFriend,
+  remove_friend: removeFriend,
   request_friend: requestFriend,
 }
 
