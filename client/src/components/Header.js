@@ -90,9 +90,10 @@ const Header = () => {
             )}
           </div>
           <div style={{ width: "auto" }} className="dropdown d-inline text-end ms-auto col">
-            <a href={`/wall?user=${user}`} className="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-              {user}
-            </a>
+            <div className="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+              Dropdown
+            </div>
+            <a href={`/wall?user=${user}`}>{user}</a>
             <ul className="dropdown-menu">
               <li>
                 <a className="dropdown-item" href="#">

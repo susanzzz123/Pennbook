@@ -1,9 +1,9 @@
 import React from "react"
 
-export const Post = ({ user, content, type, date }) => {
+const Post = ({ user, content, type, date }) => {
   const currDate = new Date(date).toString()
   return (
-    <div class="card" style={{width: "18rem"}}>
+    <div class="card" style={{ width: "18rem" }}>
       {/* <img class="card-img-top" src={img} alt="Card image cap"/> */}
       <div class="card-body">
         <h5 class="card-title">{user}</h5>
@@ -14,3 +14,5 @@ export const Post = ({ user, content, type, date }) => {
     </div>
   )
 }
+
+export default Post

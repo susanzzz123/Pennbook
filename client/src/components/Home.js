@@ -2,8 +2,8 @@ import { useEffect, useState } from "react"
 import AddedFriend from "./icons/AddedFriend"
 import PendingFriend from "./icons/PendingFriend"
 import Header from "./Header"
+import Post from "./Post"
 import $ from "jquery"
-
 
 const Home = () => {
   const [user, setUser] = useState()
@@ -14,7 +14,7 @@ const Home = () => {
     $.get("http://localhost:3000/getUser", (data, status) => {
       setUser(data)
       $.post("http://localhost:3000/getFriends", { username: data }, (data, status) => {
-        if (data === "Error occured when searching for friends") {
+        if (data === "user has no friends") {
           setFriends([])
         } else {
           setFriends(data)
@@ -22,7 +22,6 @@ const Home = () => {
       })
     })
   }, [])
-  
 
   return (
     <>

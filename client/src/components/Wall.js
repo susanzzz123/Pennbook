@@ -11,14 +11,13 @@ const Wall = () => {
   const [data, setData] = useState({})
   const [isFriend, setIsFriend] = useState()
   const [toggles, setToggles] = useState([false, false, false])
-  const [type, setType] = useState('Choose a post type')
-  const [content, setContent] = useState('')
+  const [type, setType] = useState("Choose a post type")
+  const [content, setContent] = useState("")
   const [allPosts, setAllPosts] = useState([])
 
   const params = new URLSearchParams(window.location.search)
   const user = params.get("user")
   useEffect(() => {
-
     $.post("http://localhost:3000/getWallInformation", { user }, (data, status) => {
       setData(data)
     })
@@ -29,15 +28,6 @@ const Wall = () => {
   }, [])
 
   useEffect(() => {
-    $("#edit-affiliation").on("click", () => {
-      changeToggles(0)
-    })
-    $("#edit-email").on("click", () => {
-      changeToggles(1)
-    })
-    $("#edit-password").on("click", () => {
-      changeToggles(2)
-    })
     $.post("http://localhost:3000/getPosts", { username: visitingUser }, (data, status) => {
       if (data !== "no posts") {
         setAllPosts(data)
@@ -49,11 +39,13 @@ const Wall = () => {
     if (visitingUser.length !== 0) {
       $.post("http://localhost:3000/getFriends", { username: visitingUser }, (friends_data, status) => {
         let check_friend = false
-        friends_data.forEach((elem) => {
-          if (elem.receiver.S === data.username) {
-            check_friend = true
-          }
-        })
+        if (friends_data !== "user has no friends") {
+          friends_data.forEach((elem) => {
+            if (elem.receiver.S === data.username) {
+              check_friend = true
+            }
+          })
+        }
         setIsFriend(check_friend)
       })
     }
@@ -171,7 +163,7 @@ const Wall = () => {
   }
 
   const handlePost = async () => {
-    $.post("http://localhost:3000/addPost", { username: visitingUser, type, wall: user, parent_name: '', parent_id: "-1", content }, (data, status) => {
+    $.post("http://localhost:3000/addPost", { username: visitingUser, type, wall: user, parent_name: "", parent_id: "-1", content }, (data, status) => {
       if (data !== "Success") {
         console.log(data)
       }
@@ -190,41 +182,39 @@ const Wall = () => {
                 <label htmlFor="exampleFormControlTextarea1" className="form-label">
                   Make a post!
                 </label>
-                <textarea
-                className="form-control w-75 m-auto"
-                onChange={e => setContent(e.target.value)}></textarea>
+                <textarea className="form-control w-75 m-auto" onChange={(e) => setContent(e.target.value)}></textarea>
                 <div class="dropdown mt-2">
                   <a class="btn btn-secondary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     {type}
                   </a>
                   <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" onClick={() => handleSelectPost()}>Post</a></li>
-                    <li><a class="dropdown-item" onClick={() => handleSelectStatus()}>Status Update</a></li>
+                    <li>
+                      <a class="dropdown-item" onClick={() => handleSelectPost()}>
+                        Post
+                      </a>
+                    </li>
+                    <li>
+                      <a class="dropdown-item" onClick={() => handleSelectStatus()}>
+                        Status Update
+                      </a>
+                    </li>
                   </ul>
                 </div>
-                <button
-                type="button"
-                class="btn btn-primary mt-2"
-                onClick={() => handlePost()}>Post</button>
+                <button type="button" class="btn btn-primary mt-2" onClick={() => handlePost()}>
+                  Post
+                </button>
               </div>
               <div className="col-8">
-                {
-                  allPosts.map(post =>
-                    <Post
-                    user={post.username.S}
-                    content={post.content.S}
-                    type={post.type.S}
-                    date={parseInt(post.post_id.N)}>
-                    </Post>
-                  )
-                }
+                {allPosts.map((post) => (
+                  <Post user={post.username.S} content={post.content.S} type={post.type.S} date={parseInt(post.post_id.N)}></Post>
+                ))}
               </div>
             </div>
           </div>
           <div className="col">
             <h3 className="text-center">
               {data.first_name} {data.last_name}
-              {visitingUser !== data.username && (
+              {visitingUser != data.username && (
                 <>
                   {isFriend && (
                     <>
@@ -248,9 +238,9 @@ const Wall = () => {
               {data.affiliation}
               &nbsp;
               {visitingUser === data.username && (
-                <a href="#" id="edit-affiliation">
+                <span style={{ cursor: "pointer" }} onClick={() => changeToggles(0)}>
                   <Edit></Edit>
-                </a>
+                </span>
               )}
             </div>
             {toggles[0] && (
@@ -269,9 +259,9 @@ const Wall = () => {
             <div className="fs-6 mb-2 fw-semibold">
               {data.email} &nbsp;
               {visitingUser === data.username && (
-                <a href="#" id="edit-email">
+                <span style={{ cursor: "pointer" }} onClick={() => changeToggles(1)}>
                   <Edit></Edit>
-                </a>
+                </span>
               )}
             </div>
             {toggles[1] && (
@@ -290,9 +280,9 @@ const Wall = () => {
             <div className="fs-6 mb-2 fw-semibold">
               ****** &nbsp;
               {visitingUser === data.username && (
-                <a href="#" id="edit-password">
+                <span style={{ cursor: "pointer" }} onClick={() => changeToggles(2)}>
                   <Edit></Edit>
-                </a>
+                </span>
               )}
             </div>
             {toggles[2] && (
