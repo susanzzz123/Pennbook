@@ -29,6 +29,7 @@
     "express-session": "^1.17.3",
     "jquery": "^3.6.1",
     "lru-cache": "^7.14.1",
+    "node-fetch": "^3.3.0",
     "parcel": "^2.8.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
