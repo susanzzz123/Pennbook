@@ -16,6 +16,7 @@ const Wall = () => {
   const [allPosts, setAllPosts] = useState([])
   const [affiliation, setAffiliation] = useState('')
   const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
 
   const params = new URLSearchParams(window.location.search)
   const user = params.get("user")
@@ -175,6 +176,7 @@ const Wall = () => {
   const changeAffiliation = async () => {
     $.post("http://localhost:3000/changeAffiliation", { username: user, affiliation }, (data, status) => {
       if (data === "Success") {
+        //status update
         $.post("http://localhost:3000/addPost", { username: user, type: "Status Update", wall: user, parent_name: '', parent_id: "-1", content: `${user} updated their affiliation to ${affiliation}` }, (data, status) => {
           if (data !== "Success") {
             console.log(data)
@@ -184,6 +186,7 @@ const Wall = () => {
         console.log(data)
       }
     })
+    setAffiliation('')
   }
 
   const changeEmail = async () => {
@@ -192,7 +195,18 @@ const Wall = () => {
         console.log(data)
       }
     })
+    setEmail('')
   }
+
+  const changePassword = async () => {
+    $.post("http://localhost:3000/changePassword", { username: user, password }, (data, status) => {
+      if (data !== "Success") {
+        console.log(data)
+      }
+    })
+    setPassword('')
+  }
+
 
   return (
     <>
@@ -270,7 +284,7 @@ const Wall = () => {
             {toggles[0] && (
               <>
                 <div class="input-group mb-3">
-                  <input id="affiliation-input" type="text" class="form-control" placeholder="Change Affiliation" />
+                  <input onChange={e => setAffiliation(e.target.value)} id="affiliation-input" type="text" class="form-control" placeholder="Change Affiliation" />
                   <button onClick={() => changeAffiliation()} type="button" id="change-affiliation" class="input-group-text">
                     Confirm
                   </button>
@@ -291,8 +305,8 @@ const Wall = () => {
             {toggles[1] && (
               <>
                 <div class="input-group mb-3">
-                  <input id="email-input" type="text" class="form-control" placeholder="Change Email" />
-                  <button type="button" id="change-email" class="input-group-text">
+                  <input onChange={e => setEmail(e.target.value)} id="email-input" type="text" class="form-control" placeholder="Change Email" />
+                  <button onClick={() => changeEmail()} type="button" id="change-email" class="input-group-text">
                     Confirm
                   </button>
                 </div>
@@ -312,8 +326,8 @@ const Wall = () => {
             {toggles[2] && (
               <>
                 <div class="input-group mb-3">
-                  <input id="password-input" type="text" class="form-control" placeholder="Change Password" />
-                  <button type="button" id="change-password" class="input-group-text">
+                  <input onChange={e => setPassword(e.target.value)} id="password-input" type="text" class="form-control" placeholder="Change Password" />
+                  <button onClick={() => changePassword()} type="button" id="change-password" class="input-group-text">
                     Confirm
                   </button>
                 </div>

@@ -4,7 +4,6 @@ import PendingFriend from "./icons/PendingFriend"
 import Header from "./Header"
 import Post from "./Post"
 import $ from "jquery"
-import { Post } from "./Post"
 
 const Home = () => {
   const [user, setUser] = useState()
