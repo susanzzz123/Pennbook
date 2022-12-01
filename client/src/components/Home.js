@@ -8,6 +8,7 @@ import $ from "jquery"
 const Home = () => {
   const [user, setUser] = useState()
   const [friends, setFriends] = useState([])
+  const curr_date = Date.now()
   //posts are sorted in ascending order
 
   useEffect(() => {
@@ -16,8 +17,21 @@ const Home = () => {
       $.post("http://localhost:3000/getFriends", { username: data }, (data, status) => {
         if (data === "user has no friends") {
           setFriends([])
+        } else if (typeof data === "string") {
+          setFriends([])
         } else {
-          setFriends(data)
+          const promises = []
+          const friend_list = []
+          data.forEach(function (individual_friend) {
+            promises.push(
+              $.post("http://localhost:3000/getWallInformation", { user: individual_friend.receiver.S }, (friend_data, status) => {
+                friend_list.push({ friend: friend_data.username, status: individual_friend.status.N, last_time: friend_data.last_time })
+              })
+            )
+          })
+          Promise.all(promises).then((values) => {
+            setFriends(friend_list)
+          })
         }
       })
     })
@@ -43,23 +57,36 @@ const Home = () => {
               </>
             )}
             {friends.length > 0 &&
-              friends.map((elem) => (
-                <div className="d-flex my-2">
-                  {elem.status.N == 0 && (
-                    <span className="d-inline">
-                      <PendingFriend></PendingFriend>
-                    </span>
-                  )}
-                  {elem.status.N == 1 && (
-                    <span className="d-inline">
-                      <AddedFriend></AddedFriend>
-                    </span>
-                  )}
-                  <a href={`/wall?user=${elem.receiver.S}`} className="text-decoration-none d-inline pe-auto mx-2">
-                    {elem.receiver.S}
-                  </a>
-                </div>
-              ))}
+              typeof friends != "string" &&
+              friends.map((elem) => {
+                console.log(elem.last_time)
+                return (
+                  <div className="d-flex my-2">
+                    {elem.status == 0 && (
+                      <span className="d-inline">
+                        <PendingFriend></PendingFriend>
+                      </span>
+                    )}
+                    {elem.status == 1 && (
+                      <span className="d-inline">
+                        <AddedFriend></AddedFriend>
+                      </span>
+                    )}
+                    <a href={`/wall?user=${elem.friend}`} className="text-decoration-none d-inline pe-auto mx-2">
+                      {elem.friend}
+                    </a>
+                    {curr_date - parseInt(elem.last_time) > 300000 ? (
+                      <>
+                        <div>Offline</div>
+                      </>
+                    ) : (
+                      <>
+                        <div>Online</div>
+                      </>
+                    )}
+                  </div>
+                )
+              })}
           </div>
         </div>
       </div>

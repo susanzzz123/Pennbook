@@ -4,6 +4,7 @@ Routes for friends
 
 const { response } = require("express")
 const db = require("../models/database")
+const timestamp = require("./timestamp")
 
 const requestFriend = async (req, res) => {
   res.send("TODO")
@@ -16,6 +17,7 @@ const addFriend = async (req, res) => {
     if (err) {
       res.send("Error occured when adding friend")
     } else {
+      timestamp.internalUpdateTimestamp(sender)
       res.send(data)
     }
   })
@@ -28,6 +30,7 @@ const removeFriend = async (req, res) => {
     if (err) {
       res.send("Error occured when removing friend")
     } else {
+      timestamp.internalUpdateTimestamp(sender)
       res.send(data)
     }
   })

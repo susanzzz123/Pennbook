@@ -34,8 +34,9 @@ var getUserInfo = function (username, callback) {
       const username = data.Items[0].username.S
       const email = data.Items[0].email.S
       const birthday = data.Items[0].birthday.S
+      const last_time = data.Items[0].last_time.N
 
-      callback(err, { first_name, last_name, interests, affiliation, username, email, birthday })
+      callback(err, { first_name, last_name, interests, affiliation, username, email, birthday, last_time })
     }
   })
 }
@@ -138,7 +139,7 @@ const updateTimestamp = function (username, callback) {
   const updated_time = `${Date.now()}`
 
   const params = {
-    TableName: "timestamps",
+    TableName: "users",
     Key: {
       username: {
         S: username,
@@ -174,6 +175,8 @@ var checkSignup = function (username, password, first_name, last_name, email, af
     AttributesToGet: ["password"],
   }
 
+  const time = `${Date.now()}`
+
   db.query(params, function (err, data) {
     if (err || data == null || data.Items.length !== 0) {
       callback(err, "user already exists")
@@ -205,6 +208,9 @@ var checkSignup = function (username, password, first_name, last_name, email, af
           interests: {
             SS: interests,
           },
+          last_time: {
+            N: time,
+          },
         },
         TableName: "users",
         ReturnValues: "NONE",
@@ -214,6 +220,8 @@ var checkSignup = function (username, password, first_name, last_name, email, af
         if (err) {
           callback(err)
         } else {
+          //
+
           // Also add the user prefixes to the prefixes table if they don't exist
           const prefixes = []
           const word = []

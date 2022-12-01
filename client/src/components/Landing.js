@@ -43,30 +43,38 @@ const Landing = () => {
     }
   }
 
+  handleSignup = () => {
+    navigate("/signup")
+  }
+
   return (
     <>
-      <div className="container">
-        <h1>Welcome to PennBook!</h1>
-        <form>
-          <div className="form-floating mb-3">
+      <div style={{ background: "linear-gradient(119deg, rgba(173,162,231,1) 24%, rgba(138,187,227,1) 96%)", height: "100vh", padding: "10vh" }} className="w-100">
+        <h2 className="text-center text-light mb-5 ">Pennbook</h2>
+        <form className="m-auto bg-light w-25 p-4 rounded">
+          <div style={{ width: "15vw" }} className="form-floating mb-3 m-auto">
             <input id="username" className="form-control" placeholder="Username" />
             <label className="text-secondary" htmlFor="floatingInput">
               Username
             </label>
           </div>
-          <div className="form-floating mb-3">
+          <div style={{ width: "15vw" }} className="form-floating mb-2 m-auto">
             <input id="password" className="form-control" placeholder="Password" />
             <label className="text-secondary" htmlFor="floatingInput">
               Password
             </label>
           </div>
-          <p className="text-danger">{errMessage}</p>
-          <button type="button" id="login" className="btn btn-primary">
-            Log in
-          </button>
-          <Link className="mx-3" to="/signup">
-            Sign up
-          </Link>
+          <p className="text-danger text-center">{errMessage}</p>
+          <div className="m-auto text-center mb-3">
+            <button style={{ width: "15vw" }} type="button" id="login" className="btn btn-primary">
+              Log in
+            </button>
+          </div>
+          <div className="m-auto text-center">
+            <button style={{ width: "12vw" }} onClick={() => handleSignup()} type="button" id="login" className=" btn btn-success">
+              Create account
+            </button>
+          </div>
         </form>
       </div>
     </>

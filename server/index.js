@@ -22,6 +22,7 @@ app.use(express.static("dist"))
 // Routes
 app.post("/signup", routes.signup)
 app.post("/login", routes.login)
+app.post("/logout", routes.logout)
 app.post("/changeEmail", routes.change_email)
 app.post("/changePassword", routes.change_password)
 app.get("/getUser", routes.get_user)
@@ -34,6 +35,7 @@ app.post("/getPosts", routes.get_posts_for_user)
 app.post("/addFriend", routes.add_friend)
 app.post("/removeFriend", routes.remove_friend)
 app.post("/updateTimestamp", routes.update_timestamp)
+app.post("/getTimestamp", routes.get_timestamp)
 
 // set favicon
 app.get("/favicon.ico", (req, res) => {
