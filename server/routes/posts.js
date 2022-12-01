@@ -10,15 +10,14 @@ const getPostsForUser = function (req, res) {
     if (err || data === "user has no posts") {
       res.send("no posts")
     } else {
-      console.log(data)
       res.send(data)
     }
   })
 }
 
 const addPost = function (req, res) {
-  const { username, type, wall, parent_name, parent_id, content } = req.body
-  db.add_post(username, type, wall, parent_name, parent_id, content, function (err, data) {
+  const { username, author, type, parent_name, parent_id, content } = req.body
+  db.add_post(username, author, type, parent_name, parent_id, content, function (err, data) {
     if (err) {
       res.send(err)
     } else {

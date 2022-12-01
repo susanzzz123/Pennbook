@@ -10,19 +10,18 @@ const async = require("async")
 Table: posts
 ---------------------*/
 
-const addPost = (username, type, wall, parent_name, parent_id, content, callback) => {
+const addPost = (username, author, type, parent_name, parent_id, content, callback) => {
   const post_id = `${Date.now()}`
-  console.log(typeof post_id)
   var params = {
     Item: {
       username: {
         S: username,
       },
+      author: {
+        S: author,
+      },
       post_id: {
         N: post_id,
-      },
-      wall: {
-        S: wall,
       },
       type: {
         S: type,
@@ -44,46 +43,47 @@ const addPost = (username, type, wall, parent_name, parent_id, content, callback
     if (err) {
       callback(err)
     } else {
-      callback(null, "Success")
+      //a post on another person's wall should also show up on their list of posts
+      if (username !== author) {
+        var params1 = {
+          Item: {
+            username: {
+              S: author,
+            },
+            author: {
+              S: author,
+            },
+            post_id: {
+              N: post_id,
+            },
+            type: {
+              S: type,
+            },
+            parent_name: {
+              S: parent_name,
+            },
+            parent_id: {
+              N: parent_id
+            },
+            content: {
+              S: content,
+            }
+          },
+          TableName: "posts",
+          ReturnValues: "NONE",
+        }
+        db.putItem(params1, function (err, data) {
+          if (err) {
+            callback(err)
+          } else {
+            callback(null, "Successfully added to both walls")
+          }
+        })
+      } else {
+        callback(null, "Success")
+      }
     }
   })
-  //a post on another person's wall should also show up on their list of posts
-  if (username !== wall) {
-    var params1 = {
-      Item: {
-        username: {
-          S: wall,
-        },
-        post_id: {
-          N: post_id,
-        },
-        wall: {
-          S: wall,
-        },
-        type: {
-          S: type,
-        },
-        parent_name: {
-          S: parent_name,
-        },
-        parent_id: {
-          N: parent_id
-        },
-        content: {
-          S: content,
-        }
-      },
-      TableName: "posts",
-      ReturnValues: "NONE",
-    }
-    db.putItem(params1, function (err, data) {
-      if (err) {
-        callback(err)
-      } else {
-        callback(null, "Successfully added to both walls")
-      }
-    })
-  }
 }
 
 const getPostsForUser = (username, callback) => {
@@ -95,6 +95,7 @@ const getPostsForUser = (username, callback) => {
       },
     },
     TableName: "posts",
+    ScanIndexForward: false,
   }
 
   db.query(params, function(err, data) {

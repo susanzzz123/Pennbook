@@ -10,6 +10,7 @@ const Home = () => {
   const [friends, setFriends] = useState([])
   const curr_date = Date.now()
   //posts are sorted in ascending order
+  const [posts, setPosts] = useState([])
 
   useEffect(() => {
     $.get("http://localhost:3000/getUser", (data, status) => {
@@ -32,6 +33,19 @@ const Home = () => {
           Promise.all(promises).then((values) => {
             setFriends(friend_list)
           })
+
+          data.forEach((friend) => {
+            if (friend.status.N == 1) {
+              $.post("http://localhost:3000/getPosts", { username: friend.receiver.S }, (data, status) => {
+                if (data !== "no posts") {
+                  setPosts(posts.concat(data))
+                } else {
+                  //error message for display
+                  console.log("error while retrieving posts")
+                }
+              })
+            }
+          })
         }
       })
     })
@@ -44,9 +58,11 @@ const Home = () => {
         <div className="row">
           <div className="col-3">Menu</div>
           <div className="col-7 text-center">
-            Welcome <div>{user}</div>
-            <div className="d-flex justify-content-center">
-              <Post></Post>
+            Welcome {user}
+            <div className="col-8 justify-content-center">
+              {posts.map((post) => (
+                <Post user={post.author.S} wall={post.username.S} content={post.content.S} type={post.type.S} date={parseInt(post.post_id.N)}></Post>
+              ))}
             </div>
           </div>
           <div className="col-2">

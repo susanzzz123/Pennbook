@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import Edit from "./icons/Edit"
 import $ from "jquery"
 import Header from "./Header"
-import { Post } from "./Post"
+import Post from "./Post"
 import AddFriend from "./icons/AddFriend"
 import AddedFriend from "./icons/AddedFriend"
 
@@ -10,7 +10,7 @@ const Wall = () => {
   const [visitingUser, setVisitingUser] = useState("")
   const [data, setData] = useState({})
   const [isFriend, setIsFriend] = useState()
-  const [toggles, setToggles] = useState([false, false, false])
+  const [toggles, setToggles] = useState([false, false, false, false])
   const [type, setType] = useState("Choose a post type")
   const [content, setContent] = useState("")
   const [allPosts, setAllPosts] = useState([])
@@ -28,7 +28,7 @@ const Wall = () => {
   }, [])
 
   useEffect(() => {
-    $.post("http://localhost:3000/getPosts", { username: visitingUser }, (data, status) => {
+    $.post("http://localhost:3000/getPosts", { username: user }, (data, status) => {
       if (data !== "no posts") {
         setAllPosts(data)
       } else {
@@ -78,6 +78,12 @@ const Wall = () => {
     })
   }, [toggles[2]])
 
+  useEffect(() => {
+    $("#change-interests").on("click", () => {
+      changeItem(3)
+    })
+  }, [toggles[3]])
+
   const changeToggles = (event) => {
     const curr = [...toggles]
     curr[event] = !curr[event]
@@ -119,6 +125,9 @@ const Wall = () => {
       case 2:
         newItem = "password"
         break
+      case 2:
+        newItem = "interests"
+        break
       default:
         newItem = ""
         break
@@ -136,6 +145,11 @@ const Wall = () => {
             case 0:
               newData.affiliation = itemValue
               changeToggles(0)
+              $.post("http://localhost:3000/addPost", { username: data.username, author: data.username, type: "Status Update", parent_name: '', parent_id: "-1", content: `${data.username} updated their affiliation to ${itemValue}` }, (data, status) => {
+                if (data !== "Success") {
+                  console.log(data)
+                }
+              })
               break
             case 1:
               newData.email = itemValue
@@ -163,7 +177,7 @@ const Wall = () => {
   }
 
   const handlePost = async () => {
-    $.post("http://localhost:3000/addPost", { username: visitingUser, type, wall: user, parent_name: "", parent_id: "-1", content }, (data, status) => {
+    $.post("http://localhost:3000/addPost", { username: data.username, author: visitingUser, type, parent_name: "", parent_id: "-1", content }, (data, status) => {
       if (data !== "Success") {
         console.log(data)
       }
@@ -183,30 +197,30 @@ const Wall = () => {
                   Make a post!
                 </label>
                 <textarea className="form-control w-75 m-auto" onChange={(e) => setContent(e.target.value)}></textarea>
-                <div class="dropdown mt-2">
-                  <a class="btn btn-secondary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <div className="dropdown mt-2">
+                  <a className="btn btn-secondary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     {type}
                   </a>
-                  <ul class="dropdown-menu">
+                  <ul className="dropdown-menu">
                     <li>
-                      <a class="dropdown-item" onClick={() => handleSelectPost()}>
+                      <a className="dropdown-item" onClick={() => handleSelectPost()}>
                         Post
                       </a>
                     </li>
                     <li>
-                      <a class="dropdown-item" onClick={() => handleSelectStatus()}>
+                      <a className="dropdown-item" onClick={() => handleSelectStatus()}>
                         Status Update
                       </a>
                     </li>
                   </ul>
                 </div>
-                <button type="button" class="btn btn-primary mt-2" onClick={() => handlePost()}>
+                <button type="button" className="btn btn-primary mt-2" onClick={() => handlePost()}>
                   Post
                 </button>
               </div>
               <div className="col-8">
                 {allPosts.map((post) => (
-                  <Post user={post.username.S} content={post.content.S} type={post.type.S} date={parseInt(post.post_id.N)}></Post>
+                  <Post user={post.author.S} wall={post.username.S} content={post.content.S} type={post.type.S} date={parseInt(post.post_id.N)}></Post>
                 ))}
               </div>
             </div>
@@ -304,6 +318,21 @@ const Wall = () => {
                   </>
                 )
               })}
+              {visitingUser === data.username && (
+                <span style={{ cursor: "pointer" }} onClick={() => changeToggles(3)}>
+                  <Edit></Edit>
+                </span>
+              )}
+              {toggles[3] && (
+              <>
+                <div class="input-group mb-3">
+                  <input id="interests-input" type="text" class="form-control" placeholder="Add Interest:" />
+                  <button type="button" id="change-interests" class="input-group-text">
+                    Confirm
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
