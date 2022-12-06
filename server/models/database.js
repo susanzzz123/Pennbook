@@ -386,7 +386,7 @@ var addInterest = (username, interest, callback) => {
   }
 
   db.query(params, function (err, data) {
-    if (err || data.Items.length !== 0) {
+    if (err || data.Items.length === 0) {
       callback(err, "user doesn't exist")
     } else {
       //add interest to list
@@ -431,13 +431,14 @@ var removeInterest = (username, interest, callback) => {
   }
 
   db.query(params, function (err, data) {
-    if (err || data.Items.length !== 0) {
+    if (err || data.Items.length === 0) {
       callback(err, "user doesn't exist")
     } else {
       //add interest to list
       const currInterests = data.Items[0].interests.SS
       const idx = currInterests.indexOf(interest)
-      currInterests = currInterests.splice(idx, 1)
+      currInterests.splice(idx, 1)
+      console.log(currInterests)
       const paramsAddInterest = {
         TableName: "users",
         Key: {
@@ -445,7 +446,6 @@ var removeInterest = (username, interest, callback) => {
             S: username,
           },
         },
-        ProjectionExpression: "#interests",
         ExpressionAttributeNames: { "#interests": "interests" },
         UpdateExpression: "set #interests = :val",
         ExpressionAttributeValues: {

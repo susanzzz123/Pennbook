@@ -36,6 +36,10 @@ app.post("/addFriend", routes.add_friend)
 app.post("/removeFriend", routes.remove_friend)
 app.post("/updateTimestamp", routes.update_timestamp)
 app.post("/getTimestamp", routes.get_timestamp)
+app.post("/addInterest", routes.add_interest)
+app.post("/deleteInterest", routes.delete_interest)
+app.post("/addComment", routes.add_comment)
+app.post("/getComments", routes.get_comments_for_post)
 
 // set favicon
 app.get("/favicon.ico", (req, res) => {

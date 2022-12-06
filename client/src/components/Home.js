@@ -61,7 +61,14 @@ const Home = () => {
             Welcome {user}
             <div className="col-8 justify-content-center">
               {posts.map((post) => (
-                <Post user={post.author.S} wall={post.username.S} content={post.content.S} type={post.type.S} date={parseInt(post.post_id.N)}></Post>
+                <Post
+                  user={post.author.S}
+                  wall={post.username.S}
+                  content={post.content.S}
+                  type={post.type.S}
+                  date={parseInt(post.post_id.N)}
+                  visitingUser={user}>           
+                </Post>
               ))}
             </div>
           </div>
