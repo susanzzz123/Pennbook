@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react"
+import $ from "jquery"
 import Comment from "./Comment"
 
 const Post = ({ user, wall, content, type, date, visitingUser }) => {
