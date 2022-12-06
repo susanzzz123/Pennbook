@@ -4,6 +4,7 @@ Routes for account registration
 
 const db = require("../models/database")
 const CryptoJS = require("crypto-js")
+const timestamp = require("./timestamp")
 
 const login = async (req, res) => {
   const { username, password } = req.body
@@ -18,6 +19,7 @@ const login = async (req, res) => {
       if (password === hash) {
         req.session.user = username
         req.session.save()
+        timestamp.internalUpdateTimestamp(username)
         res.send("works")
       } else {
         res.send("err2")
@@ -37,6 +39,7 @@ var signup = function (req, res) {
       if (data === "Success") {
         req.session.user = username
         req.session.save()
+        timestamp.internalUpdateTimestamp(username)
         res.send("works")
       } else {
         res.send("err2")
@@ -45,9 +48,19 @@ var signup = function (req, res) {
   })
 }
 
+var logout = function (req, res) {
+  if (req.session.user === "undefined") {
+    res.send("no user to logout")
+  } else {
+    req.session.destroy()
+    res.send("success")
+  }
+}
+
 const registration_routes = {
   signup,
   login,
+  logout,
 }
 
 module.exports = registration_routes

@@ -4,6 +4,7 @@ Routes for account changes
 
 const db = require("../models/database")
 const CryptoJS = require("crypto-js")
+const timestamp = require("./timestamp")
 
 const changeEmail = async (req, res) => {
   const { username, email } = req.body
@@ -14,6 +15,7 @@ const changeEmail = async (req, res) => {
       if (err || data === "unable to update email") {
         res.send("unable to update email")
       } else {
+        timestamp.internalUpdateTimestamp(username)
         res.send(data)
       }
     })
@@ -31,6 +33,7 @@ const changePassword = async (req, res) => {
       if (err || data === "unable to update password") {
         res.send("unable to update password")
       } else {
+        timestamp.internalUpdateTimestamp(username)
         res.send(data)
       }
     })
@@ -46,6 +49,7 @@ const changeAffiliation = async (req, res) => {
       if (err || data === "unable to update affiliation") {
         res.send("unable to update affiliation")
       } else {
+        timestamp.internalUpdateTimestamp(username)
         res.send(data)
       }
     })
@@ -63,6 +67,7 @@ const addInterest = async (req, res) => {
       if (err) {
         res.send("failed to add interest")
       } else {
+        timestamp.internalUpdateTimestamp(username)
         res.send(data)
       }
     })
@@ -79,6 +84,7 @@ const deleteInterest = async (req, res) => {
       if (err) {
         res.send("failed to remove interest")
       } else {
+        timestamp.internalUpdateTimestamp(username)
         res.send(data)
       }
     })

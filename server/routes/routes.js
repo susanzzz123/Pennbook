@@ -11,7 +11,9 @@ const timestamp_routes = require("./timestamp")
 // Routes object
 const routes = {
   update_timestamp: timestamp_routes.update_timestamp,
+  get_timestamp: timestamp_routes.get_timestamp,
   login: registration_routes.login,
+  logout: registration_routes.logout,
   signup: registration_routes.signup,
   change_email: account_routes.change_email,
   change_password: account_routes.change_password,
