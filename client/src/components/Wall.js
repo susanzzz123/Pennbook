@@ -14,6 +14,7 @@ const Wall = () => {
   const [type, setType] = useState("Choose a post type")
   const [content, setContent] = useState("")
   const [allPosts, setAllPosts] = useState([])
+  const [postMsg, setPostMsg] = useState(false)
 
   const params = new URLSearchParams(window.location.search)
   const user = params.get("user")
@@ -145,9 +146,25 @@ const Wall = () => {
             case 0:
               newData.affiliation = itemValue
               changeToggles(0)
-              $.post("http://localhost:3000/addPost", { username: data.username, author: data.username, type: "Status Update", parent_name: '', parent_id: "-1", content: `${data.username} updated their affiliation to ${itemValue}` }, (data, status) => {
+              const now = `${Date.now()}`
+              const name = data.username
+              $.post("http://localhost:3000/addPost", { username: name, wall: name, post_id: now, author: name, type: "Status Update", parent_name: '', parent_id: "-1", content: `${name} updated their affiliation to ${itemValue}` }, (data, status) => {
                 if (data !== "Success") {
                   console.log(data)
+                } else {
+                  const postObj = {
+                    author: {S: name},
+                    content: {S: `${name} updated their affiliation to ${itemValue}`},
+                    parent_id: {N: '-1'},
+                    parent_name: {S: ''},
+                    post_id: {N: now},
+                    type: {S: "Status Update"},
+                    username: {S: name},
+                    wall: {S: name}
+                  }
+                  let newAllPosts = [postObj]
+                  newAllPosts = newAllPosts.concat(allPosts)
+                  setAllPosts([... newAllPosts])
                 }
               })
               break
@@ -177,9 +194,27 @@ const Wall = () => {
   }
 
   const handlePost = async () => {
-    $.post("http://localhost:3000/addPost", { username: data.username, author: visitingUser, type, parent_name: "", parent_id: "-1", content }, (data, status) => {
-      if (data !== "Success") {
+    const name = data.username
+    const now = `${Date.now()}`
+    $.post("http://localhost:3000/addPost", { username: name, author: visitingUser, post_id: now, type, parent_name: "", parent_id: "-1", content }, (data, status) => {
+      if (data === "Post type is required") {
+        setPostMsg(true)
+      } else if (data !== "Success") {
         console.log(data)
+      } else {
+        const postObj = {
+          author: {S: visitingUser},
+          content: {S: content},
+          parent_id: {N: '-1'},
+          parent_name: {S: ''},
+          post_id: {N: now},
+          type: {S: type},
+          username: {S: name},
+          wall: {S: name}
+        }
+        let newAllPosts = [postObj]
+        newAllPosts = newAllPosts.concat(allPosts)
+        setAllPosts([... newAllPosts])
       }
     })
   }
@@ -214,13 +249,16 @@ const Wall = () => {
                     </li>
                   </ul>
                 </div>
+                {
+                  postMsg && <div className="text-danger">Post type is required</div>
+                }
                 <button type="button" className="btn btn-primary mt-2" onClick={() => handlePost()}>
                   Post
                 </button>
               </div>
               <div className="col-8">
                 {allPosts.map((post) => (
-                  <Post user={post.author.S} wall={post.username.S} content={post.content.S} type={post.type.S} date={parseInt(post.post_id.N)}></Post>
+                  <Post user={post.author.S} wall={post.wall.S} content={post.content.S} type={post.type.S} date={parseInt(post.post_id.N)}></Post>
                 ))}
               </div>
             </div>
