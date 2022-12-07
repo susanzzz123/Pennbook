@@ -6,10 +6,14 @@ const friend_routes = require("./friends")
 const registration_routes = require("./registration")
 const utility_routes = require("./utility")
 const posts_routes = require("./posts")
+const timestamp_routes = require("./timestamp")
 
 // Routes object
 const routes = {
+  update_timestamp: timestamp_routes.update_timestamp,
+  get_timestamp: timestamp_routes.get_timestamp,
   login: registration_routes.login,
+  logout: registration_routes.logout,
   signup: registration_routes.signup,
   change_email: account_routes.change_email,
   change_password: account_routes.change_password,
@@ -24,7 +28,7 @@ const routes = {
   add_friend: friend_routes.add_friend,
   request_friend: friend_routes.request_friend,
   add_post: posts_routes.add_post,
-  get_posts_for_user: posts_routes.get_posts_for_user
+  get_posts_for_user: posts_routes.get_posts_for_user,
 }
 
 module.exports = routes

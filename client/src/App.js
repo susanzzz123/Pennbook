@@ -3,8 +3,9 @@ import Landing from "./components/Landing";
 import Error from "./components/Error";
 import Home from "./components/Home";
 import Wall from "./components/Wall";
+import Visualizer from "./components/Visualizer";
 import Signup from "./components/Signup";
-import Chat from "./components/Chat";
+import "./App.css";
 
 export function App() {
 	return (
@@ -14,7 +15,7 @@ export function App() {
 				<Route path="/home" element={<Home></Home>}></Route>
 				<Route path="/wall" element={<Wall></Wall>}></Route>
 				<Route path="/signup" element={<Signup></Signup>}></Route>
-				<Route path="/chat" element={<Chat></Chat>}></Route>
+				<Route path="/visualizer" element={<Visualizer></Visualizer>}></Route>
 				<Route path="*" element={<Error></Error>}></Route>
 			</Routes>
 		</>
