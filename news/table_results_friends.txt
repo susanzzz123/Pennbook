@@ -1,8 +1,8 @@
-jren2 jren
-jren2 test1
-jren2 test2
-test2 test1
-jren expand
-jren jren2
-jren test1
-test1 test2
+{"receiver":"jren","sender":"jren2"}
+{"receiver":"test1","sender":"jren2"}
+{"receiver":"test2","sender":"jren2"}
+{"receiver":"test1","sender":"test2"}
+{"receiver":"expand","sender":"jren"}
+{"receiver":"jren2","sender":"jren"}
+{"receiver":"test1","sender":"jren"}
+{"receiver":"test2","sender":"test1"}

@@ -1,100 +1,100 @@
-99 POLITICS
-63 POLITICS
-92 POLITICS
-64 POLITICS
-36 POLITICS
-49 ENTERTAINMENT
-33 POLITICS
-22 WEIRD NEWS
-18 POLITICS
-50 ENTERTAINMENT
-16 POLITICS
-40 CRIME
-90 POLITICS
-2 ENTERTAINMENT
-13 POLITICS
-54 ENTERTAINMENT
-79 WOMEN
-8 ENTERTAINMENT
-66 IMPACT
-48 ENTERTAINMENT
-9 ENTERTAINMENT
-59 POLITICS
-1 ENTERTAINMENT
-31 BLACK VOICES
-80 SPORTS
-6 ENTERTAINMENT
-62 POLITICS
-87 BUSINESS
-75 WORLD NEWS
-76 WORLD NEWS
-97 POLITICS
-84 ENTERTAINMENT
-60 POLITICS
-61 WEIRD NEWS
-38 COMEDY
-28 BLACK VOICES
-89 BLACK VOICES
-94 POLITICS
-98 POLITICS
-53 ENTERTAINMENT
-82 ENTERTAINMENT
-30 POLITICS
-35 WOMEN
-52 ENTERTAINMENT
-24 WORLD NEWS
-77 POLITICS
-91 POLITICS
-81 ENTERTAINMENT
-88 BLACK VOICES
-27 BLACK VOICES
-96 POLITICS
-0 CRIME
-71 QUEER VOICES
-5 ENTERTAINMENT
-4 ENTERTAINMENT
-44 ENTERTAINMENT
-95 POLITICS
-32 CRIME
-41 COMEDY
-51 ENTERTAINMENT
-78 COMEDY
-83 ENTERTAINMENT
-68 WOMEN
-65 POLITICS
-34 ENTERTAINMENT
-23 WORLD NEWS
-58 POLITICS
-46 ENTERTAINMENT
-19 POLITICS
-26 WORLD NEWS
-55 ENTERTAINMENT
-7 ENTERTAINMENT
-56 ENTERTAINMENT
-11 WORLD NEWS
-3 ENTERTAINMENT
-70 QUEER VOICES
-85 COMEDY
-69 QUEER VOICES
-20 WEIRD NEWS
-39 COMEDY
-45 ENTERTAINMENT
-74 WORLD NEWS
-37 COMEDY
-93 POLITICS
-29 BLACK VOICES
-86 COMEDY
-21 ENTERTAINMENT
-25 WORLD NEWS
-12 IMPACT
-17 POLITICS
-67 WOMEN
-10 ENTERTAINMENT
-57 WORLD NEWS
-47 ENTERTAINMENT
-15 POLITICS
-42 CRIME
-43 ENTERTAINMENT
-14 POLITICS
-72 WEIRD NEWS
-73 WORLD NEWS
+{"category":"POLITICS","news_id":"99"}
+{"category":"POLITICS","news_id":"63"}
+{"category":"POLITICS","news_id":"92"}
+{"category":"POLITICS","news_id":"64"}
+{"category":"POLITICS","news_id":"36"}
+{"category":"ENTERTAINMENT","news_id":"49"}
+{"category":"POLITICS","news_id":"33"}
+{"category":"WEIRD NEWS","news_id":"22"}
+{"category":"POLITICS","news_id":"18"}
+{"category":"ENTERTAINMENT","news_id":"50"}
+{"category":"POLITICS","news_id":"16"}
+{"category":"CRIME","news_id":"40"}
+{"category":"POLITICS","news_id":"90"}
+{"category":"ENTERTAINMENT","news_id":"2"}
+{"category":"POLITICS","news_id":"13"}
+{"category":"ENTERTAINMENT","news_id":"54"}
+{"category":"WOMEN","news_id":"79"}
+{"category":"ENTERTAINMENT","news_id":"8"}
+{"category":"IMPACT","news_id":"66"}
+{"category":"ENTERTAINMENT","news_id":"48"}
+{"category":"ENTERTAINMENT","news_id":"9"}
+{"category":"POLITICS","news_id":"59"}
+{"category":"ENTERTAINMENT","news_id":"1"}
+{"category":"BLACK VOICES","news_id":"31"}
+{"category":"SPORTS","news_id":"80"}
+{"category":"ENTERTAINMENT","news_id":"6"}
+{"category":"POLITICS","news_id":"62"}
+{"category":"BUSINESS","news_id":"87"}
+{"category":"WORLD NEWS","news_id":"75"}
+{"category":"WORLD NEWS","news_id":"76"}
+{"category":"POLITICS","news_id":"97"}
+{"category":"ENTERTAINMENT","news_id":"84"}
+{"category":"POLITICS","news_id":"60"}
+{"category":"WEIRD NEWS","news_id":"61"}
+{"category":"COMEDY","news_id":"38"}
+{"category":"BLACK VOICES","news_id":"28"}
+{"category":"BLACK VOICES","news_id":"89"}
+{"category":"POLITICS","news_id":"94"}
+{"category":"POLITICS","news_id":"98"}
+{"category":"ENTERTAINMENT","news_id":"53"}
+{"category":"ENTERTAINMENT","news_id":"82"}
+{"category":"POLITICS","news_id":"30"}
+{"category":"WOMEN","news_id":"35"}
+{"category":"ENTERTAINMENT","news_id":"52"}
+{"category":"WORLD NEWS","news_id":"24"}
+{"category":"POLITICS","news_id":"77"}
+{"category":"POLITICS","news_id":"91"}
+{"category":"ENTERTAINMENT","news_id":"81"}
+{"category":"BLACK VOICES","news_id":"88"}
+{"category":"BLACK VOICES","news_id":"27"}
+{"category":"POLITICS","news_id":"96"}
+{"category":"CRIME","news_id":"0"}
+{"category":"QUEER VOICES","news_id":"71"}
+{"category":"ENTERTAINMENT","news_id":"5"}
+{"category":"ENTERTAINMENT","news_id":"4"}
+{"category":"ENTERTAINMENT","news_id":"44"}
+{"category":"POLITICS","news_id":"95"}
+{"category":"CRIME","news_id":"32"}
+{"category":"COMEDY","news_id":"41"}
+{"category":"ENTERTAINMENT","news_id":"51"}
+{"category":"COMEDY","news_id":"78"}
+{"category":"ENTERTAINMENT","news_id":"83"}
+{"category":"WOMEN","news_id":"68"}
+{"category":"POLITICS","news_id":"65"}
+{"category":"ENTERTAINMENT","news_id":"34"}
+{"category":"WORLD NEWS","news_id":"23"}
+{"category":"POLITICS","news_id":"58"}
+{"category":"ENTERTAINMENT","news_id":"46"}
+{"category":"POLITICS","news_id":"19"}
+{"category":"WORLD NEWS","news_id":"26"}
+{"category":"ENTERTAINMENT","news_id":"55"}
+{"category":"ENTERTAINMENT","news_id":"7"}
+{"category":"ENTERTAINMENT","news_id":"56"}
+{"category":"WORLD NEWS","news_id":"11"}
+{"category":"ENTERTAINMENT","news_id":"3"}
+{"category":"QUEER VOICES","news_id":"70"}
+{"category":"COMEDY","news_id":"85"}
+{"category":"QUEER VOICES","news_id":"69"}
+{"category":"WEIRD NEWS","news_id":"20"}
+{"category":"COMEDY","news_id":"39"}
+{"category":"ENTERTAINMENT","news_id":"45"}
+{"category":"WORLD NEWS","news_id":"74"}
+{"category":"COMEDY","news_id":"37"}
+{"category":"POLITICS","news_id":"93"}
+{"category":"BLACK VOICES","news_id":"29"}
+{"category":"COMEDY","news_id":"86"}
+{"category":"ENTERTAINMENT","news_id":"21"}
+{"category":"WORLD NEWS","news_id":"25"}
+{"category":"IMPACT","news_id":"12"}
+{"category":"POLITICS","news_id":"17"}
+{"category":"WOMEN","news_id":"67"}
+{"category":"ENTERTAINMENT","news_id":"10"}
+{"category":"WORLD NEWS","news_id":"57"}
+{"category":"ENTERTAINMENT","news_id":"47"}
+{"category":"POLITICS","news_id":"15"}
+{"category":"CRIME","news_id":"42"}
+{"category":"ENTERTAINMENT","news_id":"43"}
+{"category":"POLITICS","news_id":"14"}
+{"category":"WEIRD NEWS","news_id":"72"}
+{"category":"WORLD NEWS","news_id":"73"}
