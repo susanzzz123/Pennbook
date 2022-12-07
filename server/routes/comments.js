@@ -16,14 +16,18 @@ const getCommentsForPost = function(req, res) {
 }
 
 const addComment = function(req, res) {
-  const { post_identifier, content, date, author } = req.body
-  db.add_comment(post_identifier, content, date, author, function(err, data) {
+  const { post_identifier, comment_id, content, date, author } = req.body
+  db.add_comment(post_identifier, comment_id, content, date, author, function(err, data) {
     if (err) {
       res.send(err)
     } else {
       res.send("Success")
     }
   })
+}
+
+const deleteComment = function(req, res) {
+  const { post_identifier, comment_id } = req.body
 }
 
 const comment_routes = {

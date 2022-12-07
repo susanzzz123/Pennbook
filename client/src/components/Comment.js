@@ -1,6 +1,6 @@
 import React from 'react'
 
-const Comment = ({ author, date, content }) => {
+const Comment = ({ author, comment_id, date, content }) => {
   const currDate = new Date(date).toString()
   return (
     <div className="card mb-4 shadow-sm" style={{ width: "20rem" }}>

@@ -5,7 +5,6 @@ const AWS = require("aws-sdk")
 AWS.config.update({ region: "us-east-1" })
 const db = new AWS.DynamoDB()
 const async = require("async")
-const { v4: uuidv4 } = require('uuid');
 
 /* -------------------
 Tables: posts, comments
@@ -111,8 +110,7 @@ const deletePost = (username, post_id) => {
 }
 
 /* comments */
-const addComment = (post_identifier, content, date, author, callback) => {
-  const comment_id = uuidv4();
+const addComment = (post_identifier, comment_id, content, date, author, callback) => {
   var params = {
     Item: {
       post_identifier: {

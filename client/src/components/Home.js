@@ -14,7 +14,8 @@ const Home = () => {
 
   useEffect(() => {
     $.get("http://localhost:3000/getUser", (data, status) => {
-      setUser(data)
+      const username = data
+      setUser(username)
       $.post("http://localhost:3000/getFriends", { username: data }, (data, status) => {
         if (data === "user has no friends") {
           setFriends([])
@@ -33,23 +34,44 @@ const Home = () => {
           Promise.all(promises).then((values) => {
             setFriends(friend_list)
           })
-
+          
+          const postPromises = []
+          let postList = []
+          postPromises.push(
+            $.post("http://localhost:3000/getPosts", { username }, (dataResponse, status) => {
+            if (dataResponse !== "no posts") {
+              const newList = [...dataResponse]
+              postList = postList.concat(newList)
+              
+            }
+          })
+          )
+          
           data.forEach((friend) => {
             if (friend.status.N == 1) {
-              $.post("http://localhost:3000/getPosts", { username: friend.receiver.S }, (data, status) => {
-                if (data !== "no posts") {
-                  setPosts(posts.concat(data))
-                } else {
-                  //error message for display
-                  console.log("error while retrieving posts")
-                }
-              })
+              postPromises.push(
+                $.post("http://localhost:3000/getPosts", { username: friend.receiver.S }, (dataResponse, status) => {
+                  if (dataResponse !== "no posts") {
+                    const newList = [...dataResponse]
+                    console.log(newList)
+                    postList = postList.concat(newList)
+                  }
+                })
+              )
             }
+          })
+          Promise.all(postPromises).then((values) => {
+            postList.sort((a, b) => a.post_id.N > b.post_id.N ? -1 : 1)
+            setPosts([...postList])
           })
         }
       })
     })
   }, [])
+
+  useEffect(() => {
+    
+  })
 
   return (
     <>

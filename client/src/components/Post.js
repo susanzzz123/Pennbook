@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react"
 import $ from "jquery"
 import Comment from "./Comment"
+import { v4 as uuidv4 } from 'uuid';
 
 const Post = ({ user, wall, content, type, date, visitingUser }) => {
   const [commentContent, setCommentContent] = useState('')
@@ -21,12 +22,14 @@ const Post = ({ user, wall, content, type, date, visitingUser }) => {
 
   const addComment = async () => {
     const now = `${Date.now()}`
-    $.post("http://localhost:3000/addComment", { author: visitingUser, post_identifier, date: now, content: commentContent }, (data, status) => {
+    const comment_id = uuidv4()
+    $.post("http://localhost:3000/addComment", { author: visitingUser, comment_id, post_identifier, date: now, content: commentContent }, (data, status) => {
       if (data !== "Success") {
         alert(`Error while commenting`)
       } else {
         const commentObj = {
           author: {S: visitingUser},
+          comment_id: {S: comment_id},
           content: {S: commentContent},
           date: {N: now}
         }
