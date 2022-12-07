@@ -21,6 +21,7 @@ import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.SparkSession;
+import org.apache.spark.sql.catalyst.parser.SqlBaseParser.TableNameContext;
 
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Item;
@@ -159,11 +160,11 @@ public class ComputeRanks {
 
 
 	public void getTableEntries(DynamoDB db, String tableName, String projection) throws FileNotFoundException, IOException {
-		File file = new File(tableName + ".txt");
-		FileWriter fileWriter = new FileWriter(file, true);
+		File file = new File("table_results_" + tableName + ".txt");
+		FileWriter fileWriter = new FileWriter(file, false);
 		PrintWriter writer = new PrintWriter(fileWriter);
 
-		Table table = db.getTable("news");
+		Table table = db.getTable(tableName);
 
 		ItemCollection<ScanOutcome> items = table.scan( 
 			null,                                  			// FilterExpression 
@@ -178,7 +179,7 @@ public class ComputeRanks {
 			
 		while (iterator.hasNext()) { 
 			Item item = iterator.next();
-			String[] results = Arrays.stream(attrs).map(attr -> (String) item.getString(attr)).toArray(String[]::new);
+			String[] results = Arrays.stream(attrs).map(attr -> item.getString(attr).toString()).toArray(String[]::new);
 			
 			String line = String.join(" ", results);
 			writer.println(line);
