@@ -3,19 +3,18 @@ import $ from "jquery"
 import Comment from "./Comment"
 
 const Post = ({ user, wall, content, type, date, visitingUser }) => {
-  const [clicked, setClicked] = useState(false)
   const [commentContent, setCommentContent] = useState('')
   const [comments, setComments] = useState([])
 
   const currDate = new Date(date).toString()
-  let post_identifier = `${wall}#${date}`
+  let post_identifier = `${user}#${wall}#${date}`
 
   useEffect(() => {
     $.post("http://localhost:3000/getComments", { post_identifier }, (data, status) => {
       if (data !== "no comments") {
         setComments(data)
       } else {
-        console.log("error while retrieving comments")
+        console.log(data)
       }
     })
   }, [post_identifier])
@@ -24,7 +23,7 @@ const Post = ({ user, wall, content, type, date, visitingUser }) => {
     const now = `${Date.now()}`
     $.post("http://localhost:3000/addComment", { author: visitingUser, post_identifier, date: now, content: commentContent }, (data, status) => {
       if (data !== "Success") {
-        alert(`Error while posting`)
+        alert(`Error while commenting`)
       } else {
         const commentObj = {
           author: {S: visitingUser},
@@ -33,7 +32,8 @@ const Post = ({ user, wall, content, type, date, visitingUser }) => {
         }
         let newComments = [...comments]
         newComments.push(commentObj)
-        setComments([... commentObj])
+        console.log(newComments)
+        setComments([...newComments])
       }
     })
   }
@@ -61,14 +61,21 @@ const Post = ({ user, wall, content, type, date, visitingUser }) => {
         }
       </div>
       {
-        comments.map(comment => {
-          <Comment
-            author={comment.author}
-            date={comment.date}
-            content={comment.content}>
-          </Comment>
-        })
+        comments.length > 0 && type === 'Post' && (
+          <h5 className="mb-2">Comments:</h5>
+        )
       }
+      <div>
+        {
+          comments.map(comment => (
+            <Comment
+              author={comment.author.S}
+              date={parseInt(comment.date.N)}
+              content={comment.content.S}>
+            </Comment>
+          ))
+        }
+      </div>
     </div>
   )
 }

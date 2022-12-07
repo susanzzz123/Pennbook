@@ -113,7 +113,6 @@ const deletePost = (username, post_id) => {
 /* comments */
 const addComment = (post_identifier, content, date, author, callback) => {
   const comment_id = uuidv4();
-
   var params = {
     Item: {
       post_identifier: {
@@ -147,14 +146,14 @@ const addComment = (post_identifier, content, date, author, callback) => {
 const getCommentsForPost = (post_identifier, callback) => {
   var params = {
     KeyConditions: {
-      username: {
+      post_identifier: {
         ComparisonOperator: "EQ",
         AttributeValueList: [{ S: post_identifier }],
       },
     },
     TableName: "comments"
   }
-
+  
   db.query(params, function(err, data) {
     if (err || data.Items.length === 0) {
       callback(err, "post has no comments")

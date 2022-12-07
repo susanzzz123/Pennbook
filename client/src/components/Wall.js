@@ -465,10 +465,12 @@ const Wall = () => {
                 return (
                   <>
                     <span className="p-2 me-2 badge rounded-pill text-bg-secondary">
-                      {elem}&nbsp;
-                      <span style={{ cursor: "pointer" }} onClick={() => deleteInterest(elem)}>
-                        <DeleteButton></DeleteButton>
-                      </span>
+                      {elem}
+                      {visitingUser === data.username && toggles[3] && (
+                        <span style={{ cursor: "pointer" }} onClick={() => deleteInterest(elem)}>
+                          &nbsp;<DeleteButton></DeleteButton>
+                        </span>
+                      )}
                     </span>
                   </>
                 )

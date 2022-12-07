@@ -20,8 +20,6 @@ const addComment = function(req, res) {
   db.add_comment(post_identifier, content, date, author, function(err, data) {
     if (err) {
       res.send(err)
-    } else if (data !== "Success") {
-      res.send(data)
     } else {
       res.send("Success")
     }
