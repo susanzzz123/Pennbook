@@ -291,6 +291,7 @@ const Wall = () => {
     setType("Status Update")
   }
 
+  //***fix frontend add post with comment
   const handlePost = async () => {
     const name = data.username
     const now = `${Date.now()}`
