@@ -2,19 +2,24 @@ import { useState, useEffect } from "react"
 import Edit from "./icons/Edit"
 import $ from "jquery"
 import Header from "./Header"
+import Post from "./Post"
 import AddFriend from "./icons/AddFriend"
 import AddedFriend from "./icons/AddedFriend"
+import DeleteButton from "./icons/DeleteButton"
 
 const Wall = () => {
   const [visitingUser, setVisitingUser] = useState("")
   const [data, setData] = useState({})
   const [isFriend, setIsFriend] = useState()
-  const [toggles, setToggles] = useState([false, false, false])
+  const [toggles, setToggles] = useState([false, false, false, false])
+  const [type, setType] = useState("Post type")
+  const [content, setContent] = useState("")
+  const [allPosts, setAllPosts] = useState([])
+  const [postMsg, setPostMsg] = useState(false)
 
+  const params = new URLSearchParams(window.location.search)
+  const user = params.get("user")
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    const user = params.get("user")
-
     $.post("http://localhost:3000/getWallInformation", { user }, (data, status) => {
       setData(data)
     })
@@ -25,23 +30,24 @@ const Wall = () => {
   }, [])
 
   useEffect(() => {
-    $("#edit-affiliation").on("click", () => {
-      changeToggles(0)
-    })
-    $("#edit-email").on("click", () => {
-      changeToggles(1)
-    })
-    $("#edit-password").on("click", () => {
-      changeToggles(2)
+    $.post("http://localhost:3000/getPosts", { username: user }, (data, status) => {
+      if (data !== "no posts") {
+        setAllPosts(data)
+      } else {
+        //error message for display
+        console.log("error while retrieving posts")
+      }
     })
     if (visitingUser.length !== 0) {
       $.post("http://localhost:3000/getFriends", { username: visitingUser }, (friends_data, status) => {
         let check_friend = false
-        friends_data.forEach((elem) => {
-          if (elem.receiver.S === data.username) {
-            check_friend = true
-          }
-        })
+        if (friends_data !== "user has no friends") {
+          friends_data.forEach((elem) => {
+            if (elem.receiver.S === data.username) {
+              check_friend = true
+            }
+          })
+        }
         setIsFriend(check_friend)
       })
     }
@@ -73,6 +79,12 @@ const Wall = () => {
       changeItem(2)
     })
   }, [toggles[2]])
+
+  useEffect(() => {
+    $("#change-interests").on("click", () => {
+      changeItem(3)
+    })
+  }, [toggles[3]])
 
   const changeToggles = (event) => {
     const curr = [...toggles]
@@ -115,39 +127,202 @@ const Wall = () => {
       case 2:
         newItem = "password"
         break
+      case 3:
+        newItem = "interests"
+        break
       default:
         newItem = ""
         break
     }
     const itemValue = $(`#${newItem}-input`).val()
+    console.log(itemValue)
     newItem = newItem.charAt(0).toUpperCase() + newItem.slice(1)
     if (itemValue.length === 0) {
       alert(`${newItem} must be greater than length 0`)
     } else {
-      $.post(`http://localhost:3000/change${newItem}`, { username: data.username, affiliation: itemValue, email: itemValue, password: itemValue }, (dataResponse, status) => {
-        newItem = newItem.toLowerCase()
-        if (dataResponse === `${newItem} updated successfully`) {
-          const newData = { ...data }
-          switch (item) {
-            case 0:
-              newData.affiliation = itemValue
-              changeToggles(0)
-              break
-            case 1:
-              newData.email = itemValue
-              changeToggles(1)
-              break
-            case 2:
-              newData.password = itemValue
-              changeToggles(2)
-              break
+      if (newItem !== "Interests") {
+        $.post(`http://localhost:3000/change${newItem}`, 
+        {
+          username: data.username,
+          affiliation: itemValue,
+          email: itemValue,
+          password: itemValue 
+        }, (dataResponse, status) => {
+          newItem = newItem.toLowerCase()
+          if (dataResponse === `${newItem} updated successfully`) {
+            const newData = { ...data }
+            switch (item) {
+              case 0:
+                newData.affiliation = itemValue
+                changeToggles(0)
+                const now = `${Date.now()}`
+                const name = data.username
+                $.post("http://localhost:3000/addPost",
+                {
+                  username: name,
+                  wall: name,
+                  post_id: now,
+                  author: name,
+                  type: "Status Update",
+                  content: `${name} updated their affiliation to ${itemValue}`
+                }, (data, status) => {
+                  if (data !== "Success") {
+                    console.log(data)
+                  } else {
+                    const postObj = {
+                      author: {S: name},
+                      content: {S: `${name} updated their affiliation to ${itemValue}`},
+                      post_id: {N: now},
+                      type: {S: "Status Update"},
+                      username: {S: name},
+                      wall: {S: name}
+                    }
+                    let newAllPosts = [postObj]
+                    newAllPosts = newAllPosts.concat(allPosts)
+                    setAllPosts([...newAllPosts])
+                  }
+                })
+                break
+              case 1:
+                newData.email = itemValue
+                changeToggles(1)
+                break
+              case 2:
+                newData.password = itemValue
+                changeToggles(2)
+                break
+            }
+            setData(newData)
+          } else {
+            alert(`Update ${newItem} failed`)
           }
-          setData(newData)
-        } else {
-          alert(`Update ${newItem} failed`)
-        }
-      })
+        })  
+      } else {
+        $.post("http://localhost:3000/addInterest", {username: data.username, newInterest: itemValue}, (dataResponse, status) => {
+          if (dataResponse === "Success") {
+            const newData = { ...data }
+            let newInterest = data.interests
+            newInterest.push(itemValue)
+            newData.interests = [...newInterest]
+            setData(newData)
+            changeToggles(3)
+            const now = `${Date.now()}`
+            const name = data.username
+            $.post("http://localhost:3000/addPost",
+            {
+              username: name,
+              wall: name,
+              post_id: now,
+              author: name,
+              type: "Status Update",
+              content: `${name} is now interested in ${itemValue}`
+            }, (data, status) => {
+              if (data !== "Success") {
+                console.log(data)
+              } else {
+                const postObj = {
+                  author: {S: name},
+                  content: {S: `${name} is now interested in ${itemValue}`},
+                  post_id: {N: now},
+                  type: {S: "Status Update"},
+                  username: {S: name},
+                  wall: {S: name}
+                }
+                let newAllPosts = [postObj]
+                newAllPosts = newAllPosts.concat(allPosts)
+                setAllPosts([...newAllPosts])
+              }
+            })
+          } else {
+            alert(`Update ${newItem} failed`)
+          }
+        })
+      }
     }
+  }
+
+  const deleteInterest = async (elem) => {
+    $.post("http://localhost:3000/deleteInterest", {username: data.username, interest: elem}, (dataResponse, status) => {
+          if (dataResponse === "Success") {
+            const newData = { ...data }
+            const newInterest = data.interests
+            const idx = newInterest.indexOf(elem)
+            newInterest.splice(idx, 1)
+            newData.interests = [...newInterest]
+            setData(newData)
+            const now = `${Date.now()}`
+            const name = data.username
+            $.post("http://localhost:3000/addPost",
+            {
+              username: name,
+              wall: name,
+              post_id: now,
+              author: name,
+              type: "Status Update",
+              content: `${name} is no longer interested in ${elem}`
+            }, (data, status) => {
+              if (data !== "Success") {
+                console.log(data)
+              } else {
+                const postObj = {
+                  author: {S: name},
+                  content: {S: `${name} is no longer interested in ${elem}`},
+                  post_id: {N: now},
+                  type: {S: "Status Update"},
+                  username: {S: name},
+                  wall: {S: name}
+                }
+                let newAllPosts = [postObj]
+                newAllPosts = newAllPosts.concat(allPosts)
+                setAllPosts([...newAllPosts])
+              }
+            })
+          } else {
+            alert(`Update interest failed`)
+          }
+        })
+  }
+
+  const handleSelectPost = () => {
+    setType("Post")
+  }
+
+  const handleSelectStatus = () => {
+    setType("Status Update")
+  }
+
+  //***fix frontend add post with comment
+  const handlePost = async () => {
+    const name = data.username
+    const now = `${Date.now()}`
+    $.post("http://localhost:3000/addPost",
+    {
+      username: name,
+      author: visitingUser,
+      post_id: now,
+      type,
+      content
+    }, (data, status) => {
+      if (data === "Post type is required") {
+        setPostMsg(true)
+      } else if (data !== "Success") {
+        setPostMsg(false)
+        alert(`Error while posting`)
+      } else {
+        setPostMsg(false)
+        const postObj = {
+          author: {S: visitingUser},
+          content: {S: content},
+          post_id: {N: now},
+          type: {S: type},
+          username: {S: name},
+          wall: {S: name}
+        }
+        let newAllPosts = [postObj]
+        newAllPosts = newAllPosts.concat(allPosts)
+        setAllPosts([... newAllPosts])
+      }
+    })
   }
 
   return (
@@ -162,25 +337,64 @@ const Wall = () => {
                 <label htmlFor="exampleFormControlTextarea1" className="form-label">
                   Make a post!
                 </label>
-                <textarea className="form-control w-75 m-auto"></textarea>
+                <textarea className="form-control w-75 m-auto" onChange={(e) => setContent(e.target.value)}></textarea>
+                <div className="dropdown mt-2">
+                  <a className="btn btn-secondary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    {type}
+                  </a>
+                  <ul className="dropdown-menu">
+                    <li>
+                      <a className="dropdown-item" onClick={() => handleSelectPost()}>
+                        Post
+                      </a>
+                    </li>
+                    <li>
+                      <a className="dropdown-item" onClick={() => handleSelectStatus()}>
+                        Status Update
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+                {
+                  postMsg && <div className="text-danger">Post type is required</div>
+                }
+                <button type="button" className="btn btn-primary mt-2" onClick={() => handlePost()}>
+                  Post
+                </button>
+              </div>
+              <div className="col-8">
+                {allPosts.map((post) => (
+                  <Post
+                    user={post.author.S}
+                    wall={post.wall.S}
+                    content={post.content.S}
+                    type={post.type.S}
+                    date={parseInt(post.post_id.N)}
+                    visitingUser={visitingUser}>
+                  </Post>
+                ))}
               </div>
             </div>
           </div>
           <div className="col">
             <h3 className="text-center">
               {data.first_name} {data.last_name}
-              {isFriend && (
+              {visitingUser != data.username && (
                 <>
-                  <a href="#" id="remove-friend">
-                    <AddedFriend></AddedFriend>
-                  </a>
-                </>
-              )}
-              {!isFriend && (
-                <>
-                  <a href="#" id="add-friend">
-                    <AddFriend></AddFriend>
-                  </a>
+                  {isFriend && (
+                    <>
+                      <a href="#" id="remove-friend">
+                        <AddedFriend></AddedFriend>
+                      </a>
+                    </>
+                  )}
+                  {!isFriend && (
+                    <>
+                      <a href="#" id="add-friend">
+                        <AddFriend></AddFriend>
+                      </a>
+                    </>
+                  )}
                 </>
               )}
             </h3>
@@ -189,9 +403,9 @@ const Wall = () => {
               {data.affiliation}
               &nbsp;
               {visitingUser === data.username && (
-                <a href="#" id="edit-affiliation">
+                <span style={{ cursor: "pointer" }} onClick={() => changeToggles(0)}>
                   <Edit></Edit>
-                </a>
+                </span>
               )}
             </div>
             {toggles[0] && (
@@ -210,9 +424,9 @@ const Wall = () => {
             <div className="fs-6 mb-2 fw-semibold">
               {data.email} &nbsp;
               {visitingUser === data.username && (
-                <a href="#" id="edit-email">
+                <span style={{ cursor: "pointer" }} onClick={() => changeToggles(1)}>
                   <Edit></Edit>
-                </a>
+                </span>
               )}
             </div>
             {toggles[1] && (
@@ -231,15 +445,15 @@ const Wall = () => {
             <div className="fs-6 mb-2 fw-semibold">
               ****** &nbsp;
               {visitingUser === data.username && (
-                <a href="#" id="edit-password">
+                <span style={{ cursor: "pointer" }} onClick={() => changeToggles(2)}>
                   <Edit></Edit>
-                </a>
+                </span>
               )}
             </div>
             {toggles[2] && (
               <>
                 <div class="input-group mb-3">
-                  <input id="password-input" type="text" class="form-control" placeholder="Change Password" />
+                  <input id="password-input" type="text" class="form-control" placeholder="Change Password:" />
                   <button type="button" id="change-password" class="input-group-text">
                     Confirm
                   </button>
@@ -251,10 +465,32 @@ const Wall = () => {
               data.interests.map((elem) => {
                 return (
                   <>
-                    <span className="p-2 me-2 badge rounded-pill text-bg-secondary">{elem}</span>
+                    <span className="p-2 me-2 badge rounded-pill text-bg-secondary">
+                      {elem}
+                      {visitingUser === data.username && toggles[3] && (
+                        <span style={{ cursor: "pointer" }} onClick={() => deleteInterest(elem)}>
+                          &nbsp;<DeleteButton></DeleteButton>
+                        </span>
+                      )}
+                    </span>
                   </>
                 )
               })}
+              {visitingUser === data.username && (
+                <span style={{ cursor: "pointer" }} onClick={() => changeToggles(3)}>
+                  <Edit></Edit>
+                </span>
+              )}
+              {toggles[3] && (
+              <>
+                <div class="input-group mb-3">
+                  <input id="interests-input" type="text" class="form-control" placeholder="Add Interest:" />
+                  <button type="button" id="change-interests" class="input-group-text">
+                    Confirm
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>

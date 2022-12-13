@@ -34,8 +34,9 @@ var getUserInfo = function (username, callback) {
       const username = data.Items[0].username.S
       const email = data.Items[0].email.S
       const birthday = data.Items[0].birthday.S
+      const last_time = data.Items[0].last_time.N
 
-      callback(err, { first_name, last_name, interests, affiliation, username, email, birthday })
+      callback(err, { first_name, last_name, interests, affiliation, username, email, birthday, last_time })
     }
   })
 }
@@ -134,6 +135,34 @@ var removeFriend = function (sender, receiver, callback) {
   })
 }
 
+const updateTimestamp = function (username, callback) {
+  const updated_time = `${Date.now()}`
+
+  const params = {
+    TableName: "users",
+    Key: {
+      username: {
+        S: username,
+      },
+    },
+    ExpressionAttributeNames: { "#time": "last_time" },
+    UpdateExpression: "set #time = :val",
+    ExpressionAttributeValues: {
+      ":val": {
+        N: updated_time,
+      },
+    },
+  }
+
+  db.updateItem(params, function (err, data) {
+    if (err) {
+      callback(err, "unable to update time")
+    } else {
+      callback(null, "timestamp updated successfully")
+    }
+  })
+}
+
 var checkSignup = function (username, password, first_name, last_name, email, affiliation, birthday, interests, callback) {
   var params = {
     KeyConditions: {
@@ -145,6 +174,8 @@ var checkSignup = function (username, password, first_name, last_name, email, af
     TableName: "users",
     AttributesToGet: ["password"],
   }
+
+  const time = `${Date.now()}`
 
   db.query(params, function (err, data) {
     if (err || data == null || data.Items.length !== 0) {
@@ -177,6 +208,9 @@ var checkSignup = function (username, password, first_name, last_name, email, af
           interests: {
             SS: interests,
           },
+          last_time: {
+            N: time,
+          },
         },
         TableName: "users",
         ReturnValues: "NONE",
@@ -186,6 +220,8 @@ var checkSignup = function (username, password, first_name, last_name, email, af
         if (err) {
           callback(err)
         } else {
+          //
+
           // Also add the user prefixes to the prefixes table if they don't exist
           const prefixes = []
           const word = []
@@ -350,7 +386,7 @@ var addInterest = (username, interest, callback) => {
   }
 
   db.query(params, function (err, data) {
-    if (err || data.Items.length !== 0) {
+    if (err || data.Items.length === 0) {
       callback(err, "user doesn't exist")
     } else {
       //add interest to list
@@ -395,13 +431,14 @@ var removeInterest = (username, interest, callback) => {
   }
 
   db.query(params, function (err, data) {
-    if (err || data.Items.length !== 0) {
+    if (err || data.Items.length === 0) {
       callback(err, "user doesn't exist")
     } else {
       //add interest to list
       const currInterests = data.Items[0].interests.SS
       const idx = currInterests.indexOf(interest)
-      currInterests = currInterests.splice(idx, 1)
+      currInterests.splice(idx, 1)
+      console.log(currInterests)
       const paramsAddInterest = {
         TableName: "users",
         Key: {
@@ -409,7 +446,6 @@ var removeInterest = (username, interest, callback) => {
             S: username,
           },
         },
-        ProjectionExpression: "#interests",
         ExpressionAttributeNames: { "#interests": "interests" },
         UpdateExpression: "set #interests = :val",
         ExpressionAttributeValues: {
@@ -453,6 +489,7 @@ var getUsers = (username, callback) => {
 }
 
 var database = {
+  update_timestamp: updateTimestamp,
   check_login: checkLogin,
   get_user_info: getUserInfo,
   check_signup: checkSignup,

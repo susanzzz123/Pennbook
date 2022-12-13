@@ -3,6 +3,7 @@ Utility routes
 ------------*/
 
 const db = require("../models/database")
+const timestamp = require("./timestamp")
 
 const getUser = function (req, res) {
   res.send(req.session.user)

@@ -5,7 +5,6 @@ import Profile from "./icons/Profile"
 const img = require("./penguin.png")
 
 const Header = () => {
-  const [showDropdown, setShowDropdown] = useState(false)
   const [user, setUser] = useState("")
   const [searchTerm, setSearchTerm] = useState("")
   const [foundUsers, setFoundUsers] = useState([])
@@ -39,16 +38,16 @@ const Header = () => {
     })
   }, [])
 
+  const handleLogout = () => {
+    $.post("http://localhost:3000/logout", (data, status) => {})
+  }
+
   const handleBlur = () => {
     // $("#found-field").css("visibility", "hidden")
   }
 
   const handleFocus = () => {
     $("#found-field").css("visibility", "visible")
-  }
-
-  const handleClick = () => {
-    setShowDropdown(!showDropdown)
   }
 
   const viewProfile = (profile) => {
@@ -63,12 +62,15 @@ const Header = () => {
     <>
       <header className="p-3 mb-3 border-bottom">
         <div className="px-3 d-flex flex-wrap align-items-center row">
-          <a href="/home" className="text-decoration-none d-flex flex-wrap align-items-center justify-content-left col">
-            <img className="d-flex justify-content-left" src={img} width="25"></img>
-            <h3 className="text-center mb-0 mx-2">Pennbook</h3>
-          </a>
+          <div className="col-2">
+            <a href="/home" className="text-decoration-none d-inline align-baseline">
+              <img className="d-inline align-top" src={img} width="25"></img>
+              <h3 className="text-dark d-inline mx-2">Pennbook</h3>
+            </a>
+          </div>
+          <div className="col-2"></div>
 
-          <div className="position-relative d-flex mx-auto col">
+          <div className="position-relative d-inline mx-auto col">
             <input
               id="search-input"
               onBlur={() => handleBlur()}
@@ -94,28 +96,44 @@ const Header = () => {
               </div>
             )}
           </div>
-          <div onClick={handleClick} className="dropdown text-end ms-auto col">
-            {user}
-            <a href={`/wall?user=${user}`} className="d-block link-dark text-decoration-none dropdown-toggle" id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
-              <img src="https://github.com/mdo.png" alt="mdo" width="32" height="32" className="rounded-circle" />
-            </a>
+          <div className="col-3"></div>
+          <div style={{ width: "auto" }} className="dropdown d-inline text-end ms-auto col-1">
+            <div
+              style={{ userSelect: "none", cursor: "pointer" }}
+              className="d-block link-dark text-decoration-none dropdown-toggle"
+              id="dropdownUser1"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              {user}
+            </div>
             <ul className="dropdown-menu">
               <li>
-                <a className="dropdown-item" href="#">
-                  Action
+                <a href={`/wall?user=${user}`} className="dropdown-item">
+                  Wall
                 </a>
               </li>
               <li>
-                <a className="dropdown-item" href="#">
-                  Another action
+                <a className="dropdown-item" href={`/visualizer?user=${user}`}>
+                  Visualizer
+                </a>
+              </li>
+              <li>
+                <a className="dropdown-item" href={`/chat`}>
+                  Chat
+                </a>
+              </li>
+              <li>
+                <a className="dropdown-item" href={`/news`}>
+                  News
                 </a>
               </li>
               <li>
                 <hr className="dropdown-divider" />
               </li>
               <li>
-                <a className="dropdown-item" href="#">
-                  Something else here
+                <a onClick={() => handleLogout()} className="dropdown-item" href="/">
+                  Log out
                 </a>
               </li>
             </ul>

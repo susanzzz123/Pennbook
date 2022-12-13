@@ -15,20 +15,28 @@ const getPostsForUser = function (req, res) {
   })
 }
 
-const addPost = function (req, res) {
-  const { username, type, wall, parent_name, parent_id, content, img } = req.body
-  db.add_post(username, type, wall, parent_name, parent_id, content, img, function (err, data) {
+const addPost = function(req, res) {
+  const { username, author, post_id, type, content } = req.body
+  db.add_post(username, author, post_id, type, content, function (err, data) {
     if (err) {
       res.send(err)
+    } else if (data !== "Success" && data !== "Successfully added to both walls") {
+      res.send(data)
     } else {
       res.send("Success")
     }
   })
 }
 
+const deletePost = function(req, res) {
+  const { username, post_id } = req.body
+  
+}
+
 const posts_routes = {
   get_posts_for_user: getPostsForUser,
   add_post: addPost,
+  delete_post: deletePost,
 }
 
 module.exports = posts_routes
