@@ -5,15 +5,17 @@ import Header from "./Header"
 import Post from "./Post"
 import AddFriend from "./icons/AddFriend"
 import AddedFriend from "./icons/AddedFriend"
+import DeleteButton from "./icons/DeleteButton"
 
 const Wall = () => {
   const [visitingUser, setVisitingUser] = useState("")
   const [data, setData] = useState({})
   const [isFriend, setIsFriend] = useState()
   const [toggles, setToggles] = useState([false, false, false, false])
-  const [type, setType] = useState("Choose a post type")
+  const [type, setType] = useState("Post type")
   const [content, setContent] = useState("")
   const [allPosts, setAllPosts] = useState([])
+  const [postMsg, setPostMsg] = useState(false)
 
   const params = new URLSearchParams(window.location.search)
   const user = params.get("user")
@@ -125,7 +127,7 @@ const Wall = () => {
       case 2:
         newItem = "password"
         break
-      case 2:
+      case 3:
         newItem = "interests"
         break
       default:
@@ -133,39 +135,152 @@ const Wall = () => {
         break
     }
     const itemValue = $(`#${newItem}-input`).val()
+    console.log(itemValue)
     newItem = newItem.charAt(0).toUpperCase() + newItem.slice(1)
     if (itemValue.length === 0) {
       alert(`${newItem} must be greater than length 0`)
     } else {
-      $.post(`http://localhost:3000/change${newItem}`, { username: data.username, affiliation: itemValue, email: itemValue, password: itemValue }, (dataResponse, status) => {
-        newItem = newItem.toLowerCase()
-        if (dataResponse === `${newItem} updated successfully`) {
-          const newData = { ...data }
-          switch (item) {
-            case 0:
-              newData.affiliation = itemValue
-              changeToggles(0)
-              $.post("http://localhost:3000/addPost", { username: data.username, author: data.username, type: "Status Update", parent_name: '', parent_id: "-1", content: `${data.username} updated their affiliation to ${itemValue}` }, (data, status) => {
-                if (data !== "Success") {
-                  console.log(data)
-                }
-              })
-              break
-            case 1:
-              newData.email = itemValue
-              changeToggles(1)
-              break
-            case 2:
-              newData.password = itemValue
-              changeToggles(2)
-              break
+      if (newItem !== "Interests") {
+        $.post(`http://localhost:3000/change${newItem}`, 
+        {
+          username: data.username,
+          affiliation: itemValue,
+          email: itemValue,
+          password: itemValue 
+        }, (dataResponse, status) => {
+          newItem = newItem.toLowerCase()
+          if (dataResponse === `${newItem} updated successfully`) {
+            const newData = { ...data }
+            switch (item) {
+              case 0:
+                newData.affiliation = itemValue
+                changeToggles(0)
+                const now = `${Date.now()}`
+                const name = data.username
+                $.post("http://localhost:3000/addPost",
+                {
+                  username: name,
+                  wall: name,
+                  post_id: now,
+                  author: name,
+                  type: "Status Update",
+                  content: `${name} updated their affiliation to ${itemValue}`
+                }, (data, status) => {
+                  if (data !== "Success") {
+                    console.log(data)
+                  } else {
+                    const postObj = {
+                      author: {S: name},
+                      content: {S: `${name} updated their affiliation to ${itemValue}`},
+                      post_id: {N: now},
+                      type: {S: "Status Update"},
+                      username: {S: name},
+                      wall: {S: name}
+                    }
+                    let newAllPosts = [postObj]
+                    newAllPosts = newAllPosts.concat(allPosts)
+                    setAllPosts([...newAllPosts])
+                  }
+                })
+                break
+              case 1:
+                newData.email = itemValue
+                changeToggles(1)
+                break
+              case 2:
+                newData.password = itemValue
+                changeToggles(2)
+                break
+            }
+            setData(newData)
+          } else {
+            alert(`Update ${newItem} failed`)
           }
-          setData(newData)
-        } else {
-          alert(`Update ${newItem} failed`)
-        }
-      })
+        })  
+      } else {
+        $.post("http://localhost:3000/addInterest", {username: data.username, newInterest: itemValue}, (dataResponse, status) => {
+          if (dataResponse === "Success") {
+            const newData = { ...data }
+            let newInterest = data.interests
+            newInterest.push(itemValue)
+            newData.interests = [...newInterest]
+            setData(newData)
+            changeToggles(3)
+            const now = `${Date.now()}`
+            const name = data.username
+            $.post("http://localhost:3000/addPost",
+            {
+              username: name,
+              wall: name,
+              post_id: now,
+              author: name,
+              type: "Status Update",
+              content: `${name} is now interested in ${itemValue}`
+            }, (data, status) => {
+              if (data !== "Success") {
+                console.log(data)
+              } else {
+                const postObj = {
+                  author: {S: name},
+                  content: {S: `${name} is now interested in ${itemValue}`},
+                  post_id: {N: now},
+                  type: {S: "Status Update"},
+                  username: {S: name},
+                  wall: {S: name}
+                }
+                let newAllPosts = [postObj]
+                newAllPosts = newAllPosts.concat(allPosts)
+                setAllPosts([...newAllPosts])
+              }
+            })
+          } else {
+            alert(`Update ${newItem} failed`)
+          }
+        })
+      }
     }
+  }
+
+  const deleteInterest = async (elem) => {
+    $.post("http://localhost:3000/deleteInterest", {username: data.username, interest: elem}, (dataResponse, status) => {
+          if (dataResponse === "Success") {
+            const newData = { ...data }
+            const newInterest = data.interests
+            const idx = newInterest.indexOf(elem)
+            newInterest.splice(idx, 1)
+            newData.interests = [...newInterest]
+            setData(newData)
+            const now = `${Date.now()}`
+            const name = data.username
+            $.post("http://localhost:3000/addPost",
+            {
+              username: name,
+              wall: name,
+              post_id: now,
+              author: name,
+              type: "Status Update",
+              content: `${name} is no longer interested in ${elem}`
+            }, (data, status) => {
+              if (data !== "Success") {
+                console.log(data)
+              } else {
+                const postObj = {
+                  author: {S: name},
+                  content: {S: `${name} is no longer interested in ${elem}`},
+                  post_id: {N: now},
+                  type: {S: "Status Update"},
+                  username: {S: name},
+                  wall: {S: name}
+                }
+                let newAllPosts = [postObj]
+                newAllPosts = newAllPosts.concat(allPosts)
+                setAllPosts([...newAllPosts])
+              }
+            })
+          } else {
+            alert(`Update interest failed`)
+          }
+        })
   }
 
   const handleSelectPost = () => {
@@ -176,10 +291,36 @@ const Wall = () => {
     setType("Status Update")
   }
 
+  //***fix frontend add post with comment
   const handlePost = async () => {
-    $.post("http://localhost:3000/addPost", { username: data.username, author: visitingUser, type, parent_name: "", parent_id: "-1", content }, (data, status) => {
-      if (data !== "Success") {
-        console.log(data)
+    const name = data.username
+    const now = `${Date.now()}`
+    $.post("http://localhost:3000/addPost",
+    {
+      username: name,
+      author: visitingUser,
+      post_id: now,
+      type,
+      content
+    }, (data, status) => {
+      if (data === "Post type is required") {
+        setPostMsg(true)
+      } else if (data !== "Success") {
+        setPostMsg(false)
+        alert(`Error while posting`)
+      } else {
+        setPostMsg(false)
+        const postObj = {
+          author: {S: visitingUser},
+          content: {S: content},
+          post_id: {N: now},
+          type: {S: type},
+          username: {S: name},
+          wall: {S: name}
+        }
+        let newAllPosts = [postObj]
+        newAllPosts = newAllPosts.concat(allPosts)
+        setAllPosts([... newAllPosts])
       }
     })
   }
@@ -214,13 +355,23 @@ const Wall = () => {
                     </li>
                   </ul>
                 </div>
+                {
+                  postMsg && <div className="text-danger">Post type is required</div>
+                }
                 <button type="button" className="btn btn-primary mt-2" onClick={() => handlePost()}>
                   Post
                 </button>
               </div>
               <div className="col-8">
                 {allPosts.map((post) => (
-                  <Post user={post.author.S} wall={post.username.S} content={post.content.S} type={post.type.S} date={parseInt(post.post_id.N)}></Post>
+                  <Post
+                    user={post.author.S}
+                    wall={post.wall.S}
+                    content={post.content.S}
+                    type={post.type.S}
+                    date={parseInt(post.post_id.N)}
+                    visitingUser={visitingUser}>
+                  </Post>
                 ))}
               </div>
             </div>
@@ -302,7 +453,7 @@ const Wall = () => {
             {toggles[2] && (
               <>
                 <div class="input-group mb-3">
-                  <input id="password-input" type="text" class="form-control" placeholder="Change Password" />
+                  <input id="password-input" type="text" class="form-control" placeholder="Change Password:" />
                   <button type="button" id="change-password" class="input-group-text">
                     Confirm
                   </button>
@@ -314,7 +465,14 @@ const Wall = () => {
               data.interests.map((elem) => {
                 return (
                   <>
-                    <span className="p-2 me-2 badge rounded-pill text-bg-secondary">{elem}</span>
+                    <span className="p-2 me-2 badge rounded-pill text-bg-secondary">
+                      {elem}
+                      {visitingUser === data.username && toggles[3] && (
+                        <span style={{ cursor: "pointer" }} onClick={() => deleteInterest(elem)}>
+                          &nbsp;<DeleteButton></DeleteButton>
+                        </span>
+                      )}
+                    </span>
                   </>
                 )
               })}
