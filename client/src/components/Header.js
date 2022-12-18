@@ -8,6 +8,7 @@ const Header = () => {
   const [user, setUser] = useState("")
   const [searchTerm, setSearchTerm] = useState("")
   const [foundUsers, setFoundUsers] = useState([])
+  const [affiliation, setAffiliation] = useState()
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -35,6 +36,9 @@ const Header = () => {
   useEffect(() => {
     $.get("http://localhost:3000/getUser", (data, status) => {
       setUser(data)
+      $.post("http://localhost:3000/getWallInformation", {user : data}, (information, status) => {
+        setAffiliation(information.affiliation)
+      })
     })
   }, [])
 
@@ -114,7 +118,7 @@ const Header = () => {
                 </a>
               </li>
               <li>
-                <a className="dropdown-item" href={`/visualizer?user=${user}`}>
+                <a className="dropdown-item" href={`/visualizer?user=${user}&affiliation=${affiliation}`}>
                   Visualizer
                 </a>
               </li>

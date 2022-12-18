@@ -2,31 +2,37 @@ import { useEffect, useState } from "react"
 import Graph from "react-graph-vis"
 import Header from "./Header"
 import $ from "jquery"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useSearchParams } from "react-router-dom"
 
 const Visualizer = () => {
   const [nodes, setNodes] = useState([])
   const [edges, setEdges] = useState([])
+  const [params, setParams] = useSearchParams();
+  const [user, setUser] = useState()
+  const [affiliation, setAffiliation] = useState()
   const navigate = useNavigate()
 
   useEffect(() => {
-    $.get("http://localhost:3000/getUser", (data, status) => {
-      if (data !== "") {
-        $.post("http://localhost:3000/getFriends", { username: data }, (friend_data, status) => {
-          const nodes_array = []
-          const edges_array = []
-          nodes_array.push({ id: data, label: data })
-          friend_data.forEach((elem) => {
-            nodes_array.push({ id: elem.receiver.S, label: elem.receiver.S })
-            edges_array.push({ from: elem.sender.S, to: elem.receiver.S })
-          })
-          setNodes(nodes_array)
-          setEdges(edges_array)
+    const currUser = params.get("user")
+    const currAffiliation = params.get("affiliation")
+    setAffiliation(currAffiliation)
+    setUser(currUser)
+
+    if (currUser !== "") {
+      $.post("http://localhost:3000/getFriends", { username: currUser }, (friend_data, status) => {
+        const nodes_array = []
+        const edges_array = []
+        nodes_array.push({ id: currUser, label: currUser })
+        friend_data.forEach((elem) => {
+          nodes_array.push({ id: elem.receiver.S, label: elem.receiver.S })
+          edges_array.push({ from: elem.sender.S, to: elem.receiver.S })
         })
-      } else {
-        navigate("/")
-      }
-    })
+        setNodes(nodes_array)
+        setEdges(edges_array)
+      })
+    } else {
+      navigate("/")
+    }
   }, [])
 
   const options = {
@@ -40,12 +46,22 @@ const Visualizer = () => {
     $.post("http://localhost:3000/getFriends", { username }, (friend_data, status) => {
       const nodes_array = []
       const edges_array = []
+      const promises = []
+
       friend_data.forEach((elem) => {
-        nodes_array.push({ id: elem.receiver.S, label: elem.receiver.S })
-        edges_array.push({ from: elem.sender.S, to: elem.receiver.S })
+        promises.push(
+          $.post("http://localhost:3000/getWallInformation", { user: elem.receiver.S }, (friend_affiliation, status) => {
+            if (friend_affiliation.affiliation == affiliation) {
+              nodes_array.push({ id: elem.receiver.S, label: elem.receiver.S })
+              edges_array.push({ from: elem.sender.S, to: elem.receiver.S })
+            }
+          })
+        )
       })
-      setNodes(nodes.concat(nodes_array))
-      setEdges(edges.concat(edges_array))
+      Promise.all(promises).then((values) => {
+        setNodes(nodes.concat(nodes_array))
+        setEdges(edges.concat(edges_array))
+      })
     })
   }
 
@@ -63,7 +79,6 @@ const Visualizer = () => {
         options={options}
         events={events}
         getNetwork={(network) => {
-          //  if you want access to vis.js network api you can set the state in a parent component using this property
         }}
       />
     </>

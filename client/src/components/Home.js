@@ -32,6 +32,7 @@ const Home = () => {
 		socket.on("load_online_friends", (data) => {
 			var onlineFriends = data.online;
 			setFriendsList(onlineFriends);
+      socket.emit("get_online_friends", data);
 		});
 	}, [socket]);
 
@@ -92,83 +93,80 @@ const Home = () => {
     })
   }, [])
 
-
-socket.emit("get_online_friends", data);
-
-return (
-  <>
-    <Header></Header>
-    <div className="container text-center">
-      <div className="row">
-        <div className="col-3">Menu</div>
-          <div className="col-7 text-center">
-            Welcome {user}
-            <div className="col-8 justify-content-center">
-              {posts.map((post) => (
-                <Post
-                  user={post.author.S}
-                  wall={post.username.S}
-                  content={post.content.S}
-                  type={post.type.S}
-                  date={parseInt(post.post_id.N)}
-                  visitingUser={user}>           
-                </Post>
-              ))}
+  return (
+    <>
+      <Header></Header>
+      <div className="container text-center">
+        <div className="row">
+          <div className="col-3">Menu</div>
+            <div className="col-7 text-center">
+              Welcome {user}
+              <div className="col-8 justify-content-center">
+                {posts.map((post) => (
+                  <Post
+                    user={post.author.S}
+                    wall={post.username.S}
+                    content={post.content.S}
+                    type={post.type.S}
+                    date={parseInt(post.post_id.N)}
+                    visitingUser={user}>           
+                  </Post>
+                ))}
+              </div>
+            </div>
+            <div className="col-2">
+              <h3 className="text-center">Friends</h3>
+              {friends.length === 0 && (
+                <>
+                  <div>No friends</div>
+                </>
+              )}
+              {friends.length > 0 && typeof friends != "string" &&
+                friends.map((elem) => {
+                  console.log(elem.last_time)
+                  return (
+                    <div className="d-flex my-2">
+                      {elem.status == 0 && (
+                        <span className="d-inline">
+                          <PendingFriend></PendingFriend>
+                        </span>
+                      )}
+                      {elem.status == 1 && (
+                        <span className="d-inline">
+                          <AddedFriend></AddedFriend>
+                        </span>
+                      )}
+                      <a href={`/wall?user=${elem.friend}`} className="text-decoration-none d-inline pe-auto mx-2">
+                        {elem.friend}
+                      </a>
+                      {curr_date - parseInt(elem.last_time) > 300000 ? (
+                      <>
+                        <div>Offline</div>
+                      </>
+                      ) : (
+                      <>
+                        <div>Online</div>
+                      </>
+                      )}
+                    </div>
+                  )
+                })
+              }
             </div>
           </div>
-          <div className="col-2">
-            <h3 className="text-center">Friends</h3>
-            {friends.length === 0 && (
-              <>
-                <div>No friends</div>
-              </>
-            )}
-            {friends.length > 0 && typeof friends != "string" &&
-              friends.map((elem) => {
-                console.log(elem.last_time)
-                return (
-                  <div className="d-flex my-2">
-                    {elem.status == 0 && (
-                      <span className="d-inline">
-                        <PendingFriend></PendingFriend>
-                      </span>
-                    )}
-                    {elem.status == 1 && (
-                      <span className="d-inline">
-                        <AddedFriend></AddedFriend>
-                      </span>
-                    )}
-                    <a href={`/wall?user=${elem.friend}`} className="text-decoration-none d-inline pe-auto mx-2">
-                      {elem.friend}
-                    </a>
-                    {curr_date - parseInt(elem.last_time) > 300000 ? (
-                    <>
-                      <div>Offline</div>
-                    </>
-                    ) : (
-                    <>
-                      <div>Online</div>
-                    </>
-                    )}
-                  </div>
-                )
-              })
-            }
+        </div>
+        {!showChat ? (
+          <div className="joinChatContainer">
+            <button onClick={() => setShowChat(true)}>Chat</button>
           </div>
-        </div>
-      </div>
-      {!showChat ? (
-        <div className="joinChatContainer">
-          <button onClick={() => setShowChat(true)}>Chat</button>
-        </div>
-        ) : (
-        <div className="chatContainer">
-          <button onClick={() => setShowChat(false)}>Chat</button>
-          <Chat userName={user} friends={friendsList} />
-        </div>
-      )}
-    </>
-  );
+          ) : (
+          <div className="chatContainer">
+            <button onClick={() => setShowChat(false)}>Chat</button>
+            <Chat userName={user} friends={friendsList} />
+          </div>
+        )}
+      </>
+    );
 }
 
 export default Home;
