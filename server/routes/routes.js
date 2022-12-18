@@ -7,6 +7,7 @@ const registration_routes = require("./registration")
 const utility_routes = require("./utility")
 const posts_routes = require("./posts")
 const timestamp_routes = require("./timestamp")
+const comments_route = require("./comments")
 
 // Routes object
 const routes = {
@@ -29,6 +30,9 @@ const routes = {
   request_friend: friend_routes.request_friend,
   add_post: posts_routes.add_post,
   get_posts_for_user: posts_routes.get_posts_for_user,
+  delete_post: posts_routes.delete_post,
+  add_comment: comments_route.add_comment,
+  get_comments_for_post: comments_route.get_comments_for_post,
 }
 
 module.exports = routes

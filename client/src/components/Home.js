@@ -1,20 +1,44 @@
-import { useEffect, useState } from "react"
-import AddedFriend from "./icons/AddedFriend"
-import PendingFriend from "./icons/PendingFriend"
-import Header from "./Header"
-import Post from "./Post"
-import $ from "jquery"
+import React, { useEffect, useState } from "react";
+import AddedFriend from "./icons/AddedFriend";
+import PendingFriend from "./icons/PendingFriend";
+import Header from "./Header";
+import $ from "jquery";
+import { Post } from "./Post";
+import Chat from "./Chat";
+import socket from "./Socket";
 
 const Home = () => {
-  const [user, setUser] = useState()
-  const [friends, setFriends] = useState([])
-  const curr_date = Date.now()
-  //posts are sorted in ascending order
-  const [posts, setPosts] = useState([])
+	// const socket = io.connect("http://localhost:3000");
+	// const [message, setMessage] = useState("");
+	// const [messageReceived, setMessageReceived] = useState("");
+	const [showChat, setShowChat] = useState(false);
+	const [user, setUser] = useState("");
+	const [friends, setFriends] = useState([]);
+	const [friendsList, setFriendsList] = useState([]);
+	const curr_date = Date.now();
+	//posts are sorted in ascending order
+	const [posts, setPosts] = useState([]);
+
+	// const joinRoom = () => {
+	// 	// console.log(user);
+	// 	// console.log("join" + room);
+	// 	if (room !== "") {
+	// 		socket.emit("join_room", room);
+	// 		setShowChat(true);
+	// 	}
+	// };
+
+	useEffect(() => {
+		socket.on("load_online_friends", (data) => {
+			var onlineFriends = data.online;
+			setFriendsList(onlineFriends);
+		});
+	}, [socket]);
 
   useEffect(() => {
     $.get("http://localhost:3000/getUser", (data, status) => {
-      setUser(data)
+      const username = data
+      setUser(username)
       $.post("http://localhost:3000/getFriends", { username: data }, (data, status) => {
         if (data === "user has no friends") {
           setFriends([])
@@ -33,35 +57,62 @@ const Home = () => {
           Promise.all(promises).then((values) => {
             setFriends(friend_list)
           })
-
+          
+          const postPromises = []
+          let postList = []
+          postPromises.push(
+            $.post("http://localhost:3000/getPosts", { username }, (dataResponse, status) => {
+            if (dataResponse !== "no posts") {
+              const newList = [...dataResponse]
+              postList = postList.concat(newList)
+              
+            }
+          })
+          )
+          
           data.forEach((friend) => {
             if (friend.status.N == 1) {
-              $.post("http://localhost:3000/getPosts", { username: friend.receiver.S }, (data, status) => {
-                if (data !== "no posts") {
-                  setPosts(posts.concat(data))
-                } else {
-                  //error message for display
-                  console.log("error while retrieving posts")
-                }
-              })
+              postPromises.push(
+                $.post("http://localhost:3000/getPosts", { username: friend.receiver.S }, (dataResponse, status) => {
+                  if (dataResponse !== "no posts") {
+                    const newList = [...dataResponse]
+                    console.log(newList)
+                    postList = postList.concat(newList)
+                  }
+                })
+              )
             }
+          })
+          Promise.all(postPromises).then((values) => {
+            postList.sort((a, b) => a.post_id.N > b.post_id.N ? -1 : 1)
+            setPosts([...postList])
           })
         }
       })
     })
   }, [])
 
-  return (
-    <>
-      <Header></Header>
-      <div className="container text-center">
-        <div className="row">
-          <div className="col-3">Menu</div>
+
+socket.emit("get_online_friends", data);
+
+return (
+  <>
+    <Header></Header>
+    <div className="container text-center">
+      <div className="row">
+        <div className="col-3">Menu</div>
           <div className="col-7 text-center">
             Welcome {user}
             <div className="col-8 justify-content-center">
               {posts.map((post) => (
-                <Post user={post.author.S} wall={post.username.S} content={post.content.S} type={post.type.S} date={parseInt(post.post_id.N)}></Post>
+                <Post
+                  user={post.author.S}
+                  wall={post.username.S}
+                  content={post.content.S}
+                  type={post.type.S}
+                  date={parseInt(post.post_id.N)}
+                  visitingUser={user}>           
+                </Post>
               ))}
             </div>
           </div>
@@ -72,8 +123,7 @@ const Home = () => {
                 <div>No friends</div>
               </>
             )}
-            {friends.length > 0 &&
-              typeof friends != "string" &&
+            {friends.length > 0 && typeof friends != "string" &&
               friends.map((elem) => {
                 console.log(elem.last_time)
                 return (
@@ -92,22 +142,33 @@ const Home = () => {
                       {elem.friend}
                     </a>
                     {curr_date - parseInt(elem.last_time) > 300000 ? (
-                      <>
-                        <div>Offline</div>
-                      </>
+                    <>
+                      <div>Offline</div>
+                    </>
                     ) : (
-                      <>
-                        <div>Online</div>
-                      </>
+                    <>
+                      <div>Online</div>
+                    </>
                     )}
                   </div>
                 )
-              })}
+              })
+            }
           </div>
         </div>
       </div>
+      {!showChat ? (
+        <div className="joinChatContainer">
+          <button onClick={() => setShowChat(true)}>Chat</button>
+        </div>
+        ) : (
+        <div className="chatContainer">
+          <button onClick={() => setShowChat(false)}>Chat</button>
+          <Chat userName={user} friends={friendsList} />
+        </div>
+      )}
     </>
-  )
+  );
 }
 
-export default Home
+export default Home;
