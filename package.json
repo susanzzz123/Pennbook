@@ -36,7 +36,8 @@
     "react-scroll-to-bottom": "^4.2.0",
     "socket.io": "^4.5.4",
     "socket.io-client": "^4.5.4",
-    "react-graph-vis": "^1.0.7"
+    "react-graph-vis": "^1.0.7",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "buffer": "^5.7.1",

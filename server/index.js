@@ -73,22 +73,26 @@ server.listen(3000, () => {
 });
 
 // Routes
-app.post("/signup", routes.signup);
-app.post("/login", routes.login);
-app.post("/logout", routes.logout);
-app.post("/changeEmail", routes.change_email);
-app.post("/changePassword", routes.change_password);
-app.get("/getUser", routes.get_user);
-app.post("/searchUser", routes.search_user);
-app.post("/getWallInformation", routes.get_wall_information);
-app.post("/changeAffiliation", routes.change_affiliation);
-app.post("/getFriends", routes.get_friends);
-app.post("/addPost", routes.add_post);
-app.post("/getPosts", routes.get_posts_for_user);
-app.post("/addFriend", routes.add_friend);
-app.post("/removeFriend", routes.remove_friend);
-app.post("/updateTimestamp", routes.update_timestamp);
-app.post("/getTimestamp", routes.get_timestamp);
+app.post("/signup", routes.signup)
+app.post("/login", routes.login)
+app.post("/logout", routes.logout)
+app.post("/changeEmail", routes.change_email)
+app.post("/changePassword", routes.change_password)
+app.get("/getUser", routes.get_user)
+app.post("/searchUser", routes.search_user)
+app.post("/getWallInformation", routes.get_wall_information)
+app.post("/changeAffiliation", routes.change_affiliation)
+app.post("/getFriends", routes.get_friends)
+app.post("/addPost", routes.add_post)
+app.post("/getPosts", routes.get_posts_for_user)
+app.post("/addFriend", routes.add_friend)
+app.post("/removeFriend", routes.remove_friend)
+app.post("/updateTimestamp", routes.update_timestamp)
+app.post("/getTimestamp", routes.get_timestamp)
+app.post("/addInterest", routes.add_interest)
+app.post("/deleteInterest", routes.delete_interest)
+app.post("/addComment", routes.add_comment)
+app.post("/getComments", routes.get_comments_for_post)
 
 // set favicon
 app.get("/favicon.ico", (req, res) => {
