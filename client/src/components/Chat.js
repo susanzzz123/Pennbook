@@ -22,7 +22,6 @@ const Chat = ({ userName, friends }) => {
 					new Date(Date.now()).getMinutes(),
 			};
 			await socket.emit("send_message", messageData);
-			setMessageList((list) => [...list, messageData]);
 			setCurrentMessage("");
 		}
 	};
@@ -39,6 +38,7 @@ const Chat = ({ userName, friends }) => {
 
 	useEffect(() => {
 		socket.on("receive_message", (data) => {
+			console.log("receive working");
 			setMessageList((list) => [...list, data]);
 		});
 		socket.on("receive_invite", (data) => {

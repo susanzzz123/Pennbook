@@ -28,17 +28,14 @@ io.on("connection", async (socket) => {
 	console.log(`User connected: ${socket.id}`);
 	socket.on("join_room", (data) => {
 		socket.join(data);
-		socket.rooms.forEach((set) => console.log("sender" + set));
 	});
 	socket.on("start_chat", (data) => {
 		socket.join(users[data]);
-		socket.rooms.forEach((set) => console.log("invited" + set));
 		socket.to(users[data]).emit("chat_invite_accepted", users[data]);
 	});
 	socket.on("send_message", (data) => {
-		// console.log(data.room);
 		// socket.rooms.forEach((set) => console.log("send" + set));
-		socket.to(data.room).emit("receive_message", data);
+		io.to(data.room).emit("receive_message", data);
 		// socket.broadcast.emit("receive_message", data);
 	});
 	socket.on("get_online_friends", (data) => {
