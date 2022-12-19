@@ -1,6 +1,7 @@
 import react, { useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import $ from "jquery"
+const img = require("./penguin.png")
 
 const Signup = () => {
   const [errMessage, setErrMessage] = useState("")
@@ -75,67 +76,75 @@ const Signup = () => {
 
   return (
     <>
-      <div className="container">
-        <h1>Signup here:</h1>
+      <div style={{ height: "100vh", padding: "5vh" }} className="w-100">
+        <div style={{marginBottom:"12vh"}} className="d-flex justify-content-center">
+          <img className="m-auto text-center text-light" src={img} width="25"></img>
+        </div>
+        <h2 className="text-center mb-3">Create your account</h2>
         <form>
-          <div className="form-floating mb-3">
-            <input id="first_name" className="form-control" placeholder="First name" />
-            <label className="text-secondary" htmlFor="floatingInput">
-              First name
-            </label>
+          <div className="d-flex justify-content-center">
+            <div style={{width:"15vw"}} className="form-floating mb-3 d-inline">
+              <input id="first_name" className="form-control" placeholder="First name" />
+              <label className="text-secondary" htmlFor="floatingInput">
+                First name
+              </label>
+            </div>
+            <div style={{width:"1vw"}}></div>
+            <div style={{width:"15vw"}} className="form-floating mb-3 d-inline">
+              <input id="last_name" className="form-control" placeholder="Last name" />
+              <label className="text-secondary" htmlFor="floatingInput">
+                Last name
+              </label>
+            </div>
           </div>
-          <div className="form-floating mb-3">
-            <input id="last_name" className="form-control" placeholder="Last name" />
-            <label className="text-secondary" htmlFor="floatingInput">
-              Last name
-            </label>
-          </div>
-          <div className="form-floating mb-3">
+          <div style={{width:"31vw"}} className="m-auto form-floating mb-3 ">
             <input id="username" className="form-control" placeholder="Username" />
             <label className="text-secondary" htmlFor="floatingInput">
               Username
             </label>
           </div>
-          <div className="form-floating mb-3">
-            <input id="email" className="form-control" placeholder="Email" />
-            <label className="text-secondary" htmlFor="floatingInput">
-              Email
-            </label>
-          </div>
-          <div className="form-floating mb-3">
+          <div style={{width:"31vw"}} className="m-auto  form-floating mb-3">
             <input id="password" className="form-control" placeholder="Password" />
             <label className="text-secondary" htmlFor="floatingInput">
               Password
             </label>
           </div>
-          <p>Birthday</p>
-          <div className="input-group mb-3">
-            <div className="form-floating mb-3">
-              <input id="birth_day" className="form-control" placeholder="DD" />
-              <label className="text-secondary" htmlFor="floatingInput">
-                DD
-              </label>
-            </div>
-            <div className="form-floating mb-3">
-              <input id="birth_month" className="form-control" placeholder="MM" />
-              <label className="text-secondary" htmlFor="floatingInput">
-                MM
-              </label>
-            </div>
-            <div className="form-floating mb-3">
-              <input id="birth_year" className="form-control" placeholder="YY" />
-              <label className="text-secondary" htmlFor="floatingInput">
-                YY
-              </label>
-            </div>
-          </div>
-          <div className="form-floating mb-3 h-50">
-            <input id="affiliation" className="form-control" placeholder="Affiliation" />
+          <div style={{width:"31vw"}} className="m-auto form-floating mb-3">
+            <input id="email" className="form-control" placeholder="Email" />
             <label className="text-secondary" htmlFor="floatingInput">
-              Affiliation
+              Email
             </label>
           </div>
-          <div className="input-group mb-3">
+          <div className="d-flex justify-content-center">
+            <div style={{width:"15vw"}} className="form-floating mb-3 d-inline">
+              <input id="affiliation" className="form-control" placeholder="Affiliation" />
+              <label className="text-secondary" htmlFor="floatingInput">
+                Affiliation
+              </label>
+            </div>
+            <div style={{width:"1vw"}}></div>
+            <div style={{width:"15vw"}} className="input-group">
+              <div className="form-floating">
+                <input id="birth_day" className="form-control" placeholder="DD" />
+                <label className="text-secondary" htmlFor="floatingInput">
+                  DD
+                </label>
+              </div>
+              <div className="form-floating">
+                <input id="birth_month" className="form-control" placeholder="MM" />
+                <label className="text-secondary" htmlFor="floatingInput">
+                  MM
+                </label>
+              </div>
+              <div className="form-floating">
+                <input id="birth_year" className="form-control" placeholder="YY" />
+                <label className="text-secondary" htmlFor="floatingInput">
+                  YY
+                </label>
+              </div>
+            </div>
+          </div>
+          <div style={{width:"31vw"}} className="m-auto input-group mb-2">
             <div className="form-floating">
               <input id="interests_input" className="form-control" placeholder="Interests" />
               <label className="text-secondary" htmlFor="floatingInput">
@@ -146,23 +155,26 @@ const Signup = () => {
               Add
             </button>
           </div>
-          {interests &&
-            interests.map((elem) => {
-              return (
-                <>
-                  <span className="p-2 mx-2 badge rounded-pill text-bg-primary">{elem}</span>
-                </>
-              )
+          <div style={{width:"31vw"}} className="m-auto">
+            {interests &&
+              interests.map((elem) => {
+                return (
+                  <>
+                    <span className="p-2 mx-2 mb-1 badge rounded-pill text-bg-primary">{elem}</span>
+                  </>
+                )
             })}
-          <br></br>
-          <br></br>
-          <button type="button" id="submit" className="btn btn-primary">
-            Sign up
-          </button>
-          <Link className="mx-3" to="/">
-            Login
-          </Link>
-          <p className="text-danger">{errMessage}</p>
+            {interests.length == 0 && (
+              <span className="p-2 mx-2 mb-1 badge rounded-pill text-bg-primary invisible">hi</span>
+            )}
+          </div>
+          <p className="text-danger text-center">{errMessage}</p>
+          <div className="m-auto text-center mb-3">
+            <button style={{width:"31vw"}} type="button" id="submit" className="m-auto btn btn-success">
+              Continue
+            </button>
+          </div>
+          <p className="m-auto text-center fw-light">Already have an account? <a href="/" className="text-success text-decoration-none">Log in</a></p>
         </form>
       </div>
     </>

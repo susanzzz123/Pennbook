@@ -46,16 +46,6 @@ const Landing = () => {
 
   return (
     <>
-      <style>
-        {`
-          .form-floating>.form-control:focus~label,
-          .form-floating>.form-control:not(:placeholder-shown)~label,
-          .form-floating>.form-select~label {
-            opacity: .65;
-            transform: scale(.85) translateY(-.5rem) translateX(.15rem);
-          }
-        `}
-      </style>
       <div style={{ height: "100vh", padding: "5vh" }} className="w-100">
         <div style={{marginBottom:"12vh"}} className="d-flex justify-content-center">
           <img className="m-auto text-center text-light" src={img} width="25"></img>
@@ -80,7 +70,7 @@ const Landing = () => {
               Continue
             </button>
           </div>
-          <p className="m-auto text-center fw-light">Don't have an account? <a href="/signup" className="text-success">Sign up</a></p>
+          <p className="m-auto text-center fw-light">Don't have an account? <a href="/signup" className="text-success text-decoration-none">Sign up</a></p>
         </form>
       </div>
     </>
