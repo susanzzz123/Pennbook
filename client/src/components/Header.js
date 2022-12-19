@@ -5,18 +5,11 @@ import Profile from "./icons/Profile";
 const img = require("./penguin.png");
 
 const Header = () => {
-<<<<<<< HEAD
-  const [user, setUser] = useState("")
-  const [searchTerm, setSearchTerm] = useState("")
-  const [foundUsers, setFoundUsers] = useState([])
-  const [affiliation, setAffiliation] = useState()
-  const navigate = useNavigate()
-=======
 	const [user, setUser] = useState("");
 	const [searchTerm, setSearchTerm] = useState("");
 	const [foundUsers, setFoundUsers] = useState([]);
+	const [affiliation, setAffiliation] = useState();
 	const navigate = useNavigate();
->>>>>>> ryan
 
 	useEffect(() => {
 		if (searchTerm.length === 0) {
@@ -40,22 +33,18 @@ const Header = () => {
 		}
 	}, [searchTerm]);
 
-<<<<<<< HEAD
-  useEffect(() => {
-    $.get("http://localhost:3000/getUser", (data, status) => {
-      setUser(data)
-      $.post("http://localhost:3000/getWallInformation", {user : data}, (information, status) => {
-        setAffiliation(information.affiliation)
-      })
-    })
-  }, [])
-=======
 	useEffect(() => {
 		$.get("http://localhost:3000/getUser", (data, status) => {
 			setUser(data);
+			$.post(
+				"http://localhost:3000/getWallInformation",
+				{ user: data },
+				(information, status) => {
+					setAffiliation(information.affiliation);
+				}
+			);
 		});
 	}, []);
->>>>>>> ryan
 
 	const handleLogout = () => {
 		$.post("http://localhost:3000/logout", (data, status) => {});
