@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ScrollToBottom from "react-scroll-to-bottom";
 import socket from "./Socket";
+const img = require("./logout.png");
 
 const Chat = ({ userName, friends }) => {
 	const [currentMessage, setCurrentMessage] = useState("");
@@ -17,9 +18,10 @@ const Chat = ({ userName, friends }) => {
 				author: userName,
 				message: currentMessage,
 				time:
-					new Date(Date.now()).getHours() +
-					":" +
-					new Date(Date.now()).getMinutes(),
+					// new Date(Date.now()).getHours() +
+					// ":" +
+					// new Date(Date.now()).getMinutes(),
+					new Date(Date.now()),
 			};
 			await socket.emit("send_message", messageData);
 			setCurrentMessage("");
@@ -32,8 +34,24 @@ const Chat = ({ userName, friends }) => {
 	};
 
 	const startChat = (inviter) => {
-		setShowChatBox(true);
-		socket.emit("start_chat", inviter);
+		const startData = {
+			inviter: inviter,
+			user: userName,
+		};
+		// setShowChatBox(true);
+		// var room = startData.inviter + "" + startData.user;
+		// setRoom(room);
+		socket.emit("start_chat", startData);
+	};
+
+	const leaveChat = () => {
+		const leaveData = {
+			room: room,
+			user: userName,
+		};
+		socket.emit("leave_chat", leaveData);
+		setRoom("");
+		setShowChatBox(false);
 	};
 
 	useEffect(() => {
@@ -43,13 +61,32 @@ const Chat = ({ userName, friends }) => {
 		});
 		socket.on("receive_invite", (data) => {
 			setInviter(data.name);
-			setRoom(data.id);
 			setShowNotificationWindow(true);
 		});
 		socket.on("chat_invite_accepted", (data) => {
 			setShowChatBox(true);
 			socket.emit("join_room", data);
 			setRoom(data);
+		});
+		socket.on("user_left", (data) => {
+			setMessageList((list) => [...list, data]);
+		});
+		socket.on("load_chat", (data) => {
+			setShowChatBox(true);
+			socket.emit("join_room", data.room.S);
+			setRoom(data.room.S);
+			var sortedMessages = data.messages.L.sort(
+				(x, y) => new Date(x.M.time.S) - new Date(y.M.time.S)
+			).map((item) => {
+				const { message, author, time } = item.M;
+				const messageData = {
+					author: author.S,
+					message: message.S,
+					time: time.S,
+				};
+				return messageData;
+			});
+			setMessageList(sortedMessages);
 		});
 	}, [socket]);
 
@@ -84,6 +121,12 @@ const Chat = ({ userName, friends }) => {
 			</div>
 			{showChatBox ? (
 				<div className="chat-window">
+					<img
+						className="d-inline align-top"
+						src={img}
+						width="25"
+						onClick={() => leaveChat()}
+					></img>
 					<div className="chat-header">
 						<p>Live Chat</p>
 					</div>
@@ -100,7 +143,11 @@ const Chat = ({ userName, friends }) => {
 												<p>{messageContent.message}</p>
 											</div>
 											<div className="message-meta">
-												<p id="time">{messageContent.time}</p>
+												<p id="time">
+													{new Date(messageContent.time).getHours() +
+														":" +
+														new Date(messageContent.time).getMinutes()}
+												</p>
 												<p id="author">{messageContent.author}</p>
 											</div>
 										</div>
