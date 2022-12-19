@@ -9,6 +9,7 @@ const Header = () => {
   const [searchTerm, setSearchTerm] = useState("")
   const [foundUsers, setFoundUsers] = useState([])
   const [affiliation, setAffiliation] = useState()
+  const [profileURL, setProfileURL] = useState("")
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -38,6 +39,7 @@ const Header = () => {
       setUser(data)
       $.post("http://localhost:3000/getWallInformation", {user : data}, (information, status) => {
         setAffiliation(information.affiliation)
+        setProfileURL(information.profile_url)
       })
     })
   }, [])
@@ -109,9 +111,12 @@ const Header = () => {
               data-bs-toggle="dropdown"
               aria-expanded="false"
             >
-              {user}
+                <img className="d-inline align-top rounded-circle mx-2" src={profileURL} width="35"></img>
             </div>
             <ul className="dropdown-menu">
+              <li>
+                <h5 className="mx-3 fw-bolder">{user}</h5>
+              </li>
               <li>
                 <a href={`/wall?user=${user}`} className="dropdown-item">
                   Wall

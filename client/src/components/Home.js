@@ -3,9 +3,11 @@ import AddedFriend from "./icons/AddedFriend";
 import PendingFriend from "./icons/PendingFriend";
 import Header from "./Header";
 import $ from "jquery";
-import { Post } from "./Post";
+import Post from "./Post";
 import Chat from "./Chat";
 import socket from "./Socket";
+import OnlineFriend from "./icons/OnlineFriend";
+import OfflineFriend from "./icons/OfflineFriend";
 
 const Home = () => {
 	// const socket = io.connect("http://localhost:3000");
@@ -126,7 +128,7 @@ const Home = () => {
                   console.log(elem.last_time)
                   return (
                     <div className="d-flex my-2">
-                      {elem.status == 0 && (
+                      {/* {elem.status == 0 && (
                         <span className="d-inline">
                           <PendingFriend></PendingFriend>
                         </span>
@@ -135,19 +137,23 @@ const Home = () => {
                         <span className="d-inline">
                           <AddedFriend></AddedFriend>
                         </span>
+                      )} */}
+                      {curr_date - parseInt(elem.last_time) > 300000 ? (
+                        <>
+                          <span className="d-inline">
+                            <OfflineFriend />
+                          </span>
+                        </>
+                        ) : (
+                        <>
+                          <span className="d-inline">
+                            <OnlineFriend />
+                          </span>
+                        </>
                       )}
                       <a href={`/wall?user=${elem.friend}`} className="text-decoration-none d-inline pe-auto mx-2">
                         {elem.friend}
                       </a>
-                      {curr_date - parseInt(elem.last_time) > 300000 ? (
-                      <>
-                        <div>Offline</div>
-                      </>
-                      ) : (
-                      <>
-                        <div>Online</div>
-                      </>
-                      )}
                     </div>
                   )
                 })

@@ -8,6 +8,7 @@ import AddedFriend from "./icons/AddedFriend"
 import DeleteButton from "./icons/DeleteButton"
 
 const Wall = () => {
+  const [profileURL, setProfileURL] = useState("")
   const [visitingUser, setVisitingUser] = useState("")
   const [data, setData] = useState({})
   const [isFriend, setIsFriend] = useState()
@@ -21,11 +22,26 @@ const Wall = () => {
   const user = params.get("user")
   useEffect(() => {
     $.post("http://localhost:3000/getWallInformation", { user }, (data, status) => {
+      setProfileURL(data.profile_url)
       setData(data)
     })
 
     $.get("http://localhost:3000/getUser", (data, status) => {
       setVisitingUser(data)
+    })
+
+    // Add profile picture
+    $("#formFile").on('change',function(){
+      var input = $(this)[0];
+      if (input.files && input.files[0]) {
+          var reader = new FileReader();
+          reader.onload = function (e) {
+              $('#preview').attr('src', e.target.result).fadeIn('slow');
+              console.log(e.target.result)
+          }
+          reader.readAsDataURL(input.files[0]);
+
+      }
     })
   }, [])
 
@@ -86,6 +102,12 @@ const Wall = () => {
     })
   }, [toggles[3]])
 
+  useEffect(() => {
+    $("#change-profile").on("click", () => {
+      changeItem(4)
+    })
+  }, [toggles[4]])
+
   const changeToggles = (event) => {
     const curr = [...toggles]
     curr[event] = !curr[event]
@@ -130,12 +152,14 @@ const Wall = () => {
       case 3:
         newItem = "interests"
         break
+      case 4:
+        newItem = "profile"
+        break
       default:
         newItem = ""
         break
     }
     const itemValue = $(`#${newItem}-input`).val()
-    console.log(itemValue)
     newItem = newItem.charAt(0).toUpperCase() + newItem.slice(1)
     if (itemValue.length === 0) {
       alert(`${newItem} must be greater than length 0`)
@@ -146,7 +170,8 @@ const Wall = () => {
           username: data.username,
           affiliation: itemValue,
           email: itemValue,
-          password: itemValue 
+          password: itemValue ,
+          profile: itemValue,
         }, (dataResponse, status) => {
           newItem = newItem.toLowerCase()
           if (dataResponse === `${newItem} updated successfully`) {
@@ -190,6 +215,10 @@ const Wall = () => {
               case 2:
                 newData.password = itemValue
                 changeToggles(2)
+                break
+              case 4:
+                newData.profile_url = itemValue
+                changeToggles(4)
                 break
             }
             setData(newData)
@@ -378,25 +407,32 @@ const Wall = () => {
           </div>
           <div className="col">
             <h3 className="text-center">
-              {data.first_name} {data.last_name}
-              {visitingUser != data.username && (
-                <>
-                  {isFriend && (
+              <div className="align-items-center">
+                <img className="align-self-center rounded-circle" width="100" height="100" src={`${data.profile_url}`} />
+                <div className="d-flex justify-content-center">
+                  <div className="d-inline mx-1">
+                    {data.first_name} {data.last_name}
+                  </div>
+                  {visitingUser != data.username && (
                     <>
-                      <a href="#" id="remove-friend">
-                        <AddedFriend></AddedFriend>
-                      </a>
+                      {isFriend && (
+                        <>
+                          <a className="d-inline" href="#" id="remove-friend">
+                            <AddedFriend></AddedFriend>
+                          </a>
+                        </>
+                      )}
+                      {!isFriend && (
+                        <>
+                          <a className="d-inline"  href="#" id="add-friend">
+                            <AddFriend></AddFriend>
+                          </a>
+                        </>
+                      )}
                     </>
                   )}
-                  {!isFriend && (
-                    <>
-                      <a href="#" id="add-friend">
-                        <AddFriend></AddFriend>
-                      </a>
-                    </>
-                  )}
-                </>
-              )}
+                </div>
+              </div>
             </h3>
             <div className="text-secondary fw-light fs-7">Affiliation:</div>
             <div className="fs-6 mb-2 fw-semibold">
@@ -410,9 +446,9 @@ const Wall = () => {
             </div>
             {toggles[0] && (
               <>
-                <div class="input-group mb-3">
-                  <input id="affiliation-input" type="text" class="form-control" placeholder="Change Affiliation" />
-                  <button type="button" id="change-affiliation" class="input-group-text">
+                <div className="input-group mb-3">
+                  <input id="affiliation-input" type="text" className="form-control" placeholder="Change Affiliation" />
+                  <button type="button" id="change-affiliation" className="input-group-text">
                     Confirm
                   </button>
                 </div>
@@ -431,9 +467,9 @@ const Wall = () => {
             </div>
             {toggles[1] && (
               <>
-                <div class="input-group mb-3">
-                  <input id="email-input" type="text" class="form-control" placeholder="Change Email" />
-                  <button type="button" id="change-email" class="input-group-text">
+                <div className="input-group mb-3">
+                  <input id="email-input" type="text" className="form-control" placeholder="Change Email" />
+                  <button type="button" id="change-email" className="input-group-text">
                     Confirm
                   </button>
                 </div>
@@ -452,9 +488,9 @@ const Wall = () => {
             </div>
             {toggles[2] && (
               <>
-                <div class="input-group mb-3">
-                  <input id="password-input" type="text" class="form-control" placeholder="Change Password:" />
-                  <button type="button" id="change-password" class="input-group-text">
+                <div className="input-group mb-3">
+                  <input id="password-input" type="text" className="form-control" placeholder="Change Password:" />
+                  <button type="button" id="change-password" className="input-group-text">
                     Confirm
                   </button>
                 </div>
@@ -483,14 +519,31 @@ const Wall = () => {
               )}
               {toggles[3] && (
               <>
-                <div class="input-group mb-3">
-                  <input id="interests-input" type="text" class="form-control" placeholder="Add Interest:" />
-                  <button type="button" id="change-interests" class="input-group-text">
+                <div className="input-group mb-3">
+                  <input id="interests-input" type="text" className="form-control" placeholder="Add Interest:" />
+                  <button type="button" id="change-interests" className="input-group-text">
                     Confirm
                   </button>
                 </div>
               </>
             )}
+            <div className="mt-3 text-secondary fw-light mb-2 fs-7">Profile Picture:
+              {visitingUser === data.username && (
+                <span style={{ cursor: "pointer" }} onClick={() => changeToggles(4)}>
+                  <Edit></Edit>
+                </span>
+              )}
+            </div>
+              {toggles[4] && (
+                <>
+                  <div className="input-group mb-3">
+                    <input id="profile-input" type="text" className="form-control" placeholder="Change Profile Picture:" />
+                    <button type="button" id="change-profile" className="input-group-text">
+                      Confirm
+                    </button>
+                  </div>
+                </>
+              )}
           </div>
         </div>
       </div>

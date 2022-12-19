@@ -1,6 +1,7 @@
 import react, { useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import $ from "jquery"
+const img = require("./penguin.png")
 
 const Landing = () => {
   const [errMessage, setErrMessage] = useState("")
@@ -43,22 +44,21 @@ const Landing = () => {
     }
   }
 
-  handleSignup = () => {
-    navigate("/signup")
-  }
-
   return (
     <>
-      <div style={{ background: "linear-gradient(119deg, rgba(173,162,231,1) 24%, rgba(138,187,227,1) 96%)", height: "100vh", padding: "10vh" }} className="w-100">
-        <h2 className="text-center text-light mb-5 ">Pennbook</h2>
-        <form className="m-auto bg-light w-25 p-4 rounded">
-          <div style={{ width: "15vw" }} className="form-floating mb-3 m-auto">
+      <div style={{ height: "100vh", padding: "5vh" }} className="w-100">
+        <div style={{marginBottom:"12vh"}} className="d-flex justify-content-center">
+          <img className="m-auto text-center text-light" src={img} width="25"></img>
+        </div>
+        <h2 className="text-center mb-2">Pennbook</h2>
+        <form className="m-auto p-4 rounded">
+          <div style={{ width: "22vw" }} className="form-floating mb-2 m-auto">
             <input id="username" className="form-control" placeholder="Username" />
             <label className="text-secondary" htmlFor="floatingInput">
               Username
             </label>
           </div>
-          <div style={{ width: "15vw" }} className="form-floating mb-2 m-auto">
+          <div style={{ width: "22vw" }} className="form-floating mb-4 m-auto">
             <input id="password" className="form-control" placeholder="Password" />
             <label className="text-secondary" htmlFor="floatingInput">
               Password
@@ -66,15 +66,11 @@ const Landing = () => {
           </div>
           <p className="text-danger text-center">{errMessage}</p>
           <div className="m-auto text-center mb-3">
-            <button style={{ width: "15vw" }} type="button" id="login" className="btn btn-primary">
-              Log in
+            <button style={{ width: "22vw" }} type="button" id="login" className="p-3 btn btn-success">
+              Continue
             </button>
           </div>
-          <div className="m-auto text-center">
-            <button style={{ width: "12vw" }} onClick={() => handleSignup()} type="button" id="login" className=" btn btn-success">
-              Create account
-            </button>
-          </div>
+          <p className="m-auto text-center fw-light">Don't have an account? <a href="/signup" className="text-success">Sign up</a></p>
         </form>
       </div>
     </>

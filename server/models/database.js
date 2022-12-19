@@ -35,6 +35,7 @@ var getUserInfo = function (username, callback) {
 			const email = data.Items[0].email.S;
 			const birthday = data.Items[0].birthday.S;
 			const last_time = data.Items[0].last_time.N;
+			const profile_url = data.Items[0].profile_url.S;
 
 			callback(err, {
 				first_name,
@@ -45,6 +46,7 @@ var getUserInfo = function (username, callback) {
 				email,
 				birthday,
 				last_time,
+				profile_url,
 			});
 		}
 	});
@@ -261,6 +263,9 @@ var checkSignup = function (
 					last_time: {
 						N: time,
 					},
+					profile_url: {
+						S: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.personality-insights.com%2Fdefault-profile-pic%2F&psig=AOvVaw10nFX55F0VChuQrcZhIJ3z&ust=1671504493305000&source=images&cd=vfe&ved=0CA8QjRxqFwoTCPDits7VhPwCFQAAAAAdAAAAABAE"
+					}
 				},
 				TableName: "users",
 				ReturnValues: "NONE",
@@ -423,6 +428,31 @@ var updateAffiliation = (username, affiliation, callback) => {
 	});
 };
 
+var updateProfile = (username, profile, callback) => {
+	const params = {
+		TableName: "users",
+		Key: {
+			username: {
+				S: username,
+			},
+		},
+		ExpressionAttributeNames: { "#profile": "profile_url" },
+		UpdateExpression: "set #profile = :val",
+		ExpressionAttributeValues: {
+			":val": {
+				S: profile,
+			},
+		},
+	};
+	db.updateItem(params, function (err, data) {
+		if (err) {
+			callback(err, "unable to update profile");
+		} else {
+			callback(null, "profile updated successfully");
+		}
+	});
+};
+
 var addInterest = (username, interest, callback) => {
 	var params = {
 		KeyConditions: {
@@ -572,6 +602,7 @@ var database = {
 	update_email: updateEmail,
 	update_password: updatePassword,
 	update_affiliation: updateAffiliation,
+	update_profile: updateProfile,
 	add_interest: addInterest,
 	remove_interest: removeInterest,
 	get_users: getUsers,
