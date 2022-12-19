@@ -66,7 +66,7 @@ const Landing = () => {
           </div>
           <p className="text-danger text-center">{errMessage}</p>
           <div className="m-auto text-center mb-3">
-            <button style={{ width: "22vw" }}type="button" id="login" className="p-3 btn btn-success">
+            <button style={{ width: "22vw" }} type="button" id="login" className="p-2 btn btn-success">
               Continue
             </button>
           </div>

@@ -77,7 +77,7 @@ const Signup = () => {
   return (
     <>
       <div style={{ height: "100vh", padding: "5vh" }} className="w-100">
-        <div style={{marginBottom:"12vh"}} className="d-flex justify-content-center">
+        <div style={{marginBottom:"6vh"}} className="d-flex justify-content-center">
           <img className="m-auto text-center text-light" src={img} width="25"></img>
         </div>
         <h2 className="text-center mb-3">Create your account</h2>
@@ -151,7 +151,7 @@ const Signup = () => {
                 Interests
               </label>
             </div>
-            <button id="add_interest" onClick={() => handleAdd()} className="btn btn-outline-secondary" type="button">
+            <button id="add_interest" onClick={() => handleAdd()} className="btn btn-outline-success" type="button">
               Add
             </button>
           </div>
@@ -160,17 +160,17 @@ const Signup = () => {
               interests.map((elem) => {
                 return (
                   <>
-                    <span className="p-2 mx-2 mb-1 badge rounded-pill text-bg-primary">{elem}</span>
+                    <span className="p-2 mx-2 mb-1 badge rounded-pill fw-light text-bg-success">{elem}</span>
                   </>
                 )
             })}
             {interests.length == 0 && (
-              <span className="p-2 mx-2 mb-1 badge rounded-pill text-bg-primary invisible">hi</span>
+              <span className="p-2 mx-2 mb-1 badge rounded-pill text-bg-success fw-light invisible">hi</span>
             )}
           </div>
           <p className="text-danger text-center">{errMessage}</p>
           <div className="m-auto text-center mb-3">
-            <button style={{width:"31vw"}} type="button" id="submit" className="m-auto btn btn-success">
+            <button style={{width:"31vw"}} type="button" id="submit" className="p-2 m-auto btn btn-success">
               Continue
             </button>
           </div>
