@@ -101,10 +101,10 @@ const Home = () => {
 								);
 							}
 						});
-						// Promise.all(postPromises).then((values) => {
-						// 	postList.sort((a, b) => (a.post_id.N > b.post_id.N ? -1 : 1));
-						// 	setPosts([...postList]);
-						// });
+						Promise.all(postPromises).then((values) => {
+							postList.sort((a, b) => (a.post_id.N > b.post_id.N ? -1 : 1));
+							setPosts([...postList]);
+						});
 					}
 				}
 			);
