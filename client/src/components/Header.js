@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
-import $ from "jquery"
-import Profile from "./icons/Profile"
-const img = require("./penguin.png")
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import $ from "jquery";
+import Profile from "./icons/Profile";
+const img = require("./penguin.png");
 
 const Header = () => {
   const [user, setUser] = useState("")
@@ -12,27 +12,27 @@ const Header = () => {
   const [profileURL, setProfileURL] = useState("")
   const navigate = useNavigate()
 
-  useEffect(() => {
-    if (searchTerm.length === 0) {
-      setFoundUsers([])
-    } else {
-      const delayDebounceFn = setTimeout(() => {
-        if (searchTerm.length !== 0) {
-          // Uncomment this when you want to test out the actual search
-          // $.post("http://localhost:3000/searchUser", { username: searchTerm }, (data, status) => {
-          //   if (data !== "No users found") {
-          //     setFoundUsers(data)
-          //   }
-          // })
+	useEffect(() => {
+		if (searchTerm.length === 0) {
+			setFoundUsers([]);
+		} else {
+			const delayDebounceFn = setTimeout(() => {
+				if (searchTerm.length !== 0) {
+					// Uncomment this when you want to test out the actual search
+					// $.post("http://localhost:3000/searchUser", { username: searchTerm }, (data, status) => {
+					//   if (data !== "No users found") {
+					//     setFoundUsers(data)
+					//   }
+					// })
 
-          // Dummy values to save AWS cost
-          setFoundUsers(["jren2", "test1", "test2"])
-        }
-      }, 2000)
+					// Dummy values to save AWS cost
+					setFoundUsers(["jren2", "test1", "test2"]);
+				}
+			}, 2000);
 
-      return () => clearTimeout(delayDebounceFn)
-    }
-  }, [searchTerm])
+			return () => clearTimeout(delayDebounceFn);
+		}
+	}, [searchTerm]);
 
   useEffect(() => {
     $.get("http://localhost:3000/getUser", (data, status) => {
@@ -44,38 +44,40 @@ const Header = () => {
     })
   }, [])
 
-  const handleLogout = () => {
-    $.post("http://localhost:3000/logout", (data, status) => {})
-  }
+	const handleLogout = () => {
+		$.post("http://localhost:3000/logout", (data, status) => {});
+	};
 
-  const handleBlur = () => {
-    // $("#found-field").css("visibility", "hidden")
-  }
+	const handleBlur = () => {
+		// $("#found-field").css("visibility", "hidden")
+	};
 
-  const handleFocus = () => {
-    $("#found-field").css("visibility", "visible")
-  }
+	const handleFocus = () => {
+		$("#found-field").css("visibility", "visible");
+	};
 
-  const viewProfile = (profile) => {
-    $("#found-field").css("visibility", "hidden")
-    $("#search-input").val("")
-    setSearchTerm("")
-    setFoundUsers([])
-    navigate(`/wall?user=${profile}`)
-  }
+	const viewProfile = (profile) => {
+		$("#found-field").css("visibility", "hidden");
+		$("#search-input").val("");
+		setSearchTerm("");
+		setFoundUsers([]);
+		navigate(`/wall?user=${profile}`);
+	};
 
-  return (
-    <>
-      <header className="p-3 mb-3 border-bottom">
-        <div className="px-3 d-flex flex-wrap align-items-center row">
-          <div className="col-2">
-            <a href="/home" className="text-decoration-none d-inline align-baseline">
-              <img className="d-inline align-top" src={img} width="25"></img>
-              <h3 className="text-dark d-inline mx-2">Pennbook</h3>
-            </a>
-          </div>
-          <div className="col-2"></div>
-
+	return (
+		<>
+			<header className="p-3 mb-3 border-bottom">
+				<div className="px-3 d-flex flex-wrap align-items-center row">
+					<div className="col-2">
+						<a
+							href="/home"
+							className="text-decoration-none d-inline align-baseline"
+						>
+							<img className="d-inline align-top" src={img} width="25"></img>
+							<h3 className="text-dark d-inline mx-2">Pennbook</h3>
+						</a>
+					</div>
+					<div className="col-2"></div>
           <div className="position-relative d-inline mx-auto col">
             <input
               id="search-input"
@@ -153,4 +155,4 @@ const Header = () => {
   )
 }
 
-export default Header
+export default Header;

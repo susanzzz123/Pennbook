@@ -28,18 +28,57 @@ io.on("connection", async (socket) => {
 	console.log(`User connected: ${socket.id}`);
 	socket.on("join_room", (data) => {
 		socket.join(data);
-		socket.rooms.forEach((set) => console.log("sender" + set));
 	});
 	socket.on("start_chat", (data) => {
-		socket.join(users[data]);
-		socket.rooms.forEach((set) => console.log("invited" + set));
-		socket.to(users[data]).emit("chat_invite_accepted", users[data]);
+		var members = [data.inviter, data.user].sort();
+		var room = members.join("");
+		console.log(room);
+		db.get_chat(room, function (err, data2) {
+			if (err) {
+				console.log(err);
+			} else {
+				if (typeof data2 !== "undefined") {
+					console.log("first");
+					socket.join(room);
+					socket.to(users[data.inviter]).emit("load_chat", data2);
+					io.to(room).emit("load_chat", data2);
+				} else {
+					console.log("second");
+					db.create_chat(room, members, function (err, data3) {
+						if (err) {
+							console.log(err);
+						} else {
+							socket.join(room);
+							socket.to(users[data.inviter]).emit("chat_invite_accepted", room);
+						}
+					});
+				}
+			}
+		});
+	});
+	socket.on("leave_chat", (data) => {
+		socket.leave(data.room);
+		const messageData = {
+			author: data.user,
+			message: data.user + " just left.",
+			time: new Date(Date.now()),
+		};
+		socket.to(data.room).emit("user_left", messageData);
 	});
 	socket.on("send_message", (data) => {
-		// console.log(data.room);
-		// socket.rooms.forEach((set) => console.log("send" + set));
-		socket.to(data.room).emit("receive_message", data);
-		// socket.broadcast.emit("receive_message", data);
+		db.send_message(
+			data.room,
+			data.author,
+			data.message,
+			data.time,
+			function (err, data2) {
+				if (err) {
+					console.log(err);
+				} else {
+					io.to(data.room).emit("receive_message", data);
+				}
+			}
+		);
 	});
 	socket.on("get_online_friends", (data) => {
 		socket.data.username = data;
