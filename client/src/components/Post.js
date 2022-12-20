@@ -6,9 +6,18 @@ import { v4 as uuidv4 } from 'uuid';
 const Post = ({ user, wall, content, type, date, visitingUser }) => {
   const [commentContent, setCommentContent] = useState('')
   const [comments, setComments] = useState([])
+  const [profileURL, setProfileURL] = useState("")
+  const [affiliation, setAffiliation] = useState("")
 
   const currDate = new Date(date).toString()
   const post_identifier = `${user}#${wall}#${date}`
+
+  useEffect(() => {
+    $.post("http://localhost:3000/getWallInformation", {user}, (data, status) => {
+      setProfileURL(data.profile_url)
+      setAffiliation(data.affiliation)
+    })
+  },[])
 
   useEffect(() => {
     $.post("http://localhost:3000/getComments", { post_identifier }, (data, status) => {
@@ -42,12 +51,22 @@ const Post = ({ user, wall, content, type, date, visitingUser }) => {
   }
 
   return (
-    <div className="card mb-4 shadow" style={{ width: "24rem" }}>
+    <div className="card mb-4 me-5 shadow">
       <div className="card-body">
-        <h5 className="card-title">{user}</h5>
-        <h6>{currDate}</h6>
-        <p>Wall: {wall}</p>
-        <p className="card-text">{content}</p>
+        <div className="row mb-2">
+          <div style={{flex: "0 0 auto", width: "11%"}}>
+            <img className="align-self-center rounded-circle" width="50" height="50" key={profileURL} src={`${profileURL}`} />
+          </div>
+          <div className="col-10 text-start">
+            <div className="fs-5">{user}</div>
+            <div className="fw-light">{affiliation}</div>
+          </div>
+        </div>
+        <p className="text-start card-text px-2">{content}</p>
+        <div className="d-flex justify-content-between">
+          <div className="fw-light">{currDate.substring(0, 16)}</div>
+          <div className="fw-light">Posted on: {wall}</div>
+        </div>
         {
           type === "Post" && (
             <div className="input-group input-group-sm mt-2">
@@ -63,11 +82,6 @@ const Post = ({ user, wall, content, type, date, visitingUser }) => {
           )
         }
       </div>
-      {
-        comments.length > 0 && type === 'Post' && (
-          <h5 className="mb-2">Comments:</h5>
-        )
-      }
       <div>
         {
           comments.map(comment => (
