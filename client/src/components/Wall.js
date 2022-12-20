@@ -401,14 +401,16 @@ const Wall = () => {
               </div>
               <div className="col-8">
                 {allPosts.map((post) => (
-                  <Post
-                    user={post.author.S}
-                    wall={post.wall.S}
-                    content={post.content.S}
-                    type={post.type.S}
-                    date={parseInt(post.post_id.N)}
-                    visitingUser={visitingUser}>
-                  </Post>
+                  <div key={parseInt(post.post_id.N)}>
+                    <Post
+                      user={post.author.S}
+                      wall={post.wall.S}
+                      content={post.content.S}
+                      type={post.type.S}
+                      date={parseInt(post.post_id.N)}
+                      visitingUser={visitingUser}>
+                    </Post>
+                  </div>
                 ))}
               </div>
             </div>

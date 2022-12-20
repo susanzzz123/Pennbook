@@ -71,18 +71,13 @@ const Post = ({ user, wall, content, type, date, visitingUser }) => {
       <div>
         {
           comments.map(comment => (
-            <div className="card mb-4 shadow-sm" style={{ width: "20rem" }}>
-              <div className="card-body">
-                <h5 className="card-title">{comment.author.S}</h5>
-                <h6>{new Date(parseInt(comment.date.N)).toString()}</h6>
-                <p className="card-text">{comment.content.S}</p>
-              </div>
+            <div key={parseInt(comment.date.N)}>
+              <Comment
+                author={comment.author.S}
+                date={parseInt(comment.date.N)}
+                content={comment.content.S}>
+              </Comment>
             </div>
-            // <Comment
-            //   author={comment.author.S}
-            //   date={parseInt(comment.date.N)}
-            //   content={comment.content.S}>
-            // </Comment>
           ))
         }
       </div>
