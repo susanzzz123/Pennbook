@@ -1,4 +1,4 @@
-1. the full names and SEAS login names of all team members, 2) a description of featuresimplemented, 3) any extra credit claimed, 4) a list of source files included, 5) a declaration that all ofthe code you are submitting was written by you, and 6) instructions for building an running yourproject. The instructions must be sufficiently detailed for us to set up and run your application
+1. the full names and SEAS login names of all team members, 2) a description of features implemented, 3) any extra credit claimed, 4) a list of source files included, 5) a declaration that all ofthe code you are submitting was written by you, and 6) instructions for building an running yourproject. The instructions must be sufficiently detailed for us to set up and run your application
 
 Team Members:
 Jason Ren: jren2
