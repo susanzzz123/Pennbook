@@ -3,7 +3,7 @@ import AddedFriend from "./icons/AddedFriend";
 import PendingFriend from "./icons/PendingFriend";
 import Header from "./Header";
 import $ from "jquery";
-import { Post } from "./Post";
+import Post from "./Post";
 import Chat from "./Chat";
 import socket from "./Socket";
 
@@ -32,6 +32,7 @@ const Home = () => {
 		socket.on("load_online_friends", (data) => {
 			var onlineFriends = data.online;
 			setFriendsList(onlineFriends);
+      socket.emit("get_online_friends", data);
 		});
 	}, [socket]);
 
@@ -69,7 +70,6 @@ const Home = () => {
             }
           })
           )
-          
           data.forEach((friend) => {
             if (friend.status.N == 1) {
               postPromises.push(
@@ -91,9 +91,6 @@ const Home = () => {
       })
     })
   }, [])
-
-
-socket.emit("get_online_friends", data);
 
 return (
   <>
