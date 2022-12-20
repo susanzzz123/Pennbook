@@ -50,6 +50,37 @@ var getUserInfo = function (username, callback) {
 	});
 };
 
+// var searchNews = function (string, callback) {
+//   // With username as key
+//   var params = {
+//     KeyConditions: {
+//       username: {
+//         ComparisonOperator: "EQ",
+//         AttributeValueList: [{ S: username }],
+//       },
+//     },
+//     TableName: "users",
+//   }
+
+//   // If the user exists then return the password to the callback
+//   db.query(params, function (err, data) {
+//     if (err || data.Items.length == 0) {
+//       callback(err, "user not found")
+//     } else {
+//       const first_name = data.Items[0].first_name.S
+//       const last_name = data.Items[0].last_name.S
+//       const interests = data.Items[0].interests.SS
+//       const affiliation = data.Items[0].affiliation.S
+//       const username = data.Items[0].username.S
+//       const email = data.Items[0].email.S
+//       const birthday = data.Items[0].birthday.S
+//       const last_time = data.Items[0].last_time.N
+
+//       callback(err, { first_name, last_name, interests, affiliation, username, email, birthday, last_time })
+//     }
+//   })
+// }
+
 var checkLogin = function (username, callback) {
 	// With username as key
 	var params = {
@@ -404,38 +435,38 @@ var addInterest = (username, interest, callback) => {
 		AttributesToGet: ["interests"],
 	};
 
-  db.query(params, function (err, data) {
-    if (err || data.Items.length === 0) {
-      callback(err, "user doesn't exist")
-    } else {
-      //add interest to list
-      const currInterests = data.Items[0].interests.SS
-      currInterests.push(interest)
-      const paramsAddInterest = {
-        TableName: "users",
-        Key: {
-          username: {
-            S: username,
-          },
-        },
-        ExpressionAttributeNames: { "#interests": "interests" },
-        UpdateExpression: "set #interests = :val",
-        ExpressionAttributeValues: {
-          ":val": {
-            SS: currInterests,
-          },
-        },
-      }
-      db.updateItem(paramsAddInterest, function (err, data) {
-        if (err) {
-          callback(err, "unable to add interests")
-        } else {
-          callback(null, "interest added successfully")
-        }
-      })
-    }
-  })
-}
+	db.query(params, function (err, data) {
+		if (err || data.Items.length === 0) {
+			callback(err, "user doesn't exist");
+		} else {
+			//add interest to list
+			const currInterests = data.Items[0].interests.SS;
+			currInterests.push(interest);
+			const paramsAddInterest = {
+				TableName: "users",
+				Key: {
+					username: {
+						S: username,
+					},
+				},
+				ExpressionAttributeNames: { "#interests": "interests" },
+				UpdateExpression: "set #interests = :val",
+				ExpressionAttributeValues: {
+					":val": {
+						SS: currInterests,
+					},
+				},
+			};
+			db.updateItem(paramsAddInterest, function (err, data) {
+				if (err) {
+					callback(err, "unable to add interests");
+				} else {
+					callback(null, "interest added successfully");
+				}
+			});
+		}
+	});
+};
 
 var removeInterest = (username, interest, callback) => {
 	var params = {
@@ -449,40 +480,40 @@ var removeInterest = (username, interest, callback) => {
 		AttributesToGet: ["interests"],
 	};
 
-  db.query(params, function (err, data) {
-    if (err || data.Items.length === 0) {
-      callback(err, "user doesn't exist")
-    } else {
-      //add interest to list
-      const currInterests = data.Items[0].interests.SS
-      const idx = currInterests.indexOf(interest)
-      currInterests.splice(idx, 1)
-      console.log(currInterests)
-      const paramsAddInterest = {
-        TableName: "users",
-        Key: {
-          username: {
-            S: username,
-          },
-        },
-        ExpressionAttributeNames: { "#interests": "interests" },
-        UpdateExpression: "set #interests = :val",
-        ExpressionAttributeValues: {
-          ":val": {
-            SS: currInterests,
-          },
-        },
-      }
-      db.updateItem(paramsAddInterest, function (err, data) {
-        if (err) {
-          callback(err, "unable to remove interests")
-        } else {
-          callback(null, "interest removed successfully")
-        }
-      })
-    }
-  })
-}
+	db.query(params, function (err, data) {
+		if (err || data.Items.length === 0) {
+			callback(err, "user doesn't exist");
+		} else {
+			//add interest to list
+			const currInterests = data.Items[0].interests.SS;
+			const idx = currInterests.indexOf(interest);
+			currInterests.splice(idx, 1);
+			console.log(currInterests);
+			const paramsAddInterest = {
+				TableName: "users",
+				Key: {
+					username: {
+						S: username,
+					},
+				},
+				ExpressionAttributeNames: { "#interests": "interests" },
+				UpdateExpression: "set #interests = :val",
+				ExpressionAttributeValues: {
+					":val": {
+						SS: currInterests,
+					},
+				},
+			};
+			db.updateItem(paramsAddInterest, function (err, data) {
+				if (err) {
+					callback(err, "unable to remove interests");
+				} else {
+					callback(null, "interest removed successfully");
+				}
+			});
+		}
+	});
+};
 
 // used for when searching for users publicly
 var getUsers = (username, callback) => {
@@ -533,6 +564,88 @@ var getOnlineFriends = (username, onlineUsers, callback) => {
 	});
 };
 
+var createChat = function (room, members, callback) {
+	var params = {
+		Item: {
+			room: { S: room },
+			messages: { L: [] },
+			users: { SS: members },
+		},
+		TableName: "chats",
+	};
+
+	db.putItem(params, function (err, data) {
+		if (err) {
+			callback(err, null);
+		} else {
+			callback(null, data);
+		}
+	});
+};
+
+var getChat = function (room, callback) {
+	var params = {
+		KeyConditions: {
+			room: {
+				ComparisonOperator: "EQ",
+				AttributeValueList: [
+					{
+						S: room,
+					},
+				],
+			},
+		},
+		TableName: "chats",
+	};
+
+	db.query(params, function (err, data) {
+		if (err) {
+			callback(err, null);
+		} else {
+			callback(null, data.Items[0]);
+		}
+	});
+};
+
+var sendMessage = function (room, author, message, time, callback) {
+	var messageMap = {
+		M: {
+			message: {
+				S: message,
+			},
+			author: {
+				S: author,
+			},
+			time: {
+				S: time,
+			},
+		},
+	};
+
+	var params = {
+		Key: {
+			room: {
+				S: room,
+			},
+		},
+		ExpressionAttributeValues: {
+			":new_message": {
+				L: [messageMap],
+			},
+		},
+		UpdateExpression: "SET messages = list_append(messages, :new_message)",
+		TableName: "chats",
+	};
+
+	db.updateItem(params, function (err, data) {
+		if (err) {
+			callback(err, null);
+		} else {
+			callback(null, messageMap);
+		}
+	});
+};
+
 var database = {
 	update_timestamp: updateTimestamp,
 	check_login: checkLogin,
@@ -548,6 +661,9 @@ var database = {
 	add_friend: addFriend,
 	remove_friend: removeFriend,
 	get_online_friends: getOnlineFriends,
+	create_chat: createChat,
+	get_chat: getChat,
+	send_message: sendMessage,
 };
 
 module.exports = database;
