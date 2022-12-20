@@ -121,9 +121,7 @@ const Home = () => {
 				<div className="row">
 					<div className="col-3">Menu</div>
 					<div className="col-7 text-center">
-						Welcome {user}
-						<div className="col-8 justify-content-center">
-							{posts.map((post) => (
+              {posts.map((post) => (
 								<Post
 									user={post.author.S}
 									wall={post.username.S}
@@ -133,7 +131,6 @@ const Home = () => {
 									visitingUser={user}
 								></Post>
 							))}
-						</div>
 					</div>
 					<div className="col-2">
 						<h3 className="text-center">Friends</h3>

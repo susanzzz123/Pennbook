@@ -14,6 +14,8 @@ const getWallInformation = function (req, res) {
 
   db.get_user_info(user, function (err, data) {
     if (err || data === "user not found") {
+      console.log(data)
+      console.log(err)
       res.send("err1")
     } else {
       res.send(data)
