@@ -13,12 +13,12 @@ const Home = () => {
 	// const socket = io.connect("http://localhost:3000");
 	// const [message, setMessage] = useState("");
 	// const [messageReceived, setMessageReceived] = useState("");
-	const [showChat, setShowChat] = useState(false);
+	// const [showChat, setShowChat] = useState(false);
 	const [user, setUser] = useState("");
 	const [friends, setFriends] = useState([]);
 	const [friendsList, setFriendsList] = useState([]);
 	const curr_date = Date.now();
-	//posts are sorted in ascending order
+	// posts are sorted in ascending order
 	const [posts, setPosts] = useState([]);
 
 	// const joinRoom = () => {
@@ -34,66 +34,86 @@ const Home = () => {
 		socket.on("load_online_friends", (data) => {
 			var onlineFriends = data.online;
 			setFriendsList(onlineFriends);
-      socket.emit("get_online_friends", data);
+			socket.emit("get_online_friends", data);
 		});
 	}, [socket]);
 
-  useEffect(() => {
-    $.get("http://localhost:3000/getUser", (data, status) => {
-      const username = data
-      setUser(username)
-      $.post("http://localhost:3000/getFriends", { username: data }, (data, status) => {
-        if (data === "user has no friends") {
-          setFriends([])
-        } else if (typeof data === "string") {
-          setFriends([])
-        } else {
-          const promises = []
-          const friend_list = []
-          data.forEach(function (individual_friend) {
-            promises.push(
-              $.post("http://localhost:3000/getWallInformation", { user: individual_friend.receiver.S }, (friend_data, status) => {
-                friend_list.push({ friend: friend_data.username, status: individual_friend.status.N, last_time: friend_data.last_time })
-              })
-            )
-          })
-          Promise.all(promises).then((values) => {
-            setFriends(friend_list)
-          })
-          
-          const postPromises = []
-          let postList = []
-          postPromises.push(
-            $.post("http://localhost:3000/getPosts", { username }, (dataResponse, status) => {
-            if (dataResponse !== "no posts") {
-              const newList = [...dataResponse]
-              postList = postList.concat(newList)
-              
-            }
-          })
-          )
-          
-          data.forEach((friend) => {
-            if (friend.status.N == 1) {
-              postPromises.push(
-                $.post("http://localhost:3000/getPosts", { username: friend.receiver.S }, (dataResponse, status) => {
-                  if (dataResponse !== "no posts") {
-                    const newList = [...dataResponse]
-                    console.log(newList)
-                    postList = postList.concat(newList)
-                  }
-                })
-              )
-            }
-          })
-          Promise.all(postPromises).then((values) => {
-            postList.sort((a, b) => a.post_id.N > b.post_id.N ? -1 : 1)
-            setPosts([...postList])
-          })
-        }
-      })
-    })
-  }, [])
+	useEffect(() => {
+		$.get("http://localhost:3000/getUser", (data, status) => {
+			const username = data;
+			setUser(username);
+			$.post(
+				"http://localhost:3000/getFriends",
+				{ username: data },
+				(data, status) => {
+					if (data === "user has no friends") {
+						setFriends([]);
+					} else if (typeof data === "string") {
+						setFriends([]);
+					} else {
+						const promises = [];
+						const friend_list = [];
+						data.forEach(function (individual_friend) {
+							promises.push(
+								$.post(
+									"http://localhost:3000/getWallInformation",
+									{ user: individual_friend.receiver.S },
+									(friend_data, status) => {
+										friend_list.push({
+											friend: friend_data.username,
+											status: individual_friend.status.N,
+											last_time: friend_data.last_time,
+										});
+									}
+								)
+							);
+						});
+						Promise.all(promises).then((values) => {
+							setFriends(friend_list);
+						});
+
+						const postPromises = [];
+						let postList = [];
+						postPromises.push(
+							$.post(
+								"http://localhost:3000/getPosts",
+								{ username },
+								(dataResponse, status) => {
+									if (dataResponse !== "no posts") {
+										const newList = [...dataResponse];
+										postList = postList.concat(newList);
+									}
+								}
+							)
+						);
+
+						data.forEach((friend) => {
+							if (friend.status.N == 1) {
+								postPromises.push(
+									$.post(
+										"http://localhost:3000/getPosts",
+										{ username: friend.receiver.S },
+										(dataResponse, status) => {
+											if (dataResponse !== "no posts") {
+												const newList = [...dataResponse];
+												console.log(newList);
+												postList = postList.concat(newList);
+											}
+										}
+									)
+								);
+							}
+						});
+						Promise.all(postPromises).then((values) => {
+							postList.sort((a, b) => (a.post_id.N > b.post_id.N ? -1 : 1));
+							setPosts([...postList]);
+						});
+					}
+				}
+			);
+			socket.emit("get_online_friends", data);
+		});
+	}, []);
 
   return (
     <>

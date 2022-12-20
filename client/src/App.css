@@ -23,6 +23,12 @@
 	line-height: 45px;
 }
 
+/* .chat-window img {
+	display: block;
+	filter: brightness(0) invert(1);
+	cursor: pointer;
+} */
+
 .chat-window .chat-body {
 	height: calc(450px - (45px + 70px));
 	border: 1px solid #263238;
