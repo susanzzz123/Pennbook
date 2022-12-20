@@ -38,6 +38,9 @@ const Wall = () => {
         console.log("error while retrieving posts")
       }
     })
+  }, [allPosts])
+
+  useEffect(() => {
     if (visitingUser.length !== 0) {
       $.post("http://localhost:3000/getFriends", { username: visitingUser }, (friends_data, status) => {
         let check_friend = false
@@ -295,13 +298,15 @@ const Wall = () => {
   const handlePost = async () => {
     const name = data.username
     const now = `${Date.now()}`
+    const postContent = content
+    setContent('')
     $.post("http://localhost:3000/addPost",
     {
       username: name,
       author: visitingUser,
       post_id: now,
       type,
-      content
+      content: postContent
     }, (data, status) => {
       if (data === "Post type is required") {
         setPostMsg(true)
@@ -312,15 +317,15 @@ const Wall = () => {
         setPostMsg(false)
         const postObj = {
           author: {S: visitingUser},
-          content: {S: content},
+          content: {S: postContent},
           post_id: {N: now},
           type: {S: type},
           username: {S: name},
-          wall: {S: name}
+          wall: {S: name},
         }
-        let newAllPosts = [postObj]
-        newAllPosts = newAllPosts.concat(allPosts)
-        setAllPosts([... newAllPosts])
+        // let newAllPosts = [postObj]
+        // newAllPosts = newAllPosts.concat(allPosts)
+        setAllPosts([postObj, ...allPosts])
       }
     })
   }
@@ -337,7 +342,10 @@ const Wall = () => {
                 <label htmlFor="exampleFormControlTextarea1" className="form-label">
                   Make a post!
                 </label>
-                <textarea className="form-control w-75 m-auto" onChange={(e) => setContent(e.target.value)}></textarea>
+                <textarea className="form-control w-75 m-auto"
+                  onChange={(e) => setContent(e.target.value)}
+                  value={content}>
+                </textarea>
                 <div className="dropdown mt-2">
                   <a className="btn btn-secondary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     {type}
