@@ -17,6 +17,9 @@ const getCommentsForPost = function(req, res) {
 
 const addComment = function(req, res) {
   const { post_identifier, comment_id, content, date, author } = req.body
+  if (content === '' || content === undefined) {
+    res.send("Comment cannot have empty content!")
+  }
   db.add_comment(post_identifier, comment_id, content, date, author, function(err, data) {
     if (err) {
       res.send(err)

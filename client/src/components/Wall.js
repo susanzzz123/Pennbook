@@ -339,6 +339,8 @@ const Wall = () => {
     }, (data, status) => {
       if (data === "Post type is required") {
         setPostMsg(true)
+      } else if (data === "Post cannot have empty content!") {
+        alert(data)
       } else if (data !== "Success") {
         setPostMsg(false)
         alert(`Error while posting`)
@@ -352,8 +354,6 @@ const Wall = () => {
           username: {S: name},
           wall: {S: name},
         }
-        // let newAllPosts = [postObj]
-        // newAllPosts = newAllPosts.concat(allPosts)
         setAllPosts([postObj, ...allPosts])
       }
     })

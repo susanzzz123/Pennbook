@@ -24,7 +24,9 @@ const Post = ({ user, wall, content, type, date, visitingUser }) => {
     const comment = commentContent
     setCommentContent('')
     $.post("http://localhost:3000/addComment", { author: visitingUser, comment_id, post_identifier, date: now, content: comment }, (data, status) => {
-      if (data !== "Success") {
+      if (data === "Comment cannot have empty content!") {
+        alert(data)
+      } if (data !== "Success") {
         alert(`Error while commenting`)
       } else {
         const commentObj = {

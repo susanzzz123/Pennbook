@@ -17,6 +17,9 @@ const getPostsForUser = function (req, res) {
 
 const addPost = function(req, res) {
   const { username, author, post_id, type, content } = req.body
+  if (content === '' || content === undefined) {
+    res.send("Post cannot have empty content!")
+  }
   db.add_post(username, author, post_id, type, content, function (err, data) {
     if (err) {
       res.send(err)
