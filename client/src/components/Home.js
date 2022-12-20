@@ -20,6 +20,7 @@ const Home = () => {
 	const curr_date = Date.now();
 	// posts are sorted in ascending order
 	const [posts, setPosts] = useState([]);
+  const [searchArticle, setSearchArticle] = useState('')
 
 	// const joinRoom = () => {
 	// 	// console.log(user);
@@ -119,7 +120,29 @@ const Home = () => {
 			<Header></Header>
 			<div className="container text-center">
 				<div className="row">
-					<div className="col-3">Menu</div>
+					<div className="col-3">
+            Search for a news article:
+            <div>
+              <input
+                id="search-input"
+                // onBlur={() => handleBlur()}
+                // onFocus={() => handleFocus()}
+                onChange={(e) => setSearchArticle(e.target.value)}
+                type="search"
+                className="form-control"
+                placeholder="Search for an article..."
+                aria-label="Search"
+              />
+            </div>
+            News articles recommended for you
+            <div>
+              here should be like top 10 articles recommended
+            </div>
+            Active group chats
+            <div>
+            <Chat userName={user} friends={friendsList} />
+            </div>
+          </div>
 					<div className="col-7 text-center">
               {posts.map((post) => (
 								<Post
@@ -170,7 +193,7 @@ const Home = () => {
 					</div>
 				</div>
 			</div>
-			<Chat userName={user} friends={friendsList} />
+			
 			{/* {!showChat ? (
 				<div className="joinChatContainer">
 					<button onClick={() => setShowChat(true)}>Chat</button>
