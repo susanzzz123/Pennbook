@@ -38,8 +38,21 @@ io.on("connection", async (socket) => {
 	socket.on("join_room", (data) => {
 		socket.join(data);
 	});
-	socket.on("start_chat", (data) => {
-		var members = [data.inviter, data.user].sort();
+	socket.on("start_chat", async (data) => {
+		var oldRoom = data.room;
+		console.log(oldRoom);
+		const usersInOldRoom = await io.in(oldRoom).fetchSockets();
+		var members = [];
+		if (oldRoom !== "") {
+			console.log(`old: ${usersInOldRoom}`);
+			for (const user of usersInOldRoom) {
+				members.push(user.data.username);
+			}
+			members.push(data.user);
+		} else {
+			members = [data.inviter, data.user].sort();
+		}
+		var members = members.sort();
 		var room = members.join("");
 		console.log(room);
 		db.get_chat(room, function (err, data2) {
@@ -49,8 +62,14 @@ io.on("connection", async (socket) => {
 				if (typeof data2 !== "undefined") {
 					console.log("first");
 					socket.join(room);
-					socket.to(users[data.inviter]).emit("load_chat", data2);
-					io.to(room).emit("load_chat", data2);
+					if (oldRoom !== "") {
+						usersInOldRoom.forEach((user) => {
+							socket.to(users[user.data.username]).emit("load_chat", data2); // to others in old room
+						});
+					} else {
+						socket.to(users[data.inviter]).emit("load_chat", data2); // to inviter
+					}
+					io.to(room).emit("load_chat", data2); // to self
 				} else {
 					console.log("second");
 					db.create_chat(room, members, function (err, data3) {
@@ -59,6 +78,7 @@ io.on("connection", async (socket) => {
 						} else {
 							socket.join(room);
 							socket.to(users[data.inviter]).emit("chat_invite_accepted", room);
+							io.to(room).emit("chat_invite_accepted", room);
 						}
 					});
 				}
@@ -111,8 +131,12 @@ io.on("connection", async (socket) => {
 		});
 	});
 	socket.on("invite_to_chat", (data) => {
-		const inviter = { name: socket.data.username, id: socket.id };
-		socket.to(users[data]).emit("receive_invite", inviter);
+		const inviteData = {
+			name: socket.data.username,
+			id: socket.id,
+			room: data.room,
+		};
+		socket.to(users[data.friend]).emit("receive_invite", inviteData);
 	});
 	socket.on("disconnect", () => {
 		console.log("User disconnected", socket.id);
