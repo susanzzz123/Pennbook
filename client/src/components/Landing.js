@@ -77,6 +77,7 @@ const Landing = () => {
             <input
               id="password"
               className="form-control"
+              type="password"
               placeholder="Password"
             />
             <label className="text-secondary" htmlFor="floatingInput">

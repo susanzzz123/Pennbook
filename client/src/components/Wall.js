@@ -424,7 +424,7 @@ const Wall = () => {
       <Header></Header>
       <div className="container">
         <div className="row">
-          <div className="col text-center">News Articles</div>
+          <div className="col text-center"> </div>
           <div className="col-6 text-center">
             <div className="container py-3">
                 <div className="mb-3 px-5 me-2">

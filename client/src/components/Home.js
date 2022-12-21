@@ -268,34 +268,9 @@ const Home = () => {
 			<div className="container text-center">
 				<div className="row">
 					<div className="col-3">
-            <div>
-              <div class="input-group mb-3">
-                <input id="search-input"
-                  onChange={(e) => setSearchArticle(e.target.value)}
-                  type="search"
-                  className="form-control"
-                  placeholder="Search for an article..."
-                  aria-label="Search"
-                />
-                <button type="button" onClick={() => searchForArticles()} class="btn btn-outline-primary">Search</button>
-              </div>
-            </div>
-            <div style={{height:"50vh"}} className="text-start overflow-auto">
-            {
-              searchedNews.map((news) => (
-                <div className="row border rounded mx-3 my-2 py-2">
-                  <div className="col-12">
-                    <a href={`${news[1].link}`} target="_blank">{news[1].headline}</a>
-                    <p></p>
-                    <div>{news[1].authors} • <span className="fw-light">{news[1].category}</span></div>
-                  </div>
-                </div>
-              )
-            )}
-            </div>
             <button
               type="button"
-              className="btn btn-primary m-auto"
+              className="btn btn-primary m-auto mb-2"
               onClick={() => {
                 $.post(
                   "http://localhost:3000/getRecommendedArticle",
@@ -307,9 +282,9 @@ const Home = () => {
                 );
               }}
             >
-              Recommend me!
+              Recommend an article!
             </button>
-            <div>
+            <div className="mb-2">
               {newsFeed.map((article) => (
                 <div className="bg-light m-1 p-3 rounded">
                   <div className="text-end">
@@ -353,14 +328,35 @@ const Home = () => {
                 </div>
               ))}
             </div>
-            Active group chats
             <div>
-              <Chat userName={user} friends={friendsList} />
+              <div class="input-group mb-3">
+                <input id="search-input"
+                  onChange={(e) => setSearchArticle(e.target.value)}
+                  type="search"
+                  className="form-control"
+                  placeholder="Search for an article..."
+                  aria-label="Search"
+                />
+                <button type="button" onClick={() => searchForArticles()} class="btn btn-outline-primary">Search</button>
+              </div>
+            </div>
+            <div style={{height:"50vh"}} className="text-start overflow-auto">
+            {
+              searchedNews.map((news) => (
+                <div className="row border rounded mx-3 my-2 py-2">
+                  <div className="col-12">
+                    <a href={`${news[1].link}`} target="_blank">{news[1].headline}</a>
+                    <p></p>
+                    <div>{news[1].authors} • <span className="fw-light">{news[1].category}</span></div>
+                  </div>
+                </div>
+              )
+            )}
             </div>
           </div>
 
 
-					<div id="overflow-div" style={{height:"90vh", overflow: "auto"}} className="col-7 text-center">
+					<div id="overflow-div" style={{height:"90vh", overflow: "auto"}} className="col-6 text-center">
               {posts.map((post) => (
                 <div key={parseInt(post.post_id.N)}>
                   <Post
@@ -374,41 +370,49 @@ const Home = () => {
                 </div>
 							))}
 					</div>
-					<div className="col-2">
-						<h3 className="text-center">Friends</h3>
-						{friends.length === 0 && (
-							<>
-								<div>No friends</div>
-							</>
-						)}
-						{friends.length > 0 &&
-							typeof friends != "string" &&
-							friends.map((elem) => {
-								// console.log(elem.last_time);
-								return (
-									<div className="d-flex my-2">
-                  {curr_date - parseInt(elem.last_time) > 300000 ? (
-                    <>
-                      <span className="d-inline">
-                        <OfflineFriend></OfflineFriend>
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      <span className="d-inline">
-                        <OnlineFriend></OnlineFriend>
-                      </span>
-                    </>
-                  )}
-										<a
-											href={`/wall?user=${elem.friend}`}
-											className="text-decoration-none d-inline pe-auto mx-2"
-										>
-											{elem.friend}
-										</a>
-									</div>
-								);
-							})}
+					<div className="col-3">
+            <div style={{height: "27vh"}}>
+              <h4 className="text-center">Friends</h4>
+              {friends.length === 0 && (
+                <>
+                  <div>No friends</div>
+                </>
+              )}
+              {friends.length > 0 &&
+                typeof friends != "string" &&
+                friends.map((elem) => {
+                  // console.log(elem.last_time);
+                  return (
+                    <div className="d-flex my-2">
+                    {curr_date - parseInt(elem.last_time) > 300000 ? (
+                      <>
+                        <span className="d-inline">
+                          <OfflineFriend></OfflineFriend>
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <span className="d-inline">
+                          <OnlineFriend></OnlineFriend>
+                        </span>
+                      </>
+                    )}
+                      <a
+                        href={`/wall?user=${elem.friend}`}
+                        className="text-decoration-none d-inline pe-auto mx-2"
+                      >
+                        {elem.friend}
+                      </a>
+                    </div>
+                  );
+                })}
+              </div>
+              <h4>
+                Group chats
+              </h4>
+              <div>
+                <Chat userName={user} friends={friendsList} />
+              </div>
 					</div>
 				</div>
 			</div>
