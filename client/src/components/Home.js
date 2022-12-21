@@ -105,8 +105,18 @@ const Home = () => {
 							}
 						});
 						Promise.all(postPromises).then((values) => {
-							postList.sort((a, b) => (a.post_id.N > b.post_id.N ? -1 : 1));
-							setPosts([...postList]);
+							const filteredPosts = postList.reduce((acc, current) => {
+                const x = acc.find(post => 
+                  (post.post_id.N === current.post_id.N) && (post.author.S === current.author.S)
+                );
+                if (!x) {
+                  return acc.concat([current]);
+                } else {
+                  return acc;
+                }
+              }, []);
+              filteredPosts.sort((a, b) => (a.post_id.N > b.post_id.N ? -1 : 1));
+              setPosts([...filteredPosts]);
 						});
 					}
 				}
