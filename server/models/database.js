@@ -264,19 +264,18 @@ var checkSignup = function (
 						N: time,
 					},
 					profile_url: {
-						S: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.personality-insights.com%2Fdefault-profile-pic%2F&psig=AOvVaw10nFX55F0VChuQrcZhIJ3z&ust=1671504493305000&source=images&cd=vfe&ved=0CA8QjRxqFwoTCPDits7VhPwCFQAAAAAdAAAAABAE"
+						S: "https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg"
 					}
 				},
 				TableName: "users",
 				ReturnValues: "NONE",
 			};
 
-			db.putItem(paramsAddUser, function (err, data) {
+
+			db.putItem(paramsAddUser, async function (err, data) {
 				if (err) {
 					callback(err);
 				} else {
-					//
-
 					// Also add the user prefixes to the prefixes table if they don't exist
 					const prefixes = [];
 					const word = [];
@@ -284,9 +283,10 @@ var checkSignup = function (
 						word.push(username.charAt(i));
 						prefixes.push([word.join(""), [username]]);
 					}
+					
 
-					async
-						.forEach(prefixes, function (prefix) {
+					await Promise.all(prefixes.map(async (prefix) => {
+						const holisticFunction = async () => {
 							// Check if the prefix exists
 							var params = {
 								KeyConditions: {
@@ -298,7 +298,8 @@ var checkSignup = function (
 								TableName: "prefixes",
 							};
 
-							db.query(params, function (err, data) {
+
+							await db.query(params, function (err, data) {
 								if (err) {
 									callback(err, "failed");
 								} else if (data.Items.length !== 0) {
@@ -337,7 +338,6 @@ var checkSignup = function (
 										},
 										TableName: "prefixes",
 									};
-
 									db.putItem(params, function (err, data) {
 										if (err) {
 											callback(err, "failed");
@@ -345,11 +345,21 @@ var checkSignup = function (
 									});
 								}
 							});
-						})
-						.then(callback(null, "Success"));
+						}
+						await holisticFunction();
+					}));
+					
+					callback(null, "Success");
+					// async
+					// 	.forEach(prefixes, function (prefix) {
+					// 	})
+					// 	.then(() => {
+					// 		console.log("LAST ITEM ERROR")
+					// 		callback(null, "Success")});
+					// 	}
 				}
 			});
-		}
+			}
 	});
 };
 
@@ -569,29 +579,37 @@ var getUsers = (username, callback) => {
 };
 
 var getOnlineFriends = (username, onlineUsers, callback) => {
-	getFriends(username, function (err, data) {
-		if (err) {
-			console.log(err);
-		} else {
-			// console.log("working");
-			var friends = data.map((obj) => obj.receiver.S);
-			if (friends === []) {
-				callback(err, "No online friends");
+	if (username.length !== 0) {
+		getFriends(username, function (err, data) {
+			if (err) {
+				console.log(err);
 			} else {
-				var onlineFriends = friends.filter((friend) =>
-					onlineUsers.includes(friend)
-				);
-				var offlineFriends = friends.filter(
-					(friend) => !onlineUsers.includes(friend)
-				);
-				var allFriends = {
-					online: onlineFriends,
-					offline: offlineFriends,
-				};
-				callback(err, allFriends);
+				// console.log("working");
+				if (data !== "user has no friends") {
+					var friends = data.map((obj) => obj.receiver.S);
+					if (friends === []) {
+						callback(err, "No online friends");
+					} else {
+						var onlineFriends = friends.filter((friend) =>
+							onlineUsers.includes(friend)
+						);
+						var offlineFriends = friends.filter(
+							(friend) => !onlineUsers.includes(friend)
+						);
+						var allFriends = {
+							online: onlineFriends,
+							offline: offlineFriends,
+						};
+						callback(err, allFriends);
+					}
+				} else {
+						callback(err, "No online friends")
+				}
 			}
-		}
-	});
+		});
+	} else {
+		callback(null, "No online friends")
+	}
 };
 
 var createChat = function (room, members, callback) {

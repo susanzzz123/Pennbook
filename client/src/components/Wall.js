@@ -365,42 +365,42 @@ const Wall = () => {
       <div className="container">
         <div className="row">
           <div className="col text-center">News Articles</div>
-          <div className="col-6  text-center">
+          <div className="col-6 text-center">
             <div className="container py-3">
-              <div className="mb-3">
-                <label htmlFor="exampleFormControlTextarea1" className="form-label">
-                  Make a post!
-                </label>
-                <textarea className="form-control w-75 m-auto"
-                  onChange={(e) => setContent(e.target.value)}
-                  value={content}>
-                </textarea>
-                <div className="dropdown mt-2">
-                  <a className="btn btn-secondary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    {type}
-                  </a>
-                  <ul className="dropdown-menu">
-                    <li>
-                      <a className="dropdown-item" onClick={() => handleSelectPost()}>
-                        Post
+                <div className="mb-3 px-5 me-2">
+                  <textarea className="form-control m-auto"
+                    onChange={(e) => setContent(e.target.value)}
+                    value={content}
+                    placeholder={`Post to ${data.username}'s wall`}
+                    >
+                  </textarea>
+                  <div className="d-flex border-top mt-2 justify-content-between m-auto">
+                    <div className="dropdown mt-2">
+                      <a className="btn btn-secondary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        {type}
                       </a>
-                    </li>
-                    <li>
-                      <a className="dropdown-item" onClick={() => handleSelectStatus()}>
-                        Status Update
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-                {
-                  postMsg && <div className="text-danger">Post type is required</div>
-                }
-                <button type="button" className="btn btn-primary mt-2" onClick={() => handlePost()}>
-                  Post
-                </button>
+                      <ul className="dropdown-menu">
+                        <li>
+                          <a className="dropdown-item" onClick={() => handleSelectPost()}>
+                            Post
+                          </a>
+                        </li>
+                        <li>
+                          <a className="dropdown-item" onClick={() => handleSelectStatus()}>
+                            Status Update
+                          </a>
+                        </li>
+                      </ul>
+                    </div>
+                    {
+                      postMsg && <div className="text-danger">Post type is required</div>
+                    }
+                    <button type="button" className="btn btn-primary mt-2" onClick={() => handlePost()}>
+                      Post
+                    </button>
+                  </div>
               </div>
-              <div className="col-8">
-                {allPosts.map((post) => (
+              {allPosts.map((post) => (
                   <div key={parseInt(post.post_id.N)}>
                     <Post
                       user={post.author.S}
@@ -410,9 +410,8 @@ const Wall = () => {
                       date={parseInt(post.post_id.N)}
                       visitingUser={visitingUser}>
                     </Post>
-                  </div>
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
           </div>
           <div className="col">

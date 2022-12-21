@@ -111,7 +111,8 @@ const Chat = ({ userName, friends }) => {
 				<div className="notification-window"></div>
 			)}
 			<div className="friends-window">
-				{friends.map((friend) => {
+				{friends != undefined && friends.length > 0 && 
+					friends.map((friend) => {
 					return (
 						<button onClick={(e) => inviteToChat(e, "value")} value={friend}>
 							{friend}

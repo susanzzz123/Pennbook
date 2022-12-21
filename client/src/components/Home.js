@@ -42,15 +42,18 @@ const Home = () => {
 		$.get("http://localhost:3000/getUser", (data, status) => {
 			const username = data;
 			setUser(username);
+      console.log("GOT USER")
 			$.post(
 				"http://localhost:3000/getFriends",
 				{ username: data },
 				(data, status) => {
+          console.log("GOT FRIENDS")
 					if (data === "user has no friends") {
 						setFriends([]);
 					} else if (typeof data === "string") {
 						setFriends([]);
 					} else {
+            console.log("USER HAS FRIENDS")
 						const promises = [];
 						const friend_list = [];
 						data.forEach(function (individual_friend) {
@@ -117,6 +120,14 @@ const Home = () => {
 
 	return (
 		<>
+    <style>
+      {`
+        #overflow-div::-webkit-scrollbar {
+          display: none;
+        }
+      `}
+    </style>
+    <div></div>
 			<Header></Header>
 			<div className="container text-center">
 				<div className="row">
@@ -140,10 +151,10 @@ const Home = () => {
             </div>
             Active group chats
             <div>
-            <Chat userName={user} friends={friendsList} />
+              <Chat userName={user} friends={friendsList} />
             </div>
           </div>
-					<div className="col-7 text-center">
+					<div id="overflow-div" style={{height:"90vh", overflow: "auto"}} className="col-7 text-center">
               {posts.map((post) => (
 								<Post
 									user={post.author.S}

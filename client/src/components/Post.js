@@ -53,7 +53,7 @@ const Post = ({ user, wall, content, type, date, visitingUser }) => {
   }
 
   return (
-    <div className="card mb-4 me-5 shadow">
+    <div className="card mb-4 m-auto shadow">
       <div className="card-body">
         <div className="row mb-2">
           <div style={{flex: "0 0 auto", width: "11%"}}>
