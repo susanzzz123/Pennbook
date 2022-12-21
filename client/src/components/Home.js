@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+
 import AddedFriend from "./icons/AddedFriend";
 import PendingFriend from "./icons/PendingFriend";
 import Header from "./Header";
@@ -8,6 +9,8 @@ import Chat from "./Chat";
 import socket from "./Socket";
 import OfflineFriend from "./icons/OfflineFriend";
 import OnlineFriend from "./icons/OnlineFriend";
+import Heart from "./icons/Heart";
+import HeartFill from "./icons/HeartFill";
 
 const Home = () => {
   // const socket = io.connect("http://localhost:3000");
@@ -22,6 +25,8 @@ const Home = () => {
   const [posts, setPosts] = useState([]);
   const [searchArticle, setSearchArticle] = useState("");
 
+  const [newsFeed, setNewsFeed] = useState([]);
+
   // const joinRoom = () => {
   // 	// console.log(user);
   // 	// console.log("join" + room);
@@ -30,6 +35,16 @@ const Home = () => {
   // 		setShowChat(true);
   // 	}
   // };
+
+  const getFullArticle = (id) => {
+    var article;
+    $.get(`http://localhost:3000/getArticle/${id}`, (data, status) => {
+      // setNewsFeed(newsFeed.concat([data]));
+      console.log(data);
+      article = data[0]?.link.S;
+    });
+    return article;
+  };
 
   useEffect(() => {
     socket.on("load_online_friends", (data) => {
@@ -41,6 +56,7 @@ const Home = () => {
   useEffect(() => {
     $.get("http://localhost:3000/getUser", (data, status) => {
       const username = data;
+      console.log(username);
       setUser(username);
       $.post(
         "http://localhost:3000/getFriends",
@@ -111,6 +127,14 @@ const Home = () => {
           }
         }
       );
+      $.post(
+        "http://localhost:3000/getRecommendedArticle",
+        { username: username },
+        (data, status) => {
+          setNewsFeed(newsFeed.concat([data]));
+          console.log(newsFeed.concat([data]));
+        }
+      );
       socket.emit("get_online_friends", data);
     });
   }, []);
@@ -135,7 +159,47 @@ const Home = () => {
               />
             </div>
             News articles recommended for you
-            <div>here should be like top 10 articles recommended</div>
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() => {
+                $.post(
+                  "http://localhost:3000/getRecommendedArticle",
+                  { username: user },
+                  (data, status) => {
+                    setNewsFeed(newsFeed.concat([data]));
+                    console.log(newsFeed.concat([data]));
+                  }
+                );
+              }}
+            >
+              Get updates
+            </button>
+            <div>
+              {newsFeed.map((article) => (
+                <div className="bg-light m-1 p-3 rounded">
+                  <div className="text-end">
+                    <div
+                      role="button"
+                      onClick={() => {
+                        $.post(
+                          "http://localhost:3000/toggleArticleLike",
+                          { username: user, id: article.news_id.S },
+                          (data, status) => {
+                            console.log(data);
+                            console.log(article);
+                          }
+                        );
+                      }}
+                    >
+                      <Heart />
+                    </div>
+                  </div>
+                  <a href={article.link.S}>{article.headline.S}</a>
+                  <p>{article.short_description.S}</p>
+                </div>
+              ))}
+            </div>
             Active group chats
             <div>
               <Chat userName={user} friends={friendsList} />
