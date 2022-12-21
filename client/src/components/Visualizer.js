@@ -4,6 +4,7 @@ import Header from "./Header";
 import $ from "jquery";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
+// Component for the visualizer
 const Visualizer = () => {
   const [nodes, setNodes] = useState([]);
   const [edges, setEdges] = useState([]);
@@ -12,6 +13,7 @@ const Visualizer = () => {
   const [affiliation, setAffiliation] = useState();
   const navigate = useNavigate();
 
+  // Get the user, his friends and their information
   useEffect(() => {
     const currUser = params.get("user");
     const currAffiliation = params.get("affiliation");
@@ -46,6 +48,7 @@ const Visualizer = () => {
     height: "500px",
   };
 
+  // On click, you should expand a node by checking their affiliation
   const expand = (username) => {
     $.post(
       "http://localhost:3000/getFriends",

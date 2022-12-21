@@ -33,7 +33,6 @@ const loadNews = async () => {
         .split("\r\n")
         .slice(0, 100)
         .map((n, i) => ({ id: i.toString(), ...JSON.parse(n) }));
-      // console.log(entries);
 
       entries.forEach((e) => {
         const date = new Date(Date.parse(e.date));

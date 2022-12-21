@@ -4,6 +4,7 @@ import $ from "jquery";
 import Profile from "./icons/Profile";
 const img = require("./penguin.png");
 
+// This is a header that contains the search bar and account dropdown
 const Header = () => {
   const [user, setUser] = useState("")
   const [searchTerm, setSearchTerm] = useState("")
@@ -13,20 +14,17 @@ const Header = () => {
   const navigate = useNavigate()
 
 	useEffect(() => {
+    // On the search bar, display options while the user is typing
 		if (searchTerm.length === 0) {
 			setFoundUsers([]);
 		} else {
 			const delayDebounceFn = setTimeout(() => {
 				if (searchTerm.length !== 0) {
-					// Uncomment this when you want to test out the actual search
 					$.post("http://localhost:3000/searchUser", { username: searchTerm }, (data, status) => {
 					  if (data !== "No users found") {
 					    setFoundUsers(data)
 					  }
 					})
-
-					// Dummy values to save AWS cost
-					// setFoundUsers(["jren2", "test1", "test2"]);
 				}
 			}, 1000);
 
@@ -35,7 +33,7 @@ const Header = () => {
 	}, [searchTerm]);
 
   useEffect(() => {
-    console.log("FRIENDS HELLO")
+    // Get the user 
     $.get("http://localhost:3000/getUser", (data, status) => {
       setUser(data)
       $.post("http://localhost:3000/getWallInformation", {user : data}, (information, status) => {
@@ -50,19 +48,10 @@ const Header = () => {
 	};
 
 	const handleBlur = () => {
-		// $("#found-field").css("visibility", "hidden")
 	};
 
 	const handleFocus = () => {
 		$("#found-field").css("visibility", "visible");
-	};
-
-	const viewProfile = (profile) => {
-		$("#found-field").css("visibility", "hidden");
-		$("#search-input").val("");
-		setSearchTerm("");
-		setFoundUsers([]);
-		navigate(`/wall?user=${profile}`);
 	};
 
 	return (

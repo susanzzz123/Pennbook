@@ -196,44 +196,6 @@ const toggleArticleLike = (id, user, callback) => {
       });
     }
   });
-
-  // db.query(params, function (err, data) {
-  //   if (err) {
-  //     callback(err, "error");
-  //   } else {
-  //     const likes = data.Items[0]?.likes?.SS;
-
-  //     if (!likes) likes = [];
-
-  //     callback(err, data);
-
-  //     // likes = likes.includes(user)
-  //     //   ? likes.filter((u) => u != user)
-  //     //   : likes.concat([user]);
-
-  //     // const likeParams = {
-  //     //   TableName: "news",
-  //     //   ExpressionAttributeValues: {
-  //     //     ":i": { S: id },
-  //     //   },
-  //     //   KeyConditionExpression: "news_id = :i",
-  //     //   UpdateExpression: "set likes = :l",
-  //     //   ExpressionAttributeValues: {
-  //     //     ":l": {
-  //     //       SS: likes,
-  //     //     },
-  //     //   },
-  //     // };
-
-  //     // db.updateItem(likeParams, function (err, data) {
-  //     //   if (err) {
-  //     //     callback(err, "Failed toggling like");
-  //     //   } else {
-  //     //     callback(null, "Toggled article like");
-  //     //   }
-  //     // });
-  //   }
-  // });
 };
 
 var checkLogin = function (username, callback) {
@@ -503,13 +465,6 @@ var checkSignup = function (
 					}));
 					
 					callback(null, "Success");
-					// async
-					// 	.forEach(prefixes, function (prefix) {
-					// 	})
-					// 	.then(() => {
-					// 		console.log("LAST ITEM ERROR")
-					// 		callback(null, "Success")});
-					// 	}
 				}
 			});
 			}
@@ -681,7 +636,6 @@ var removeInterest = (username, interest, callback) => {
       const currInterests = data.Items[0].interests.SS;
       const idx = currInterests.indexOf(interest);
       currInterests.splice(idx, 1);
-      console.log(currInterests);
       const paramsAddInterest = {
         TableName: "users",
         Key: {
@@ -737,7 +691,6 @@ var getOnlineFriends = (username, onlineUsers, callback) => {
 			if (err) {
 				console.log(err);
 			} else {
-				// console.log("working");
 				if (data !== "user has no friends") {
 					var friends = data.map((obj) => obj.receiver.S);
 					if (friends === []) {

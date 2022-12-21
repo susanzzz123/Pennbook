@@ -1,5 +1,5 @@
 import react, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import $ from "jquery";
 const img = require("./penguin.png");
 
@@ -7,6 +7,7 @@ const Landing = () => {
   const [errMessage, setErrMessage] = useState("");
   const navigate = useNavigate();
 
+  // If the user is already logged in, go straight to home
   useEffect(() => {
     $.get("http://localhost:3000/getUser", (data, status) => {
       if (data !== "") {
@@ -23,6 +24,7 @@ const Landing = () => {
     });
   }, []);
 
+  // Login function
   handleLogin = () => {
     const username = $("#username").val();
     const password = $("#password").val();

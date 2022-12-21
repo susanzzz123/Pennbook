@@ -1,7 +1,4 @@
 import React, { useEffect, useState } from "react";
-
-import AddedFriend from "./icons/AddedFriend";
-import PendingFriend from "./icons/PendingFriend";
 import Header from "./Header";
 import $ from "jquery";
 import Post from "./Post";
@@ -13,11 +10,8 @@ import Heart from "./icons/Heart";
 import HeartFill from "./icons/HeartFill";
 import {stemmer} from 'stemmer'
 
+// Home page has many features
 const Home = () => {
-	// const socket = io.connect("http://localhost:3000");
-	// const [message, setMessage] = useState("");
-	// const [messageReceived, setMessageReceived] = useState("");
-	// const [showChat, setShowChat] = useState(false);
 	const [user, setUser] = useState("");
 	const [friends, setFriends] = useState([]);
 	const [friendsList, setFriendsList] = useState([]);
@@ -28,35 +22,22 @@ const Home = () => {
   const [searchedNews, setSearchedNews] = useState([])
   const [newsFeed, setNewsFeed] = useState([]);
 
-  // const joinRoom = () => {
-  // 	// console.log(user);
-  // 	// console.log("join" + room);
-  // 	if (room !== "") {
-  // 		socket.emit("join_room", room);
-  // 		setShowChat(true);
-  // 	}
-  // };
-
   const getFullArticle = (id) => {
     var article;
     $.get(`http://localhost:3000/getArticle/${id}`, (data, status) => {
-      // setNewsFeed(newsFeed.concat([data]));
-      console.log(data);
       article = data[0]?.link.S;
     });
     return article;
   };
 
 	useEffect(() => {
-    // const interval = setInterval(() => {
       socket.on("load_online_friends", (data) => {
         var onlineFriends = data.online;
         setFriendsList(onlineFriends);
       });
-    // }, 5000)
-    // return () => clearInterval(interval)
 	}, []);
 
+  // use effect to get user information along with friends 
   useEffect(() => {
 		$.get("http://localhost:3000/getUser", (data, status) => {
 			const username = data;
@@ -142,6 +123,7 @@ const Home = () => {
 		});
 	}, []);
 
+  // keep reloading for friends
   useEffect(() => {
     const interval = setInterval(() => {
       if (user != '' && user != undefined) {
@@ -224,8 +206,9 @@ const Home = () => {
       }
     }, 5000)
     return () => clearInterval(interval)
-  }, []) 
+  }, [user]) 
 
+  // method to search for articles based on the input field
   const searchForArticles = () => {
     if (searchArticle.length > 0) {
       let words = searchArticle.toLowerCase()
@@ -247,7 +230,6 @@ const Home = () => {
               return b[1].count - a[1].count;
           });
 
-          console.log(sort_news)
           setSearchedNews(sort_news)
         }
       )
@@ -277,7 +259,6 @@ const Home = () => {
                   { username: user },
                   (data, status) => {
                     setNewsFeed(newsFeed.concat([data]));
-                    console.log(newsFeed.concat([data]));
                   }
                 );
               }}
@@ -304,15 +285,12 @@ const Home = () => {
                               ? article.likes.SS.concat([user])
                               : [user],
                           });
-                          console.log(newNewsFeed);
                           setNewsFeed(newNewsFeed);
 
                           $.post(
                             "http://localhost:3000/toggleArticleLike",
                             { username: user, id: article.news_id.S },
                             (data, status) => {
-                              console.log(data);
-                              console.log(article);
                             }
                           );
                         }}
@@ -383,7 +361,6 @@ const Home = () => {
               {friends.length > 0 &&
                 typeof friends != "string" &&
                 friends.map((elem) => {
-                  // console.log(elem.last_time);
                   return (
                     <div className="d-flex my-2">
                     {curr_date - parseInt(elem.last_time) > 300000 ? (

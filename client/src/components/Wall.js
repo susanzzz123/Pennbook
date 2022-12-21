@@ -7,6 +7,7 @@ import AddFriend from "./icons/AddFriend";
 import AddedFriend from "./icons/AddedFriend";
 import DeleteButton from "./icons/DeleteButton";
 
+// Component for the wall
 const Wall = () => {
   const [profileURL, setProfileURL] = useState("");
   const [visitingUser, setVisitingUser] = useState("");
@@ -20,6 +21,8 @@ const Wall = () => {
 
   const params = new URLSearchParams(window.location.search);
   const user = params.get("user");
+
+  // Get the wall information and the users along with profile pictures
   useEffect(() => {
     $.post(
       "http://localhost:3000/getWallInformation",
@@ -41,7 +44,6 @@ const Wall = () => {
         var reader = new FileReader();
         reader.onload = function (e) {
           $("#preview").attr("src", e.target.result).fadeIn("slow");
-          console.log(e.target.result);
         };
         reader.readAsDataURL(input.files[0]);
       }
@@ -56,7 +58,7 @@ const Wall = () => {
     });
   }, [allPosts]);
 
-  //periodically make backend calls to get the latest posts
+  // periodically make backend calls to get the latest posts
   useEffect(() => {
     const interval = setInterval(() => {
       if (allPosts.length !== 0) {
@@ -90,6 +92,7 @@ const Wall = () => {
     }
   }, [visitingUser]);
 
+  // Account change effects
   useEffect(() => {
     $("#add-friend").on("click", () => {
       addFriend();
@@ -151,7 +154,6 @@ const Wall = () => {
   };
 
   const removeFriend = () => {
-    console.log("Removing friend");
     $.post(
       "http://localhost:3000/removeFriend",
       { sender: visitingUser, receiver: data.username },
@@ -166,6 +168,7 @@ const Wall = () => {
     );
   };
 
+  // Function for account changes
   changeItem = (item) => {
     var newItem = "";
     switch (item) {
@@ -316,6 +319,7 @@ const Wall = () => {
     }
   };
 
+  // Separate function for delete interests (it is stored as a list)
   const deleteInterest = async (elem) => {
     $.post(
       "http://localhost:3000/deleteInterest",
@@ -373,7 +377,6 @@ const Wall = () => {
     setType("Status Update");
   };
 
-  //***fix frontend add post with comment
   const handlePost = async () => {
     const name = data.username;
     const now = `${Date.now()}`;

@@ -34,17 +34,14 @@ app.use(express.static("dist"));
 
 // listening for incoming sockets
 io.on("connection", async (socket) => {
-	console.log(`User connected: ${socket.id}`);
 	socket.on("join_room", (data) => {
 		socket.join(data);
 	});
 	socket.on("start_chat", async (data) => {
 		var oldRoom = data.room;
-		console.log(oldRoom);
 		const usersInOldRoom = await io.in(oldRoom).fetchSockets();
 		var members = [];
 		if (oldRoom !== "") {
-			console.log(`old: ${usersInOldRoom}`);
 			for (const user of usersInOldRoom) {
 				members.push(user.data.username);
 			}
@@ -54,13 +51,11 @@ io.on("connection", async (socket) => {
 		}
 		var members = members.sort();
 		var room = members.join("");
-		console.log(room);
 		db.get_chat(room, function (err, data2) {
 			if (err) {
 				console.log(err);
 			} else {
 				if (typeof data2 !== "undefined") {
-					console.log("first");
 					socket.join(room);
 					if (oldRoom !== "") {
 						usersInOldRoom.forEach((user) => {
@@ -71,7 +66,6 @@ io.on("connection", async (socket) => {
 					}
 					io.to(room).emit("load_chat", data2); // to self
 				} else {
-					console.log("second");
 					db.create_chat(room, members, function (err, data3) {
 						if (err) {
 							console.log(err);
@@ -141,30 +135,6 @@ io.on("connection", async (socket) => {
 	socket.on("disconnect", () => {
 		console.log("User disconnected", socket.id);
 	});
-	// socket.on("get_all_posts", (data) => {
-	// 	socket.data.friends = data.friends
-	// 	socket.data.username = data.username
-	// 	let posts = []
-	// 	socket.data.friends.forEach(friend => {
-	// 		if (friend.status.N == 1) {
-	// 			postsdb.get_posts_for_user(friend.receiver.S, function(err, data) {
-	// 				if (err) {
-	// 					console.log(err)
-	// 				} else if (data !="user has no posts") {
-	// 					posts = posts.concat(data)
-	// 					postsdb.get_posts_for_user(socket.data.username, function(err, data) {
-	// 						if (err) {
-	// 							console.log(err)
-	// 						} else if (data !="user has no posts") {
-	// 							posts = posts.concat(data)
-	// 						}
-	// 						socket.emit("load_all_posts", posts)
-	// 					})
-	// 				}
-	// 			})
-	// 		}
-	// 	})
-	// })
 });
 
 server.listen(3000, () => {
@@ -208,7 +178,3 @@ app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "../dist/index.html"));
 });
 
-// // Start node server
-// app.listen(3000, () => {
-// 	console.log("listening on 3000");
-// });

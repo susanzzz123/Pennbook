@@ -2,7 +2,6 @@
 Utility routes
 ------------*/
 const db = require("../models/database")
-const timestamp = require("./timestamp")
 
 const getUser = function (req, res) {
   res.send(req.session.user)
@@ -13,8 +12,6 @@ const getWallInformation = function (req, res) {
 
   db.get_user_info(user, function (err, data) {
     if (err || data === "user not found") {
-      console.log(data)
-      console.log(err)
       res.send("err1")
     } else {
       res.send(data)

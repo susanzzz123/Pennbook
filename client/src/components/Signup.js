@@ -1,13 +1,15 @@
 import react, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import $ from "jquery";
 const img = require("./penguin.png");
 
+// Component for signup page
 const Signup = () => {
   const [errMessage, setErrMessage] = useState("");
   const [interests, setInterests] = useState([]);
   const navigate = useNavigate();
 
+  // setting event listeners for when a user signs up
   useEffect(() => {
     $("#interests_input").on("keypress", (e) => {
       if (e.which === 13) handleAdd();
@@ -32,7 +34,7 @@ const Signup = () => {
         setErrMessage("Last name cannot be empty");
       } else if (username.length === 0) {
         setErrMessage("Username cannot be empty");
-      } else if (email.length < 5 || !email.includes("@")) {
+      } else if (email.length < 5 || !email.includes("@") || !email.includes(".")) {
         setErrMessage("Please enter a valid email");
       } else if (password.length < 6 || !/\d/.test(password)) {
         setErrMessage(
@@ -43,7 +45,6 @@ const Signup = () => {
         birth_day.length === 0 ||
         /\D/.test(birth_day)
       ) {
-        // TODO: check birthday is valid
         setErrMessage("Please enter a valid birth day");
       } else if (
         birth_month.length > 2 ||
@@ -91,7 +92,6 @@ const Signup = () => {
   handleAdd = () => {
     const interest = $("#interests_input").val();
     if (!interests.includes(interest)) {
-      // TODO: Add a way to remove the interest
       setInterests((old) => [...old, interest]);
     }
     $("#interests_input").val("");

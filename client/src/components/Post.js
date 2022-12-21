@@ -3,6 +3,7 @@ import $ from "jquery"
 import Comment from "./Comment"
 import { v4 as uuidv4 } from 'uuid';
 
+// Component for posts
 const Post = ({ user, wall, content, type, date, visitingUser }) => {
   const [commentContent, setCommentContent] = useState('')
   const [comments, setComments] = useState([])
@@ -12,6 +13,7 @@ const Post = ({ user, wall, content, type, date, visitingUser }) => {
   const currDate = new Date(date).toString()
   const post_identifier = `${user}#${wall}#${date}`
 
+  // Get the wall information and comments of a post
   useEffect(() => {
     $.post("http://localhost:3000/getWallInformation", {user}, (data, status) => {
       setProfileURL(data.profile_url)

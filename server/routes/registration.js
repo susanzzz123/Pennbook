@@ -32,21 +32,16 @@ var signup = function (req, res) {
   const { username, password, first_name, last_name, email, affiliation, birthday, interests } = req.body
   var hash = CryptoJS.SHA256(password).toString()
 
-  console.log("SIGNING UP")
   db.check_signup(username, hash, first_name, last_name, email, affiliation, birthday, interests, function (err, data) {
-    console.log("RETURNED FROM CHECK_SIGNUP")
     if (data === "user already exists") {
-      console.log("HELLO?")
       res.send("err1")
     } else {
       if (data === "Success") {
         req.session.user = username
         req.session.save()
-        console.log("SUCESS")
         timestamp.internalUpdateTimestamp(username)
         res.send("works")
       } else {
-        console.log("ERROR")
         res.send("err2")
       }
     }

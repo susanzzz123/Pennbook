@@ -13,17 +13,12 @@ const Chat = ({ userName, friends }) => {
 	const [invitedRoom, setInvitedRoom] = useState("");
 
 	const sendMessage = async () => {
-		console.log(`hi ${room}`);
 		if (currentMessage !== "") {
 			const messageData = {
 				room: room,
 				author: userName,
 				message: currentMessage,
-				time:
-					// new Date(Date.now()).getHours() +
-					// ":" +
-					// new Date(Date.now()).getMinutes(),
-					new Date(Date.now()),
+				time: new Date(Date.now()),
 			};
 			await socket.emit("send_message", messageData);
 			setCurrentMessage("");
@@ -31,7 +26,6 @@ const Chat = ({ userName, friends }) => {
 	};
 
 	const inviteToChat = (e) => {
-		console.log("inviteroom: " + room);
 		const inviteData = {
 			friend: e.target.value,
 			room: room,
@@ -41,15 +35,11 @@ const Chat = ({ userName, friends }) => {
 
 	const startChat = (inviter, invitedRoom) => {
 		setRoom(invitedRoom);
-		console.log("roomie: " + invitedRoom);
 		const startData = {
 			inviter: inviter,
 			user: userName,
 			room: invitedRoom,
 		};
-		// setShowChatBox(true);
-		// var room = startData.inviter + "" + startData.user;
-		// setRoom(room);
 		socket.emit("start_chat", startData);
 	};
 
@@ -64,10 +54,8 @@ const Chat = ({ userName, friends }) => {
   };
 
 	const leaveCurrentRoom = () => {
-		console.log(`loadingg ${room}`);
 		if (!room.length == 0) {
 			// was already in room prior to accepting invite
-			console.log("leaving");
 			const leaveData = {
 				room: room,
 				user: userName,
@@ -78,7 +66,6 @@ const Chat = ({ userName, friends }) => {
 
 	useEffect(() => {
 		socket.on("receive_message", (data) => {
-			console.log("receive working");
 			setMessageList((list) => [...list, data]);
 		});
 		socket.on("receive_invite", (data) => {
@@ -87,7 +74,6 @@ const Chat = ({ userName, friends }) => {
 			setInvitedRoom(data.room);
 		});
 		socket.on("chat_invite_accepted", (data) => {
-			// leaveCurrentRoom();
 			setShowChatBox(true);
 			socket.emit("join_room", data);
 			setRoom(data);
@@ -96,7 +82,6 @@ const Chat = ({ userName, friends }) => {
 			setMessageList((list) => [...list, data]);
 		});
 		socket.on("load_chat", (data) => {
-			// leaveCurrentRoom();
 			setShowChatBox(true);
 			socket.emit("join_room", data.room.S);
 			setRoom(data.room.S);
