@@ -49,11 +49,22 @@ const Wall = () => {
     $.post("http://localhost:3000/getPosts", { username: user }, (data, status) => {
       if (data !== "no posts") {
         setAllPosts(data)
-      } else {
-        //error message for display
-        console.log("error while retrieving posts")
       }
     })
+  }, [allPosts])
+
+  //periodically make backend calls to get the latest posts
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (allPosts.length !== 0) {
+        $.post("http://localhost:3000/getPosts", { username: user }, (data, status) => {
+          if (data !== "no posts") {
+            setAllPosts(data)
+          }
+        })
+      }
+    }, 5000)
+  return () => clearInterval(interval)
   }, [allPosts])
 
   useEffect(() => {

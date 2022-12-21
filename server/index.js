@@ -4,6 +4,7 @@ var routes = require("./routes/routes");
 var cors = require("cors");
 const path = require("path");
 const db = require("./models/database");
+const postsdb = require("./models/postsdb");
 
 // Initialization
 var app = express();
@@ -116,6 +117,30 @@ io.on("connection", async (socket) => {
 	socket.on("disconnect", () => {
 		console.log("User disconnected", socket.id);
 	});
+	// socket.on("get_all_posts", (data) => {
+	// 	socket.data.friends = data.friends
+	// 	socket.data.username = data.username
+	// 	let posts = []
+	// 	socket.data.friends.forEach(friend => {
+	// 		if (friend.status.N == 1) {
+	// 			postsdb.get_posts_for_user(friend.receiver.S, function(err, data) {
+	// 				if (err) {
+	// 					console.log(err)
+	// 				} else if (data !="user has no posts") {
+	// 					posts = posts.concat(data)
+	// 					postsdb.get_posts_for_user(socket.data.username, function(err, data) {
+	// 						if (err) {
+	// 							console.log(err)
+	// 						} else if (data !="user has no posts") {
+	// 							posts = posts.concat(data)
+	// 						}
+	// 						socket.emit("load_all_posts", posts)
+	// 					})
+	// 				}
+	// 			})
+	// 		}
+	// 	})
+	// })
 });
 
 server.listen(3000, () => {
