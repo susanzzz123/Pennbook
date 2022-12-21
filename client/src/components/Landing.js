@@ -8,7 +8,7 @@ const Landing = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
-    $.get("http://localhost:3000/getUser", (data, status) => {
+    $.get("http://localhost:80/getUser", (data, status) => {
       if (data !== "") {
         navigate("/home")
       }
@@ -32,7 +32,7 @@ const Landing = () => {
     } else if (password.length === 0) {
       setErrMessage("Password must be filled")
     } else {
-      $.post("http://localhost:3000/login", { username, password }, function (data, status) {
+      $.post("http://localhost:80/login", { username, password }, function (data, status) {
         if (data === "err1") {
           setErrMessage("User not found")
         } else if (data === "err2") {

@@ -13,14 +13,14 @@ const Post = ({ user, wall, content, type, date, visitingUser }) => {
   const post_identifier = `${user}#${wall}#${date}`
 
   useEffect(() => {
-    $.post("http://localhost:3000/getWallInformation", {user}, (data, status) => {
+    $.post("http://localhost:80/getWallInformation", {user}, (data, status) => {
       setProfileURL(data.profile_url)
       setAffiliation(data.affiliation)
     })
   },[])
 
   useEffect(() => {
-    $.post("http://localhost:3000/getComments", { post_identifier }, (data, status) => {
+    $.post("http://localhost:80/getComments", { post_identifier }, (data, status) => {
       if (data !== "no comments") {
         setComments(data)
       }
@@ -32,7 +32,7 @@ const Post = ({ user, wall, content, type, date, visitingUser }) => {
     const comment_id = uuidv4()
     const comment = commentContent
     setCommentContent('')
-    $.post("http://localhost:3000/addComment", { author: visitingUser, comment_id, post_identifier, date: now, content: comment }, (data, status) => {
+    $.post("http://localhost:80/addComment", { author: visitingUser, comment_id, post_identifier, date: now, content: comment }, (data, status) => {
       if (data === "Comment cannot have empty content!") {
         alert(data)
       } if (data !== "Success") {

@@ -39,12 +39,12 @@ const Home = () => {
 	}, [socket]);
 
 	useEffect(() => {
-		$.get("http://localhost:3000/getUser", (data, status) => {
+		$.get("http://localhost:80/getUser", (data, status) => {
 			const username = data;
 			setUser(username);
       console.log("GOT USER")
 			$.post(
-				"http://localhost:3000/getFriends",
+				"http://localhost:80/getFriends",
 				{ username: data },
 				(data, status) => {
           console.log("GOT FRIENDS")
@@ -59,7 +59,7 @@ const Home = () => {
 						data.forEach(function (individual_friend) {
 							promises.push(
 								$.post(
-									"http://localhost:3000/getWallInformation",
+									"http://localhost:80/getWallInformation",
 									{ user: individual_friend.receiver.S },
 									(friend_data, status) => {
 										friend_list.push({
@@ -79,7 +79,7 @@ const Home = () => {
 						let postList = [];
 						postPromises.push(
 							$.post(
-								"http://localhost:3000/getPosts",
+								"http://localhost:80/getPosts",
 								{ username },
 								(dataResponse, status) => {
 									if (dataResponse !== "no posts") {
@@ -94,7 +94,7 @@ const Home = () => {
 							if (friend.status.N == 1) {
 								postPromises.push(
 									$.post(
-										"http://localhost:3000/getPosts",
+										"http://localhost:80/getPosts",
 										{ username: friend.receiver.S },
 										(dataResponse, status) => {
 											if (dataResponse !== "no posts") {

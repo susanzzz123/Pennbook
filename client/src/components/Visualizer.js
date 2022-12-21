@@ -19,7 +19,7 @@ const Visualizer = () => {
     setUser(currUser)
 
     if (currUser !== "") {
-      $.post("http://localhost:3000/getFriends", { username: currUser }, (friend_data, status) => {
+      $.post("http://localhost:80/getFriends", { username: currUser }, (friend_data, status) => {
         const nodes_array = []
         const edges_array = []
         nodes_array.push({ id: currUser, label: currUser })
@@ -43,14 +43,14 @@ const Visualizer = () => {
   }
 
   const expand = (username) => {
-    $.post("http://localhost:3000/getFriends", { username }, (friend_data, status) => {
+    $.post("http://localhost:80/getFriends", { username }, (friend_data, status) => {
       const nodes_array = []
       const edges_array = []
       const promises = []
 
       friend_data.forEach((elem) => {
         promises.push(
-          $.post("http://localhost:3000/getWallInformation", { user: elem.receiver.S }, (friend_affiliation, status) => {
+          $.post("http://localhost:80/getWallInformation", { user: elem.receiver.S }, (friend_affiliation, status) => {
             if (friend_affiliation.affiliation == affiliation) {
               nodes_array.push({ id: elem.receiver.S, label: elem.receiver.S })
               edges_array.push({ from: elem.sender.S, to: elem.receiver.S })

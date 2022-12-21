@@ -8,7 +8,7 @@ const Comment = ({ author, comment_id, date, content }) => {
   const [affiliation, setAffiliation] = useState("")
 
   useEffect(() => {
-    $.post("http://localhost:3000/getWallInformation", {user: author}, (data, status) => {
+    $.post("http://localhost:80/getWallInformation", {user: author}, (data, status) => {
       setProfileURL(data.profile_url)
       setAffiliation(data.affiliation)
     })

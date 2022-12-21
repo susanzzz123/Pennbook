@@ -21,12 +21,12 @@ const Wall = () => {
   const params = new URLSearchParams(window.location.search)
   const user = params.get("user")
   useEffect(() => {
-    $.post("http://localhost:3000/getWallInformation", { user }, (data, status) => {
+    $.post("http://localhost:80/getWallInformation", { user }, (data, status) => {
       setProfileURL(data.profile_url)
       setData(data)
     })
 
-    $.get("http://localhost:3000/getUser", (data, status) => {
+    $.get("http://localhost:80/getUser", (data, status) => {
       setVisitingUser(data)
     })
 
@@ -46,7 +46,7 @@ const Wall = () => {
   }, [])
 
   useEffect(() => {
-    $.post("http://localhost:3000/getPosts", { username: user }, (data, status) => {
+    $.post("http://localhost:80/getPosts", { username: user }, (data, status) => {
       if (data !== "no posts") {
         setAllPosts(data)
       } else {
@@ -58,7 +58,7 @@ const Wall = () => {
 
   useEffect(() => {
     if (visitingUser.length !== 0) {
-      $.post("http://localhost:3000/getFriends", { username: visitingUser }, (friends_data, status) => {
+      $.post("http://localhost:80/getFriends", { username: visitingUser }, (friends_data, status) => {
         let check_friend = false
         if (friends_data !== "user has no friends") {
           friends_data.forEach((elem) => {
@@ -118,7 +118,7 @@ const Wall = () => {
   }
 
   const addFriend = () => {
-    $.post("http://localhost:3000/addFriend", { sender: visitingUser, receiver: data.username }, (data, status) => {
+    $.post("http://localhost:80/addFriend", { sender: visitingUser, receiver: data.username }, (data, status) => {
       if (data === "error") {
         console.log("error")
       } else {
@@ -130,7 +130,7 @@ const Wall = () => {
 
   const removeFriend = () => {
     console.log("Removing friend")
-    $.post("http://localhost:3000/removeFriend", { sender: visitingUser, receiver: data.username }, (data, status) => {
+    $.post("http://localhost:80/removeFriend", { sender: visitingUser, receiver: data.username }, (data, status) => {
       if (data === "error") {
         console.log("error")
       } else {
@@ -168,7 +168,7 @@ const Wall = () => {
       alert(`${newItem} must be greater than length 0`)
     } else {
       if (newItem !== "Interests") {
-        $.post(`http://localhost:3000/change${newItem}`, 
+        $.post(`http://localhost:80/change${newItem}`, 
         {
           username: data.username,
           affiliation: itemValue,
@@ -185,7 +185,7 @@ const Wall = () => {
                 changeToggles(0)
                 const now = `${Date.now()}`
                 const name = data.username
-                $.post("http://localhost:3000/addPost",
+                $.post("http://localhost:80/addPost",
                 {
                   username: name,
                   wall: name,
@@ -230,7 +230,7 @@ const Wall = () => {
           }
         })  
       } else {
-        $.post("http://localhost:3000/addInterest", {username: data.username, newInterest: itemValue}, (dataResponse, status) => {
+        $.post("http://localhost:80/addInterest", {username: data.username, newInterest: itemValue}, (dataResponse, status) => {
           if (dataResponse === "Success") {
             const newData = { ...data }
             let newInterest = data.interests
@@ -240,7 +240,7 @@ const Wall = () => {
             changeToggles(3)
             const now = `${Date.now()}`
             const name = data.username
-            $.post("http://localhost:3000/addPost",
+            $.post("http://localhost:80/addPost",
             {
               username: name,
               wall: name,
@@ -274,7 +274,7 @@ const Wall = () => {
   }
 
   const deleteInterest = async (elem) => {
-    $.post("http://localhost:3000/deleteInterest", {username: data.username, interest: elem}, (dataResponse, status) => {
+    $.post("http://localhost:80/deleteInterest", {username: data.username, interest: elem}, (dataResponse, status) => {
           if (dataResponse === "Success") {
             const newData = { ...data }
             const newInterest = data.interests
@@ -284,7 +284,7 @@ const Wall = () => {
             setData(newData)
             const now = `${Date.now()}`
             const name = data.username
-            $.post("http://localhost:3000/addPost",
+            $.post("http://localhost:80/addPost",
             {
               username: name,
               wall: name,
@@ -329,7 +329,7 @@ const Wall = () => {
     const now = `${Date.now()}`
     const postContent = content
     setContent('')
-    $.post("http://localhost:3000/addPost",
+    $.post("http://localhost:80/addPost",
     {
       username: name,
       author: visitingUser,

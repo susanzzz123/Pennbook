@@ -48,7 +48,7 @@ const Signup = () => {
       } else if (interest_list.length === 0) {
         setErrMessage("Add at least 2 interests")
       } else {
-        $.post("http://localhost:3000/signup", { username, password, first_name, last_name, email, affiliation, birthday, interests: interest_list }, (data, status) => {
+        $.post("http://localhost:80/signup", { username, password, first_name, last_name, email, affiliation, birthday, interests: interest_list }, (data, status) => {
           if (data === "err1") {
             setErrMessage("User already exists")
           } else if (data === "err2") {

@@ -20,7 +20,7 @@ const Header = () => {
 			const delayDebounceFn = setTimeout(() => {
 				if (searchTerm.length !== 0) {
 					// Uncomment this when you want to test out the actual search
-					$.post("http://localhost:3000/searchUser", { username: searchTerm }, (data, status) => {
+					$.post("http://localhost:80/searchUser", { username: searchTerm }, (data, status) => {
 					  if (data !== "No users found") {
 					    setFoundUsers(data)
 					  }
@@ -37,9 +37,9 @@ const Header = () => {
 
   useEffect(() => {
     console.log("FRIENDS HELLO")
-    $.get("http://localhost:3000/getUser", (data, status) => {
+    $.get("http://localhost:80/getUser", (data, status) => {
       setUser(data)
-      $.post("http://localhost:3000/getWallInformation", {user : data}, (information, status) => {
+      $.post("http://localhost:80/getWallInformation", {user : data}, (information, status) => {
         setAffiliation(information.affiliation)
         setProfileURL(information.profile_url)
       })
@@ -47,7 +47,7 @@ const Header = () => {
   }, [])
 
 	const handleLogout = () => {
-		$.post("http://localhost:3000/logout", (data, status) => {});
+		$.post("http://localhost:80/logout", (data, status) => {});
 	};
 
 	const handleBlur = () => {
