@@ -25,7 +25,18 @@ const Post = ({ user, wall, content, type, date, visitingUser }) => {
         setComments(data)
       }
     })
-  }, [comments])
+  }, [])
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      $.post("http://localhost:3000/getComments", { post_identifier }, (data, status) => {
+        if (data !== "no comments") {
+          setComments(data)
+        }
+      })
+    }, 5000)
+    return () => clearInterval(interval)
+  }, [])
 
   const addComment = () => {
     const now = `${Date.now()}`
@@ -46,7 +57,6 @@ const Post = ({ user, wall, content, type, date, visitingUser }) => {
         }
         let newComments = [...comments]
         newComments.push(commentObj)
-        // console.log(newComments)
         setComments([...newComments])
       }
     })
