@@ -145,7 +145,17 @@ const toggleArticleLike = (id, user, callback) => {
     } else {
       var likes = data.Items[0]?.likes?.SS;
       if (!likes) {
-        likes = [user];
+        likes = [];
+      }
+
+      if (likes.includes(user)) {
+        likes.splice(likes.indexOf(user), 1);
+      } else {
+        likes.push(user);
+      }
+
+      if (likes.length == 0) {
+        likes = ["NO_LIKES"];
       }
 
       const likeParams = {

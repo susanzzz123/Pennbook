@@ -182,6 +182,21 @@ const Home = () => {
                     <div
                       role="button"
                       onClick={() => {
+                        // update locally
+                        var newNewsFeed = newsFeed.filter(
+                          (a) => a.news_id.S != article.news_id.S
+                        );
+                        newNewsFeed.push({
+                          ...article,
+                          likes: article?.likes?.SS?.includes(user)
+                            ? article.likes.SS.filter((u) => u != user)
+                            : article.likes?.SS
+                            ? article.likes.SS.concat([user])
+                            : [user],
+                        });
+                        console.log(newNewsFeed);
+                        setNewsFeed(newNewsFeed);
+
                         $.post(
                           "http://localhost:3000/toggleArticleLike",
                           { username: user, id: article.news_id.S },
@@ -192,7 +207,11 @@ const Home = () => {
                         );
                       }}
                     >
-                      <Heart />
+                      {article?.likes?.SS?.includes(user) ? (
+                        <HeartFill />
+                      ) : (
+                        <Heart />
+                      )}
                     </div>
                   </div>
                   <a href={article.link.S}>{article.headline.S}</a>
