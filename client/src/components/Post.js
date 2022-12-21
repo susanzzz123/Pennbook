@@ -13,14 +13,14 @@ const Post = ({ user, wall, content, type, date, visitingUser }) => {
   const post_identifier = `${user}#${wall}#${date}`
 
   useEffect(() => {
-    $.post("http://localhost:3000/getWallInformation", {user}, (data, status) => {
+    $.post("http://localhost:80/getWallInformation", {user}, (data, status) => {
       setProfileURL(data.profile_url)
       setAffiliation(data.affiliation)
     })
   },[])
 
   useEffect(() => {
-    $.post("http://localhost:3000/getComments", { post_identifier }, (data, status) => {
+    $.post("http://localhost:80/getComments", { post_identifier }, (data, status) => {
       if (data !== "no comments") {
         setComments(data)
       }
@@ -43,7 +43,7 @@ const Post = ({ user, wall, content, type, date, visitingUser }) => {
     const comment_id = uuidv4()
     const comment = commentContent
     setCommentContent('')
-    $.post("http://localhost:3000/addComment", { author: visitingUser, comment_id, post_identifier, date: now, content: comment }, (data, status) => {
+    $.post("http://localhost:80/addComment", { author: visitingUser, comment_id, post_identifier, date: now, content: comment }, (data, status) => {
       if (data === "Comment cannot have empty content!") {
         alert(data)
       } if (data !== "Success") {
@@ -63,7 +63,7 @@ const Post = ({ user, wall, content, type, date, visitingUser }) => {
   }
 
   return (
-    <div className="card mb-4 me-5 shadow">
+    <div className="card mb-4 m-auto shadow">
       <div className="card-body">
         <div className="row mb-2">
           <div style={{flex: "0 0 auto", width: "11%"}}>

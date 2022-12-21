@@ -19,25 +19,26 @@ const Header = () => {
 			const delayDebounceFn = setTimeout(() => {
 				if (searchTerm.length !== 0) {
 					// Uncomment this when you want to test out the actual search
-					// $.post("http://localhost:3000/searchUser", { username: searchTerm }, (data, status) => {
-					//   if (data !== "No users found") {
-					//     setFoundUsers(data)
-					//   }
-					// })
+					$.post("http://localhost:80/searchUser", { username: searchTerm }, (data, status) => {
+					  if (data !== "No users found") {
+					    setFoundUsers(data)
+					  }
+					})
 
 					// Dummy values to save AWS cost
-					setFoundUsers(["jren2", "test1", "test2"]);
+					// setFoundUsers(["jren2", "test1", "test2"]);
 				}
-			}, 2000);
+			}, 1000);
 
 			return () => clearTimeout(delayDebounceFn);
 		}
 	}, [searchTerm]);
 
   useEffect(() => {
-    $.get("http://localhost:3000/getUser", (data, status) => {
+    console.log("FRIENDS HELLO")
+    $.get("http://localhost:80/getUser", (data, status) => {
       setUser(data)
-      $.post("http://localhost:3000/getWallInformation", {user : data}, (information, status) => {
+      $.post("http://localhost:80/getWallInformation", {user : data}, (information, status) => {
         setAffiliation(information.affiliation)
         setProfileURL(information.profile_url)
       })
@@ -45,7 +46,7 @@ const Header = () => {
   }, [])
 
 	const handleLogout = () => {
-		$.post("http://localhost:3000/logout", (data, status) => {});
+		$.post("http://localhost:80/logout", (data, status) => {});
 	};
 
 	const handleBlur = () => {
@@ -90,7 +91,7 @@ const Header = () => {
               aria-label="Search"
             />
             {foundUsers.length > 0 && (
-              <div id="found-field" style={{ width: "29rem" }} className="z-10 mt-1 position-absolute top-100 bg-light p-3">
+              <div id="found-field" style={{ width: "29rem", zIndex: "50" }} className="mt-1 position-absolute top-100 bg-light p-3">
                 {foundUsers.map((elem) => (
                   <a href={`/wall?user=${elem}`} className="text-decoration-none  pe-auto row my-1">
                     <div className="z-50 d-flex col-1 align-items-center">
@@ -127,16 +128,6 @@ const Header = () => {
               <li>
                 <a className="dropdown-item" href={`/visualizer?user=${user}&affiliation=${affiliation}`}>
                   Visualizer
-                </a>
-              </li>
-              <li>
-                <a className="dropdown-item" href={`/chat`}>
-                  Chat
-                </a>
-              </li>
-              <li>
-                <a className="dropdown-item" href={`/news`}>
-                  News
                 </a>
               </li>
               <li>

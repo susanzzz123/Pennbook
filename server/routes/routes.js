@@ -1,13 +1,14 @@
 /* ---
 Routes
 -----*/
-const account_routes = require("./account")
-const friend_routes = require("./friends")
-const registration_routes = require("./registration")
-const utility_routes = require("./utility")
-const posts_routes = require("./posts")
-const timestamp_routes = require("./timestamp")
-const comments_route = require("./comments")
+const account_routes = require("./account");
+const friend_routes = require("./friends");
+const registration_routes = require("./registration");
+const utility_routes = require("./utility");
+const posts_routes = require("./posts");
+const timestamp_routes = require("./timestamp");
+const comments_route = require("./comments");
+const news_route = require("./news");
 
 // Routes object
 const routes = {
@@ -24,6 +25,7 @@ const routes = {
   delete_interest: account_routes.delete_interest,
   search_user: utility_routes.search_user,
   get_user: utility_routes.get_user,
+  search_news: utility_routes.search_news,
   get_wall_information: utility_routes.get_wall_information,
   get_friends: friend_routes.get_friends,
   remove_friend: friend_routes.remove_friend,
@@ -34,6 +36,9 @@ const routes = {
   delete_post: posts_routes.delete_post,
   add_comment: comments_route.add_comment,
   get_comments_for_post: comments_route.get_comments_for_post,
-}
+  get_article: news_route.get_article,
+  get_recommended_article: news_route.get_recommended_article,
+  toggle_article_like: news_route.toggle_article_like,
+};
 
-module.exports = routes
+module.exports = routes;

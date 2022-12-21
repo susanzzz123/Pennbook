@@ -1,7 +1,6 @@
 /* -----------
 Utility routes
 ------------*/
-
 const db = require("../models/database")
 const timestamp = require("./timestamp")
 
@@ -19,6 +18,24 @@ const getWallInformation = function (req, res) {
       res.send("err1")
     } else {
       res.send(data)
+    }
+  })
+}
+
+// input is text (sentence)
+const searchNews= async (req, res) => {
+  const { words } = req.body
+
+  db.search_news(words, function (err, data) {
+    if (err) {
+      res.send("Error occurred when searching for news")
+    } else {
+      if (data == 0) {
+        res.send("No news found")
+      } else {
+        // Returns a hashmap with news articles
+        res.send(data)
+      }
     }
   })
 }
@@ -44,6 +61,7 @@ const searchUser = async (req, res) => {
 
 const utility_routes = {
   search_user: searchUser,
+  search_news: searchNews,
   get_user: getUser,
   get_wall_information: getWallInformation,
 }
