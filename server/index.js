@@ -23,11 +23,11 @@ const users = {};
 app.use(cors({ credentials: true, origin: "http://localhost:1234" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(
-	session({
-		secret: "loginSecret",
-		resave: false,
-		saveUninitialized: true,
-	})
+  session({
+    secret: "loginSecret",
+    resave: false,
+    saveUninitialized: true,
+  })
 );
 app.use(express.json());
 app.use(express.static("dist"));
@@ -168,7 +168,7 @@ io.on("connection", async (socket) => {
 });
 
 server.listen(3000, () => {
-	console.log("listening on 3000");
+  console.log("listening on 3000");
 });
 
 // Routes
@@ -194,15 +194,18 @@ app.post("/addInterest", routes.add_interest)
 app.post("/deleteInterest", routes.delete_interest)
 app.post("/addComment", routes.add_comment)
 app.post("/getComments", routes.get_comments_for_post)
+app.get("/getArticle/:id", routes.get_article);
+app.post("/getRecommendedArticle", routes.get_recommended_article);
+app.post("/toggleArticleLike", routes.toggle_article_like);
 
 // set favicon
 app.get("/favicon.ico", (req, res) => {
-	res.status(404).send();
+  res.status(404).send();
 });
 
 // set the initial entry point
 app.get("*", (req, res) => {
-	res.sendFile(path.join(__dirname, "../dist/index.html"));
+  res.sendFile(path.join(__dirname, "../dist/index.html"));
 });
 
 // // Start node server

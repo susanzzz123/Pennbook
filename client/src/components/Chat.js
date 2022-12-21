@@ -53,15 +53,15 @@ const Chat = ({ userName, friends }) => {
 		socket.emit("start_chat", startData);
 	};
 
-	const leaveChat = () => {
-		const leaveData = {
-			room: room,
-			user: userName,
-		};
-		socket.emit("leave_chat", leaveData);
-		setRoom("");
-		setShowChatBox(false);
-	};
+  const leaveChat = () => {
+    const leaveData = {
+      room: room,
+      user: userName,
+    };
+    socket.emit("leave_chat", leaveData);
+    setRoom("");
+    setShowChatBox(false);
+  };
 
 	const leaveCurrentRoom = () => {
 		console.log(`loadingg ${room}`);

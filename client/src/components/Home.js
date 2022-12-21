@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+
 import AddedFriend from "./icons/AddedFriend";
 import PendingFriend from "./icons/PendingFriend";
 import Header from "./Header";
@@ -8,6 +9,8 @@ import Chat from "./Chat";
 import socket from "./Socket";
 import OfflineFriend from "./icons/OfflineFriend";
 import OnlineFriend from './icons/OnlineFriend'
+import Heart from "./icons/Heart";
+import HeartFill from "./icons/HeartFill";
 import {stemmer} from 'stemmer'
 
 const Home = () => {
@@ -23,15 +26,26 @@ const Home = () => {
 	const [posts, setPosts] = useState([]);
   const [searchArticle, setSearchArticle] = useState('')
   const [searchedNews, setSearchedNews] = useState([])
+  const [newsFeed, setNewsFeed] = useState([]);
 
-	// const joinRoom = () => {
-	// 	// console.log(user);
-	// 	// console.log("join" + room);
-	// 	if (room !== "") {
-	// 		socket.emit("join_room", room);
-	// 		setShowChat(true);
-	// 	}
-	// };
+  // const joinRoom = () => {
+  // 	// console.log(user);
+  // 	// console.log("join" + room);
+  // 	if (room !== "") {
+  // 		socket.emit("join_room", room);
+  // 		setShowChat(true);
+  // 	}
+  // };
+
+  const getFullArticle = (id) => {
+    var article;
+    $.get(`http://localhost:3000/getArticle/${id}`, (data, status) => {
+      // setNewsFeed(newsFeed.concat([data]));
+      console.log(data);
+      article = data[0]?.link.S;
+    });
+    return article;
+  };
 
 	useEffect(() => {
     // const interval = setInterval(() => {
@@ -249,7 +263,7 @@ const Home = () => {
         }
       `}
     </style>
-    <div></div>
+    <div>
 			<Header></Header>
 			<div className="container text-center">
 				<div className="row">
@@ -278,6 +292,66 @@ const Home = () => {
                 </div>
               )
             )}
+            </div>
+            <button
+              type="button"
+              className="btn btn-primary m-auto"
+              onClick={() => {
+                $.post(
+                  "http://localhost:3000/getRecommendedArticle",
+                  { username: user },
+                  (data, status) => {
+                    setNewsFeed(newsFeed.concat([data]));
+                    console.log(newsFeed.concat([data]));
+                  }
+                );
+              }}
+            >
+              Recommend me!
+            </button>
+            <div>
+              {newsFeed.map((article) => (
+                <div className="bg-light m-1 p-3 rounded">
+                  <div className="text-end">
+                    <div
+                      role="button"
+                      onClick={() => {
+                        // update locally
+                        var newNewsFeed = newsFeed.filter(
+                          (a) => a.news_id.S != article.news_id.S
+                        );
+                        newNewsFeed.push({
+                          ...article,
+                          likes: article?.likes?.SS?.includes(user)
+                            ? article.likes.SS.filter((u) => u != user)
+                            : article.likes?.SS
+                            ? article.likes.SS.concat([user])
+                            : [user],
+                        });
+                        console.log(newNewsFeed);
+                        setNewsFeed(newNewsFeed);
+
+                        $.post(
+                          "http://localhost:3000/toggleArticleLike",
+                          { username: user, id: article.news_id.S },
+                          (data, status) => {
+                            console.log(data);
+                            console.log(article);
+                          }
+                        );
+                      }}
+                    >
+                      {article?.likes?.SS?.includes(user) ? (
+                        <HeartFill />
+                      ) : (
+                        <Heart />
+                      )}
+                    </div>
+                  </div>
+                  <a href={article.link.S}>{article.headline.S}</a>
+                  <p>{article.short_description.S}</p>
+                </div>
+              ))}
             </div>
             Active group chats
             <div>
@@ -338,19 +412,9 @@ const Home = () => {
 					</div>
 				</div>
 			</div>
-			
-			{/* {!showChat ? (
-				<div className="joinChatContainer">
-					<button onClick={() => setShowChat(true)}>Chat</button>
-				</div>
-			) : (
-				<div className="chatContainer">
-					<button onClick={() => setShowChat(false)}>Chat</button>
-					<Chat userName={user} friends={friendsList} />
-				</div>
-			)} */}
-		</>
-	);
+      </div>
+    </>
+  );
 };
 
 export default Home;
