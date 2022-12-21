@@ -32,11 +32,32 @@ const Home = () => {
 	// };
 
 	useEffect(() => {
-		socket.on("load_online_friends", (data) => {
-			var onlineFriends = data.online;
-			setFriendsList(onlineFriends);
-		});
-	}, [socket]);
+    // const interval = setInterval(() => {
+      socket.on("load_online_friends", (data) => {
+        var onlineFriends = data.online;
+        setFriendsList(onlineFriends);
+      });
+      // if (friends && user) {
+      //   socket.emit("get_all_posts", { friends, username: user })
+      // }
+      // socket.on("load_all_posts", (data) => {
+      //   const filteredPosts = data.reduce((acc, current) => {
+      //     const x = acc.find(post => 
+      //       (post.post_id.N === current.post_id.N) && (post.author.S === current.author.S)
+      //     );
+      //     if (!x) {
+      //       return acc.concat([current]);
+      //     } else {
+      //       return acc;
+      //     }
+      //   }, []);
+      //   filteredPosts.sort((a, b) => (a.post_id.N > b.post_id.N ? -1 : 1));
+      //   setPosts([...filteredPosts]);
+      // })
+    // }, 5000)
+    // return () => clearInterval(interval)
+	}, []);
+
 
 	useEffect(() => {
 		$.get("http://localhost:3000/getUser", (data, status) => {
@@ -46,13 +67,13 @@ const Home = () => {
 				"http://localhost:3000/getFriends",
 				{ username: data },
 				(data, status) => {
+          const postPromises = []
+          let postList = []
 					if (data === "user has no friends") {
 						setFriends([]);
 					} else if (typeof data === "string") {
 						setFriends([]);
 					} else {
-						const promises = [];
-						const friend_list = [];
 						data.forEach(function (individual_friend) {
 							promises.push(
 								$.post(
@@ -70,50 +91,67 @@ const Home = () => {
 						});
 						Promise.all(promises).then((values) => {
 							setFriends(friend_list);
+              // socket.emit("get_all_posts", { friends: data, username });
 						});
-
-						const postPromises = [];
-						let postList = [];
-						postPromises.push(
-							$.post(
-								"http://localhost:3000/getPosts",
-								{ username },
-								(dataResponse, status) => {
-									if (dataResponse !== "no posts") {
-										const newList = [...dataResponse];
-										postList = postList.concat(newList);
-									}
-								}
-							)
-						);
-
-						data.forEach((friend) => {
-							if (friend.status.N == 1) {
-								postPromises.push(
-									$.post(
-										"http://localhost:3000/getPosts",
-										{ username: friend.receiver.S },
-										(dataResponse, status) => {
-											if (dataResponse !== "no posts") {
-												const newList = [...dataResponse];
-												console.log(newList);
-												postList = postList.concat(newList);
-											}
-										}
-									)
-								);
-							}
-						});
-						Promise.all(postPromises).then((values) => {
-							postList.sort((a, b) => (a.post_id.N > b.post_id.N ? -1 : 1));
-							setPosts([...postList]);
-						});
+            const promises = [];
+						const friend_list = [];
+            data.forEach(friend => {
+              if (friend.status.N == 1) {
+                postPromises.push(
+                  $.post(
+                    "http://localhost:3000/getPosts", 
+                    {username: friend.receiver.S}, 
+                  function(err, dataR) {
+                    if (dataR != "no posts") {
+                      const newList = [...dataR]
+                      postList = postList.concat(newList)
+                    }
+                  })
+                )
+              }
+            })
+            postPromises.push(
+              $.post(
+              "http://localhost:3000/getPosts",
+              {username},
+              function(err, dataR) {
+                if (dataR != "no posts") {
+                  const newList = [...dataR]
+                  postList = postList.concat(newList)
+                }
+              })
+            )
+            Promise.all(postPromises).then((values) => {
+              const filteredPosts = postList.reduce((acc, current) => {
+                const x = acc.find(post => 
+                  (post.post_id.N === current.post_id.N) && (post.author.S === current.author.S)
+                );
+                if (!x) {
+                  return acc.concat([current]);
+                } else {
+                  return acc;
+                }
+              }, []);
+              filteredPosts.sort((a, b) => (a.post_id.N > b.post_id.N ? -1 : 1));
+              setPosts([...filteredPosts]);
+            })
 					}
 				}
 			);
 			socket.emit("get_online_friends", data);
 		});
 	}, []);
+
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+      // if (friends && user) {
+      //   socket.emit("get_all_posts", { friends, username: user })
+      // }
+      // // const data = user
+      // socket.emit("get_online_friends", user);
+  //   }, 5000);
+  //   return () => clearInterval(interval);
+  // }, []);
 
 	return (
 		<>
@@ -147,7 +185,7 @@ const Home = () => {
               {posts.map((post) => (
 								<Post
 									user={post.author.S}
-									wall={post.username.S}
+									wall={post.wall.S}
 									content={post.content.S}
 									type={post.type.S}
 									date={parseInt(post.post_id.N)}
