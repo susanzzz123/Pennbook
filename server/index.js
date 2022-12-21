@@ -167,13 +167,8 @@ io.on("connection", async (socket) => {
 	// })
 });
 
-<<<<<<< HEAD
 server.listen(80, () => {
 	console.log("listening on 80");
-=======
-server.listen(3000, () => {
-  console.log("listening on 3000");
->>>>>>> 06393ac25e9b44c9a7f111694faba5973c635f9e
 });
 
 // Routes
