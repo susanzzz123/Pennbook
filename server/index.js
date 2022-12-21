@@ -9,17 +9,25 @@ const postsdb = require("./models/postsdb");
 // Initialization
 var app = express();
 var server = require("http").createServer(app);
-var io = require("socket.io")(server);
+const io = require("socket.io")(server, {
+  cors: {
+    origin: "https://localhost:1234",
+    methods: ["GET", "POST"],
+    allowedHeaders: ["my-custom-header"],
+    credentials: true
+  }
+});
+
 const users = {};
 
 app.use(cors({ credentials: true, origin: "http://localhost:1234" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(
-	session({
-		secret: "loginSecret",
-		resave: false,
-		saveUninitialized: true,
-	})
+  session({
+    secret: "loginSecret",
+    resave: false,
+    saveUninitialized: true,
+  })
 );
 app.use(express.json());
 app.use(express.static("dist"));
@@ -30,8 +38,21 @@ io.on("connection", async (socket) => {
 	socket.on("join_room", (data) => {
 		socket.join(data);
 	});
-	socket.on("start_chat", (data) => {
-		var members = [data.inviter, data.user].sort();
+	socket.on("start_chat", async (data) => {
+		var oldRoom = data.room;
+		console.log(oldRoom);
+		const usersInOldRoom = await io.in(oldRoom).fetchSockets();
+		var members = [];
+		if (oldRoom !== "") {
+			console.log(`old: ${usersInOldRoom}`);
+			for (const user of usersInOldRoom) {
+				members.push(user.data.username);
+			}
+			members.push(data.user);
+		} else {
+			members = [data.inviter, data.user].sort();
+		}
+		var members = members.sort();
 		var room = members.join("");
 		console.log(room);
 		db.get_chat(room, function (err, data2) {
@@ -41,8 +62,14 @@ io.on("connection", async (socket) => {
 				if (typeof data2 !== "undefined") {
 					console.log("first");
 					socket.join(room);
-					socket.to(users[data.inviter]).emit("load_chat", data2);
-					io.to(room).emit("load_chat", data2);
+					if (oldRoom !== "") {
+						usersInOldRoom.forEach((user) => {
+							socket.to(users[user.data.username]).emit("load_chat", data2); // to others in old room
+						});
+					} else {
+						socket.to(users[data.inviter]).emit("load_chat", data2); // to inviter
+					}
+					io.to(room).emit("load_chat", data2); // to self
 				} else {
 					console.log("second");
 					db.create_chat(room, members, function (err, data3) {
@@ -51,6 +78,7 @@ io.on("connection", async (socket) => {
 						} else {
 							socket.join(room);
 							socket.to(users[data.inviter]).emit("chat_invite_accepted", room);
+							io.to(room).emit("chat_invite_accepted", room);
 						}
 					});
 				}
@@ -103,8 +131,12 @@ io.on("connection", async (socket) => {
 		});
 	});
 	socket.on("invite_to_chat", (data) => {
-		const inviter = { name: socket.data.username, id: socket.id };
-		socket.to(users[data]).emit("receive_invite", inviter);
+		const inviteData = {
+			name: socket.data.username,
+			id: socket.id,
+			room: data.room,
+		};
+		socket.to(users[data.friend]).emit("receive_invite", inviteData);
 	});
 	socket.on("disconnect", () => {
 		console.log("User disconnected", socket.id);
@@ -135,12 +167,18 @@ io.on("connection", async (socket) => {
 	// })
 });
 
+<<<<<<< HEAD
 server.listen(80, () => {
 	console.log("listening on 80");
+=======
+server.listen(3000, () => {
+  console.log("listening on 3000");
+>>>>>>> 06393ac25e9b44c9a7f111694faba5973c635f9e
 });
 
 // Routes
 app.post("/signup", routes.signup)
+app.post("/searchNews", routes.search_news)
 app.post("/login", routes.login)
 app.post("/logout", routes.logout)
 app.post("/changeEmail", routes.change_email)
@@ -161,15 +199,18 @@ app.post("/addInterest", routes.add_interest)
 app.post("/deleteInterest", routes.delete_interest)
 app.post("/addComment", routes.add_comment)
 app.post("/getComments", routes.get_comments_for_post)
+app.get("/getArticle/:id", routes.get_article);
+app.post("/getRecommendedArticle", routes.get_recommended_article);
+app.post("/toggleArticleLike", routes.toggle_article_like);
 
 // set favicon
 app.get("/favicon.ico", (req, res) => {
-	res.status(404).send();
+  res.status(404).send();
 });
 
 // set the initial entry point
 app.get("*", (req, res) => {
-	res.sendFile(path.join(__dirname, "../dist/index.html"));
+  res.sendFile(path.join(__dirname, "../dist/index.html"));
 });
 
 // // Start node server
