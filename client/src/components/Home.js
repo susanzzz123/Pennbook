@@ -210,7 +210,7 @@ const Home = () => {
       }
     }, 5000)
     return () => clearInterval(interval)
-  }, [user]) 
+  }, []) 
 
 	return (
 		<>
