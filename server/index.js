@@ -8,7 +8,15 @@ const db = require("./models/database");
 // Initialization
 var app = express();
 var server = require("http").createServer(app);
-var io = require("socket.io")(server);
+const io = require("socket.io")(server, {
+  cors: {
+    origin: "https://localhost:1234",
+    methods: ["GET", "POST"],
+    allowedHeaders: ["my-custom-header"],
+    credentials: true
+  }
+});
+
 const users = {};
 
 app.use(cors({ credentials: true, origin: "http://localhost:1234" }));
