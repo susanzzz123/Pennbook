@@ -284,50 +284,52 @@ const Home = () => {
             >
               Recommend an article!
             </button>
-            <div className="mb-2">
-              {newsFeed.map((article) => (
-                <div className="bg-light m-1 p-3 rounded">
-                  <div className="text-end">
-                    <div
-                      role="button"
-                      onClick={() => {
-                        // update locally
-                        var newNewsFeed = newsFeed.filter(
-                          (a) => a.news_id.S != article.news_id.S
-                        );
-                        newNewsFeed.push({
-                          ...article,
-                          likes: article?.likes?.SS?.includes(user)
-                            ? article.likes.SS.filter((u) => u != user)
-                            : article.likes?.SS
-                            ? article.likes.SS.concat([user])
-                            : [user],
-                        });
-                        console.log(newNewsFeed);
-                        setNewsFeed(newNewsFeed);
+            { newsFeed.length > 0 && (
+              <div style={{height:"30vh"}} className="mb-2 overflow-auto">
+                {newsFeed.map((article) => (
+                  <div className="bg-light m-1 p-3 rounded">
+                    <div className="text-end">
+                      <div
+                        role="button"
+                        onClick={() => {
+                          // update locally
+                          var newNewsFeed = newsFeed.filter(
+                            (a) => a.news_id.S != article.news_id.S
+                          );
+                          newNewsFeed.push({
+                            ...article,
+                            likes: article?.likes?.SS?.includes(user)
+                              ? article.likes.SS.filter((u) => u != user)
+                              : article.likes?.SS
+                              ? article.likes.SS.concat([user])
+                              : [user],
+                          });
+                          console.log(newNewsFeed);
+                          setNewsFeed(newNewsFeed);
 
-                        $.post(
-                          "http://localhost:3000/toggleArticleLike",
-                          { username: user, id: article.news_id.S },
-                          (data, status) => {
-                            console.log(data);
-                            console.log(article);
-                          }
-                        );
-                      }}
-                    >
-                      {article?.likes?.SS?.includes(user) ? (
-                        <HeartFill />
-                      ) : (
-                        <Heart />
-                      )}
+                          $.post(
+                            "http://localhost:3000/toggleArticleLike",
+                            { username: user, id: article.news_id.S },
+                            (data, status) => {
+                              console.log(data);
+                              console.log(article);
+                            }
+                          );
+                        }}
+                      >
+                        {article?.likes?.SS?.includes(user) ? (
+                          <HeartFill />
+                        ) : (
+                          <Heart />
+                        )}
+                      </div>
                     </div>
+                    <a href={article.link.S}>{article.headline.S}</a>
+                    <p>{article.short_description.S}</p>
                   </div>
-                  <a href={article.link.S}>{article.headline.S}</a>
-                  <p>{article.short_description.S}</p>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
             <div>
               <div class="input-group mb-3">
                 <input id="search-input"
@@ -340,7 +342,7 @@ const Home = () => {
                 <button type="button" onClick={() => searchForArticles()} class="btn btn-outline-primary">Search</button>
               </div>
             </div>
-            <div style={{height:"50vh"}} className="text-start overflow-auto">
+            <div style={{height:"45vh"}} className="text-start overflow-auto">
             {
               searchedNews.map((news) => (
                 <div className="row border rounded mx-3 my-2 py-2">
