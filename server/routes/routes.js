@@ -24,6 +24,7 @@ const routes = {
   delete_interest: account_routes.delete_interest,
   search_user: utility_routes.search_user,
   get_user: utility_routes.get_user,
+  search_news: utility_routes.search_news,
   get_wall_information: utility_routes.get_wall_information,
   get_friends: friend_routes.get_friends,
   remove_friend: friend_routes.remove_friend,

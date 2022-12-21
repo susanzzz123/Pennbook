@@ -52,36 +52,49 @@ var getUserInfo = function (username, callback) {
 	});
 };
 
-// var searchNews = function (string, callback) {
-//   // With username as key
-//   var params = {
-//     KeyConditions: {
-//       username: {
-//         ComparisonOperator: "EQ",
-//         AttributeValueList: [{ S: username }],
-//       },
-//     },
-//     TableName: "users",
-//   }
-
-//   // If the user exists then return the password to the callback
-//   db.query(params, function (err, data) {
-//     if (err || data.Items.length == 0) {
-//       callback(err, "user not found")
-//     } else {
-//       const first_name = data.Items[0].first_name.S
-//       const last_name = data.Items[0].last_name.S
-//       const interests = data.Items[0].interests.SS
-//       const affiliation = data.Items[0].affiliation.S
-//       const username = data.Items[0].username.S
-//       const email = data.Items[0].email.S
-//       const birthday = data.Items[0].birthday.S
-//       const last_time = data.Items[0].last_time.N
-
-//       callback(err, { first_name, last_name, interests, affiliation, username, email, birthday, last_time })
-//     }
-//   })
-// }
+// Takes as input words which is a list of stemmed words
+const searchNews = async function (words, callback) {
+	const wordsCount = {};
+	// For each word, get the news articles
+	const promises = [];
+	words.forEach(function (word) {
+		const	queryPromise = new Promise((resolve, reject) => {
+				db.query(
+					{
+						KeyConditions: {
+							keyword: {
+								ComparisonOperator: "EQ",
+								AttributeValueList: [{ S: word }],
+							},
+						},
+						TableName: "newsSearch",
+					}, function (err, data) {
+					if (err) {
+						reject(err)
+					} else if (data.Items.length !== 0) {
+						data.Items.map((newsItem) => {
+							if (wordsCount.hasOwnProperty(newsItem.news_id.S)) {
+								wordsCount[`${newsItem.news_id.S}`].count += 1
+							} else {
+								wordsCount[`${newsItem.news_id.S}`] = {
+									count: 1,
+									authors: newsItem.authors.S,
+									category: newsItem.category.S,
+									link: newsItem.link.S,
+									headline: newsItem.headline.S,
+								}
+							}
+						})
+						resolve()
+					}
+				})
+			})
+			promises.push(queryPromise)
+	});
+	Promise.all(promises).then((values) => {
+		callback(null, wordsCount)
+	});
+}
 
 var checkLogin = function (username, callback) {
 	// With username as key
@@ -713,6 +726,7 @@ var database = {
 	create_chat: createChat,
 	get_chat: getChat,
 	send_message: sendMessage,
+	search_news: searchNews,
 };
 
 module.exports = database;

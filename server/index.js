@@ -149,6 +149,7 @@ server.listen(3000, () => {
 
 // Routes
 app.post("/signup", routes.signup)
+app.post("/searchNews", routes.search_news)
 app.post("/login", routes.login)
 app.post("/logout", routes.logout)
 app.post("/changeEmail", routes.change_email)

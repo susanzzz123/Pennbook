@@ -13,7 +13,6 @@ const Header = () => {
   const navigate = useNavigate()
 
 	useEffect(() => {
-    console.log("found the errror")
 		if (searchTerm.length === 0) {
 			setFoundUsers([]);
 		} else {

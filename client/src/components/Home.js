@@ -8,6 +8,7 @@ import Chat from "./Chat";
 import socket from "./Socket";
 import OfflineFriend from "./icons/OfflineFriend";
 import OnlineFriend from './icons/OnlineFriend'
+import {stemmer} from 'stemmer'
 
 const Home = () => {
 	// const socket = io.connect("http://localhost:3000");
@@ -21,6 +22,7 @@ const Home = () => {
 	// posts are sorted in ascending order
 	const [posts, setPosts] = useState([]);
   const [searchArticle, setSearchArticle] = useState('')
+  const [searchedNews, setSearchedNews] = useState([])
 
 	// const joinRoom = () => {
 	// 	// console.log(user);
@@ -45,7 +47,6 @@ const Home = () => {
 		$.get("http://localhost:3000/getUser", (data, status) => {
 			const username = data;
 			setUser(username);
-      console.log("GOT USER")
 			$.post(
 				"http://localhost:3000/getFriends",
 				{ username: data },
@@ -57,7 +58,6 @@ const Home = () => {
 					} else if (typeof data === "string") {
 						setFriends([]);
 					} else {
-            console.log("USER HAS FRIENDS")
 						const promises = [];
 						const friend_list = [];
 						data.forEach(function (individual_friend) {
@@ -212,6 +212,34 @@ const Home = () => {
     return () => clearInterval(interval)
   }, []) 
 
+  const searchForArticles = () => {
+    if (searchArticle.length > 0) {
+      let words = searchArticle.toLowerCase()
+      words = words.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"") // remove all punctuation
+      .replace(/\s{2,}/g," ")                  // fix spaces
+      words = words.split(" ")
+
+      words = words.map(function(word) {
+        return stemmer(word)
+      })
+
+      $.post("http://localhost:3000/searchNews", { words }, (data, response) => {
+          let sort_news = [];
+          for (var news in data) {
+              sort_news.push([news, data[news]]);
+          }
+
+          sort_news.sort(function(a, b) {
+              return b[1].count - a[1].count;
+          });
+
+          console.log(sort_news)
+          setSearchedNews(sort_news)
+        }
+      )
+    }
+  }
+
 	return (
 		<>
     <style>
@@ -226,28 +254,38 @@ const Home = () => {
 			<div className="container text-center">
 				<div className="row">
 					<div className="col-3">
-            Search for a news article:
             <div>
-              <input
-                id="search-input"
-                // onBlur={() => handleBlur()}
-                // onFocus={() => handleFocus()}
-                onChange={(e) => setSearchArticle(e.target.value)}
-                type="search"
-                className="form-control"
-                placeholder="Search for an article..."
-                aria-label="Search"
-              />
+              <div class="input-group mb-3">
+                <input id="search-input"
+                  onChange={(e) => setSearchArticle(e.target.value)}
+                  type="search"
+                  className="form-control"
+                  placeholder="Search for an article..."
+                  aria-label="Search"
+                />
+                <button type="button" onClick={() => searchForArticles()} class="btn btn-outline-primary">Search</button>
+              </div>
             </div>
-            News articles recommended for you
-            <div>
-              here should be like top 10 articles recommended
+            <div style={{height:"50vh"}} className="text-start overflow-auto">
+            {
+              searchedNews.map((news) => (
+                <div className="row border rounded mx-3 my-2 py-2">
+                  <div className="col-12">
+                    <a href={`${news[1].link}`} target="_blank">{news[1].headline}</a>
+                    <p></p>
+                    <div>{news[1].authors} • <span className="fw-light">{news[1].category}</span></div>
+                  </div>
+                </div>
+              )
+            )}
             </div>
             Active group chats
             <div>
               <Chat userName={user} friends={friendsList} />
             </div>
           </div>
+
+
 					<div id="overflow-div" style={{height:"90vh", overflow: "auto"}} className="col-7 text-center">
               {posts.map((post) => (
                 <div key={parseInt(post.post_id.N)}>
