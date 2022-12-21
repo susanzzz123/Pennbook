@@ -19,6 +19,7 @@ const routes = {
   change_email: account_routes.change_email,
   change_password: account_routes.change_password,
   change_affiliation: account_routes.change_affiliation,
+  change_profile: account_routes.change_profile,
   add_interest: account_routes.add_interest,
   delete_interest: account_routes.delete_interest,
   search_user: utility_routes.search_user,

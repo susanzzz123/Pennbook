@@ -35,6 +35,7 @@ var getUserInfo = function (username, callback) {
 			const email = data.Items[0].email.S;
 			const birthday = data.Items[0].birthday.S;
 			const last_time = data.Items[0].last_time.N;
+			const profile_url = data.Items[0].profile_url.S;
 
 			callback(err, {
 				first_name,
@@ -45,10 +46,42 @@ var getUserInfo = function (username, callback) {
 				email,
 				birthday,
 				last_time,
+				profile_url,
 			});
 		}
 	});
 };
+
+// var searchNews = function (string, callback) {
+//   // With username as key
+//   var params = {
+//     KeyConditions: {
+//       username: {
+//         ComparisonOperator: "EQ",
+//         AttributeValueList: [{ S: username }],
+//       },
+//     },
+//     TableName: "users",
+//   }
+
+//   // If the user exists then return the password to the callback
+//   db.query(params, function (err, data) {
+//     if (err || data.Items.length == 0) {
+//       callback(err, "user not found")
+//     } else {
+//       const first_name = data.Items[0].first_name.S
+//       const last_name = data.Items[0].last_name.S
+//       const interests = data.Items[0].interests.SS
+//       const affiliation = data.Items[0].affiliation.S
+//       const username = data.Items[0].username.S
+//       const email = data.Items[0].email.S
+//       const birthday = data.Items[0].birthday.S
+//       const last_time = data.Items[0].last_time.N
+
+//       callback(err, { first_name, last_name, interests, affiliation, username, email, birthday, last_time })
+//     }
+//   })
+// }
 
 var checkLogin = function (username, callback) {
 	// With username as key
@@ -230,6 +263,9 @@ var checkSignup = function (
 					last_time: {
 						N: time,
 					},
+					profile_url: {
+						S: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.personality-insights.com%2Fdefault-profile-pic%2F&psig=AOvVaw10nFX55F0VChuQrcZhIJ3z&ust=1671504493305000&source=images&cd=vfe&ved=0CA8QjRxqFwoTCPDits7VhPwCFQAAAAAdAAAAABAE"
+					}
 				},
 				TableName: "users",
 				ReturnValues: "NONE",
@@ -388,6 +424,31 @@ var updateAffiliation = (username, affiliation, callback) => {
 			callback(err, "unable to update affiliation");
 		} else {
 			callback(null, "affiliation updated successfully");
+		}
+	});
+};
+
+var updateProfile = (username, profile, callback) => {
+	const params = {
+		TableName: "users",
+		Key: {
+			username: {
+				S: username,
+			},
+		},
+		ExpressionAttributeNames: { "#profile": "profile_url" },
+		UpdateExpression: "set #profile = :val",
+		ExpressionAttributeValues: {
+			":val": {
+				S: profile,
+			},
+		},
+	};
+	db.updateItem(params, function (err, data) {
+		if (err) {
+			callback(err, "unable to update profile");
+		} else {
+			callback(null, "profile updated successfully");
 		}
 	});
 };
@@ -623,6 +684,7 @@ var database = {
 	update_email: updateEmail,
 	update_password: updatePassword,
 	update_affiliation: updateAffiliation,
+	update_profile: updateProfile,
 	add_interest: addInterest,
 	remove_interest: removeInterest,
 	get_users: getUsers,

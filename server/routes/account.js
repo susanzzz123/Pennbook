@@ -58,6 +58,24 @@ const changeAffiliation = async (req, res) => {
   }
 }
 
+const changeProfile = async (req, res) => {
+  const { username, profile } = req.body
+  //somehow check if it's the logged-in user changing their email
+  if (req.session.user === username) {
+    //db calls for updating profile
+    db.update_profile(username, profile, function (err, data) {
+      if (err || data === "unable to update profile") {
+        res.send("unable to update profile")
+      } else {
+        timestamp.internalUpdateTimestamp(username)
+        res.send(data)
+      }
+    })
+  } else {
+    res.send("user has no access permissions")
+  }
+}
+
 const addInterest = async (req, res) => {
   const { username, newInterest } = req.body
   //somehow check if it's the logged-in user changing their email
@@ -90,12 +108,15 @@ const deleteInterest = async (req, res) => {
   }
 }
 
+
+
 const account_routes = {
   delete_interest: deleteInterest,
   add_interest: addInterest,
   change_affiliation: changeAffiliation,
   change_password: changePassword,
   change_email: changeEmail,
+  change_profile: changeProfile,
 }
 
 module.exports = account_routes

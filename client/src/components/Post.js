@@ -8,22 +8,22 @@ const Post = ({ user, wall, content, type, date, visitingUser }) => {
   const [comments, setComments] = useState([])
 
   const currDate = new Date(date).toString()
-  let post_identifier = `${user}#${wall}#${date}`
+  const post_identifier = `${user}#${wall}#${date}`
 
   useEffect(() => {
     $.post("http://localhost:3000/getComments", { post_identifier }, (data, status) => {
       if (data !== "no comments") {
         setComments(data)
-      } else {
-        console.log(data)
       }
     })
-  }, [post_identifier])
+  }, [comments])
 
-  const addComment = async () => {
+  const addComment = () => {
     const now = `${Date.now()}`
     const comment_id = uuidv4()
-    $.post("http://localhost:3000/addComment", { author: visitingUser, comment_id, post_identifier, date: now, content: commentContent }, (data, status) => {
+    const comment = commentContent
+    setCommentContent('')
+    $.post("http://localhost:3000/addComment", { author: visitingUser, comment_id, post_identifier, date: now, content: comment }, (data, status) => {
       if (data !== "Success") {
         alert(`Error while commenting`)
       } else {
@@ -35,7 +35,7 @@ const Post = ({ user, wall, content, type, date, visitingUser }) => {
         }
         let newComments = [...comments]
         newComments.push(commentObj)
-        console.log(newComments)
+        // console.log(newComments)
         setComments([...newComments])
       }
     })
@@ -43,7 +43,6 @@ const Post = ({ user, wall, content, type, date, visitingUser }) => {
 
   return (
     <div className="card mb-4 shadow" style={{ width: "24rem" }}>
-      {/* <img class="card-img-top" src={img} alt="Card image cap"/> */}
       <div className="card-body">
         <h5 className="card-title">{user}</h5>
         <h6>{currDate}</h6>
@@ -54,7 +53,8 @@ const Post = ({ user, wall, content, type, date, visitingUser }) => {
             <div className="input-group input-group-sm mt-2">
               <textarea
                 className="form-control"
-                onChange={(e) => setCommentContent(e.target.value)}>
+                onChange={(e) => setCommentContent(e.target.value)}
+                value={commentContent}>
               </textarea>
               <button className="btn btn-outline-primary input-group-text" onClick={() => addComment()}>
                 Comment
@@ -71,11 +71,13 @@ const Post = ({ user, wall, content, type, date, visitingUser }) => {
       <div>
         {
           comments.map(comment => (
-            <Comment
-              author={comment.author.S}
-              date={parseInt(comment.date.N)}
-              content={comment.content.S}>
-            </Comment>
+            <div key={parseInt(comment.date.N)}>
+              <Comment
+                author={comment.author.S}
+                date={parseInt(comment.date.N)}
+                content={comment.content.S}>
+              </Comment>
+            </div>
           ))
         }
       </div>
