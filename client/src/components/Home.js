@@ -32,11 +32,14 @@ const Home = () => {
 	// };
 
 	useEffect(() => {
-		socket.on("load_online_friends", (data) => {
-			var onlineFriends = data.online;
-			setFriendsList(onlineFriends);
-		});
-	}, [socket]);
+    // const interval = setInterval(() => {
+      socket.on("load_online_friends", (data) => {
+        var onlineFriends = data.online;
+        setFriendsList(onlineFriends);
+      });
+    // }, 5000)
+    // return () => clearInterval(interval)
+	}, []);
 
 	useEffect(() => {
 		$.get("http://localhost:80/getUser", (data, status) => {
@@ -47,7 +50,8 @@ const Home = () => {
 				"http://localhost:80/getFriends",
 				{ username: data },
 				(data, status) => {
-          console.log("GOT FRIENDS")
+          			const postPromises = [];
+					let postList = [];
 					if (data === "user has no friends") {
 						setFriends([]);
 					} else if (typeof data === "string") {
@@ -75,21 +79,6 @@ const Home = () => {
 							setFriends(friend_list);
 						});
 
-						const postPromises = [];
-						let postList = [];
-						postPromises.push(
-							$.post(
-								"http://localhost:80/getPosts",
-								{ username },
-								(dataResponse, status) => {
-									if (dataResponse !== "no posts") {
-										const newList = [...dataResponse];
-										postList = postList.concat(newList);
-									}
-								}
-							)
-						);
-
 						data.forEach((friend) => {
 							if (friend.status.N == 1) {
 								postPromises.push(
@@ -99,7 +88,6 @@ const Home = () => {
 										(dataResponse, status) => {
 											if (dataResponse !== "no posts") {
 												const newList = [...dataResponse];
-												console.log(newList);
 												postList = postList.concat(newList);
 											}
 										}
@@ -107,16 +95,122 @@ const Home = () => {
 								);
 							}
 						});
-						Promise.all(postPromises).then((values) => {
-							postList.sort((a, b) => (a.post_id.N > b.post_id.N ? -1 : 1));
-							setPosts([...postList]);
-						});
 					}
+          postPromises.push(
+            $.post(
+              "http://localhost:3000/getPosts",
+              { username },
+              (dataResponse, status) => {
+                if (dataResponse !== "no posts") {
+                  const newList = [...dataResponse];
+                  postList = postList.concat(newList);
+                }
+              }
+            )
+          );
+          Promise.all(postPromises).then((values) => {
+            const filteredPosts = postList.reduce((acc, current) => {
+              const x = acc.find(post => 
+                (post.post_id.N === current.post_id.N) && (post.author.S === current.author.S)
+              );
+              if (!x) {
+                return acc.concat([current]);
+              } else {
+                return acc;
+              }
+            }, []);
+            filteredPosts.sort((a, b) => (a.post_id.N > b.post_id.N ? -1 : 1));
+            setPosts([...filteredPosts]);
+          });
 				}
 			);
 			socket.emit("get_online_friends", data);
 		});
 	}, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (user != '' && user != undefined) {
+        $.post(
+          "http://localhost:3000/getFriends",
+          { username: user },
+          (data, status) => {
+            const postPromises = [];
+            let postList = [];
+            if (data === "user has no friends") {
+              setFriends([]);
+            } else if (typeof data === "string") {
+              setFriends([]);
+            } else {
+              const promises = [];
+              const friend_list = [];
+              data.forEach(function (individual_friend) {
+                promises.push(
+                  $.post(
+                    "http://localhost:3000/getWallInformation",
+                    { user: individual_friend.receiver.S },
+                    (friend_data, status) => {
+                      friend_list.push({
+                        friend: friend_data.username,
+                        status: individual_friend.status.N,
+                        last_time: friend_data.last_time,
+                      });
+                    }
+                  )
+                );
+              });
+              Promise.all(promises).then((values) => {
+                setFriends(friend_list);
+              });
+              data.forEach((friend) => {
+                if (friend.status.N == 1) {
+                  postPromises.push(
+                    $.post(
+                      "http://localhost:3000/getPosts",
+                      { username: friend.receiver.S },
+                      (dataResponse, status) => {
+                        if (dataResponse !== "no posts") {
+                          const newList = [...dataResponse];
+                          postList = postList.concat(newList);
+                        }
+                      }
+                    )
+                  );
+                }
+              });
+            }
+            postPromises.push(
+              $.post(
+                "http://localhost:3000/getPosts",
+                { username: user },
+                (dataResponse, status) => {
+                  if (dataResponse !== "no posts") {
+                    const newList = [...dataResponse];
+                    postList = postList.concat(newList);
+                  }
+                }
+              )
+            );
+            Promise.all(postPromises).then((values) => {
+              const filteredPosts = postList.reduce((acc, current) => {
+                const x = acc.find(post => 
+                  (post.post_id.N === current.post_id.N) && (post.author.S === current.author.S)
+                );
+                if (!x) {
+                  return acc.concat([current]);
+                } else {
+                  return acc;
+                }
+              }, []);
+              filteredPosts.sort((a, b) => (a.post_id.N > b.post_id.N ? -1 : 1));
+              setPosts([...filteredPosts]);
+            });
+          }
+        );
+      }
+    }, 5000)
+    return () => clearInterval(interval)
+  }, []) 
 
 	return (
 		<>
@@ -156,14 +250,16 @@ const Home = () => {
           </div>
 					<div id="overflow-div" style={{height:"90vh", overflow: "auto"}} className="col-7 text-center">
               {posts.map((post) => (
-								<Post
-									user={post.author.S}
-									wall={post.username.S}
-									content={post.content.S}
-									type={post.type.S}
-									date={parseInt(post.post_id.N)}
-									visitingUser={user}
-								></Post>
+                <div key={parseInt(post.post_id.N)}>
+                  <Post
+                    user={post.author.S}
+                    wall={post.wall.S}
+                    content={post.content.S}
+                    type={post.type.S}
+                    date={parseInt(post.post_id.N)}
+                    visitingUser={user}
+                  ></Post>
+                </div>
 							))}
 					</div>
 					<div className="col-2">
@@ -176,7 +272,7 @@ const Home = () => {
 						{friends.length > 0 &&
 							typeof friends != "string" &&
 							friends.map((elem) => {
-								console.log(elem.last_time);
+								// console.log(elem.last_time);
 								return (
 									<div className="d-flex my-2">
                   {curr_date - parseInt(elem.last_time) > 300000 ? (
