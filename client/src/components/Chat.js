@@ -149,6 +149,7 @@ const Chat = ({ userName, friends }) => {
 					<img
 						className="d-inline align-top"
 						src={img}
+						alt="Leave Chat"
 						width="25"
 						onClick={() => leaveChat()}
 					></img>
