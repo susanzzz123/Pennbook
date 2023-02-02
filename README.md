@@ -17,6 +17,7 @@ In this project, we implemented a facebook themed around Penn students. This all
 - Backend on Node.js with Express.js
 - AWS services(DynamoDB, S3, deployed on EC2)
 - Socket.io
+- Apache Spark
 
 Extra Credit:
 - This project also implements dynamic and persistent profile pictures and persistent group chat messages.  
