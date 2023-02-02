@@ -1,3 +1,5 @@
+*Pennbook*
+
 Team Members:
 Jason Ren: jren2
 Brian Williams: bewill
@@ -98,7 +100,7 @@ G22
 | loader.js
 | package.json
 
-Declaration that all ofthe code you are submitting was written by us:
+Declaration that all of the code you are submitting was written by us:
 Brian Williams bewill
 Ryan deLopez vdelopez
 Susan Zhang szhang25
